@@ -29,9 +29,9 @@ using System;
 using Nini.Config;
 using WhiteCore.Framework.SceneInfo;
 
-namespace WhiteCore.Modules.MarketPlace
+namespace WhiteCore.Modules.MarketPlaceAPI
 {
-    public class MarketPlaceModule
+    public class MarketPlaceAPIModule
     {
         public void Init()
         {
@@ -39,7 +39,7 @@ namespace WhiteCore.Modules.MarketPlace
         
         public string Name
         {
-            get { return "MarketPlaceModule"; }
+            get { return "MarketPlaceAPIModule"; }
         }
 
         public void Close()
