@@ -1,4 +1,4 @@
 WhiteCore-Optional-Modules
 ==========================
 
-Repository Optional Modules for WhiteCore
+This is the Optional Modules Repository for WhiteCore
