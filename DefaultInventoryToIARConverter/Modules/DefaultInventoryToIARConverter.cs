@@ -44,7 +44,7 @@ using WhiteCore.Region;
 [assembly: AssemblyVersion("2014.4.22")]
 [assembly: AssemblyFileVersion("2014.4.22")]
 
-namespace WhiteCore.Services.InventoryService
+namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 {
     /// <summary>
     /// This plugin saves the default asset and inventory folders over into an IAR file so they can be loaded easier.

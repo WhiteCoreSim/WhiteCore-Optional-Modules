@@ -46,7 +46,7 @@ using WhiteCore.Region;
 [assembly: AssemblyVersion("2014.4.22")]
 [assembly: AssemblyFileVersion("2014.4.22")]
 
-namespace WhiteCore.Region.OptionalModules.World.TreePopulator
+namespace WhiteCore.Addon.TreePopulator
 {
     /// <summary>
     /// Version 1.0 (WhiteCore)
