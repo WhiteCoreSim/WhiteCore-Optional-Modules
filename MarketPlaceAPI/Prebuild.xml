@@ -32,11 +32,9 @@
 	</Configuration>
 
 	<ReferencePath>../../../bin/</ReferencePath>
+	<Reference name="Nini" path="../../../bin/"/>	
 	<Reference name="System"/>
 	<Reference name="System.Web"/>
-
-	<Reference name="Nini" path="../../../bin/"/>
-
 	<Reference name="WhiteCore.Framework"/>
 
 	<Files>
