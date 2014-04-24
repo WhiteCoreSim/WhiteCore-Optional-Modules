@@ -27,6 +27,7 @@
 
 using Nini.Config;
 using System;
+using System.Reflection;
 using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.SceneInfo;
 

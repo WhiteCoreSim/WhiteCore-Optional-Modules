@@ -32,6 +32,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using OpenMetaverse;
 using Nini.Config;
 using WhiteCore.Framework.Modules;
