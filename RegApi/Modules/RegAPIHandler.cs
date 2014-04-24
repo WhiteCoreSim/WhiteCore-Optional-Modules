@@ -57,7 +57,7 @@ namespace WhiteCore.Addon.RegAPI
     /// http://wiki.secondlife.com/wiki/Registration_API_Reference
     /// http://wiki.secondlife.com/wiki/Registration_API
     /// </summary>
-    public class RegAPIHandler : IService
+    public class RegAPIService : IService
     {
         public IHttpServer m_server = null;
         public string Name
@@ -71,12 +71,16 @@ namespace WhiteCore.Addon.RegAPI
 
         public void Start(IConfigSource config, IRegistryCore registry)
         {
-            IConfig handlerConfig = config.Configs["Handlers"];
+            IConfig handlerConfig = config.Configs["RegAPI"];
             if (handlerConfig.GetString("RegApiHandler", "") != Name)
+            {
+                MainConsole.Instance.Info("[RegAPI]: RegAPI Handler not set");
                 return;
-            m_server = registry.RequestModuleInterface<ISimulationBase>().GetHttpServer(handlerConfig.GetUInt("WireduxHandlerPort"));
+            }
+            m_server = registry.RequestModuleInterface<ISimulationBase>().GetHttpServer(handlerConfig.GetUInt("RegAPIHandlerPort"));
             //This handler allows sims to post CAPS for their sims on the CAPS server.
             m_server.AddStreamHandler(new RegApiHTTPHandler(registry, m_server));
+            MainConsole.Instance.Info("[RegAPI]: RegAPI has been started");
         }
 
         public void FinishedStartup()
