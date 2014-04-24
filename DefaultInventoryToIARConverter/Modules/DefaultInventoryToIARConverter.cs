@@ -40,6 +40,8 @@ using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Modules.Archivers;
 using WhiteCore.Region;
 
+[assembly: AssemblyVersion("2014.4.22")]
+[assembly: AssemblyFileVersion("2014.4.22")]
 
 namespace WhiteCore.Services.InventoryService
 {

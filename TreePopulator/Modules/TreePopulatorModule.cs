@@ -42,6 +42,9 @@ using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Framework.PresenceInfo;
 using WhiteCore.Region;
 
+[assembly: AssemblyVersion("2014.4.22")]
+[assembly: AssemblyFileVersion("2014.4.22")]
+
 namespace WhiteCore.Region.OptionalModules.World.TreePopulator
 {
     /// <summary>
