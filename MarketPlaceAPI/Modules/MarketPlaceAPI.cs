@@ -30,6 +30,9 @@ using System;
 using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.SceneInfo;
 
+[assembly: AssemblyVersion("2014.4.22")]
+[assembly: AssemblyFileVersion("2014.4.22")]
+
 namespace WhiteCore.Modules.MarketPlaceAPI
 {
     public class MarketPlaceAPIModule

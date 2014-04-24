@@ -47,6 +47,9 @@ using WhiteCore.Framework.Services;
 using WhiteCore.Framework.Services.ClassHelpers.Profile;
 using WhiteCore.Framework.Utilities;
 
+[assembly: AssemblyVersion("2014.4.22")]
+[assembly: AssemblyFileVersion("2014.4.22")]
+
 namespace WhiteCore.Addon.RegAPI
 {
     /// <summary>
