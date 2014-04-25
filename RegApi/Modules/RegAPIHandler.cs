@@ -47,8 +47,8 @@ using WhiteCore.Framework.Services;
 using WhiteCore.Framework.Services.ClassHelpers.Profile;
 using WhiteCore.Framework.Utilities;
 
-[assembly: AssemblyVersion("2014.4.22")]
-[assembly: AssemblyFileVersion("2014.4.22")]
+[assembly: AssemblyVersion("2014.4.25")]
+[assembly: AssemblyFileVersion("2014.4.25")]
 
 namespace WhiteCore.Addon.RegAPI
 {
@@ -111,22 +111,20 @@ namespace WhiteCore.Addon.RegAPI
                 OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
             string body = HttpServerHandlerHelpers.ReadString(requestData);
-
-            //MainConsole.Instance.DebugFormat("[XXX]: query String: {0}", body);
+            OSDMap resp = new OSDMap();
             try
             {
-                OSDMap map = (OSDMap)OSDParser.DeserializeLLSDXml(body);
+                OSDMap request = (OSDMap)OSDParser.DeserializeLLSDXml(body);
                 //Make sure that the person who is calling can access the web service
-                if (map["submit"] == "Get Capabilities")
+                if (request["submit"] == "Get Capabilities")
                 {
-
+                    ProcessLogin(request);
                 }
             }
             catch (Exception)
             {
+                resp.Add("response", OSD.FromString("Failed"));
             }
-            OSDMap resp = new OSDMap();
-            resp.Add("response", OSD.FromString("Failed"));
             string xmlString = OSDParser.SerializeLLSDXmlString(resp);
             UTF8Encoding encoding = new UTF8Encoding();
             return encoding.GetBytes(xmlString);
@@ -139,6 +137,8 @@ namespace WhiteCore.Addon.RegAPI
             string LastName = map["last_name"].AsString();
             string Password = map["password"].AsString();
 
+            MainConsole.Instance.Info("[RegAPI]: Requesting Login for Capabilities");
+
             ILoginService loginService = m_registry.RequestModuleInterface<ILoginService>();
 
             Verified = loginService.VerifyClient(UUID.Zero, FirstName + " " + LastName, "UserAccount", Password);
@@ -149,6 +149,7 @@ namespace WhiteCore.Addon.RegAPI
                 UserAccount account = m_registry.RequestModuleInterface<IUserAccountService>().GetUserAccount(null, FirstName, LastName);
                 if (Verified)
                 {
+                    MainConsole.Instance.Info("[RegAPI]: Verified user, creating Caps");
                     AddCapsUrls(resp, account);
                 }
             }
@@ -162,20 +163,26 @@ namespace WhiteCore.Addon.RegAPI
             //Check whether they can use the Api
             if ((account.UserFlags & RegApiAllowed) == RegApiAllowed)
             {
+                MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} is allowed to use the RegAPI", account.FirstName, account.LastName);
                 if ((account.UserFlags & RegApiAddToGroup) == RegApiAddToGroup)
                     resp["add_to_group"] = AddSpecificUrl("add_to_group");
+                MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Add to Group : {2}", account.FirstName, account.LastName, resp["add_to_group"]);
 
                 if ((account.UserFlags & RegApiCheckName) == RegApiCheckName)
                     resp["check_name"] = AddSpecificUrl("check_name");
+                MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Check Name : {2}", account.FirstName, account.LastName, resp["check_name"]);
 
                 if ((account.UserFlags & RegApiCreateUser) == RegApiCreateUser)
                     resp["create_user"] = AddSpecificUrl("create_user");
+                MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Create User : {2}", account.FirstName, account.LastName, resp["create_user"]);
 
                 if ((account.UserFlags & RegApiGetErrorCodes) == RegApiGetErrorCodes)
                     resp["get_error_codes"] = AddSpecificUrl("get_error_codes");
+                MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Get Error Code : {2}", account.FirstName, account.LastName, resp["get_error_codes"]);
 
                 if ((account.UserFlags & RegApiGetLastNames) == RegApiGetLastNames)
                     resp["get_last_names"] = AddSpecificUrl("get_last_names");
+                MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Get Last Names : {2}", account.FirstName, account.LastName, resp["get_last_names"]);
             }
         }
 
@@ -186,7 +193,7 @@ namespace WhiteCore.Addon.RegAPI
         /// <returns></returns>
         private string AddSpecificUrl(string type)
         {
-            string capPath = "/cap/"+UUID.Random()+"/"+type;
+            string capPath = "/cap/regapi/"+UUID.Random();
             m_server.AddStreamHandler(new GenericStreamHandler("GET", capPath, 
                 delegate(string path, Stream request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
                 {
