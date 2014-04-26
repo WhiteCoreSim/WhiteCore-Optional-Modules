@@ -26,6 +26,8 @@
  */
 
 using Nini.Config;
+using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 using System;
 using System.Reflection;
 using WhiteCore.Framework.Modules;
@@ -38,10 +40,20 @@ namespace WhiteCore.Modules.MarketPlaceAPI
 {
     public class MarketPlaceAPIModule
     {
+        // TODO: This is the explanation what the MarketPlaceAPI will do
+        //
+        // * Register the user as a MarketPlace user
+        //
+        // * External MarketPlace can use the following calls
+        // - GetBalance(uuid)
+        // - Charge (uuid, amount, text)
+        //
+
+        #region Initialisation
         public void Init()
         {
         }
-        
+
         public string Name
         {
             get { return "MarketPlaceAPIModule"; }
@@ -50,5 +62,18 @@ namespace WhiteCore.Modules.MarketPlaceAPI
         public void Close()
         {
         }
+        #endregion
+
+        #region Money Regulators
+        private void GetBalance(UUID agentID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Charge(UUID agentID, int amount, string text, TransactionType type)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }
