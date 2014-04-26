@@ -368,24 +368,17 @@ namespace WhiteCore.Addon.RegAPI
 
         private OSD GetErrorCode(OSDMap map)
         {
-            string userName = map["username"];
-            int last_name_id = map["last_name_id"];
-
-            bool found = false;
-            if (m_lastNameRegistry.ContainsKey(last_name_id))
-            {
-                string lastName = m_lastNameRegistry[last_name_id];
-                IUserAccountService accountService = m_registry.RequestModuleInterface<IUserAccountService>();
-                UserAccount user = accountService.GetUserAccount(null, userName, lastName);
-                if (user != null)
-                    found = true;
-            }
-
-            return found;
+            // TODO: Send back the Errorcodes that can occur when requesting information
+            //       from the RegAPI.
+            //
+            //       For more details, see http://wiki.secondlife.com/wiki/Registration_API_Error_Codes
+            return true;
         }
 
         private OSD GetLastNames(OSDMap map)
         {
+            // TODO: Write the database call that sends the query "get 10 different last names" and put them in the m_lastNameRegistry
+            //       so the system can send those to the requesting client.
             OSDMap resp = new OSDMap();
 
             //Add all the last names
