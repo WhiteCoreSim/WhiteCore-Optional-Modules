@@ -36,6 +36,9 @@ using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Framework.Utilities;
 
+[assembly: AssemblyVersion("2014.5.4")]
+[assembly: AssemblyFileVersion("2014.5.4")]
+
 namespace WhiteCore.Addon.Updater
 {
     public class UpdaterPlugin :IService
@@ -69,12 +72,17 @@ namespace WhiteCore.Addon.Updater
             {
                 //Check whether this is enabled
                 IConfig updateConfig = config.Configs["Updater"];
-                if (updateConfig == null)
+                if (updateConfig.GetString("Plugin", "") != Name)
+                {
+                    MainConsole.Instance.Info("[WhiteCore Updater]: WhiteCore Updater Plugin not set");
                     return;
-
+                }
                 if (!updateConfig.GetBoolean("Enabled", false))
+                {
+                    MainConsole.Instance.Info("[WhiteCore Updater]: WhiteCore Updater Plugin not enabled");
                     return;
-
+                }
+                // Everything is working, let's start checking for an update
                 MainConsole.Instance.Info("[WhiteCore Updater]: Checking for updates...");
                 const string CurrentVersion = VersionInfo.VERSION_NUMBER;
                 string LastestVersionToBlock = updateConfig.GetString("LatestRelease", VersionInfo.VERSION_NUMBER);
@@ -83,7 +91,10 @@ namespace WhiteCore.Addon.Updater
                 //Pull the xml from the website
                 string XmlData = Utilities.ReadExternalWebsite(WebSite);
                 if (string.IsNullOrEmpty(XmlData))
+                {
+                    MainConsole.Instance.ErrorFormat("[WhiteCore Updater]: Unable to reach {0} due to network error", m_urlToCheckForUpdates);
                     return;
+                }
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(XmlData);
 
@@ -133,7 +144,11 @@ namespace WhiteCore.Addon.Updater
                 else if (Compare(UpdaterNode.ChildNodes[0].InnerText, CurrentVersion) && Compare(UpdaterNode.ChildNodes[2].InnerText, LastestVersionToBlock))
                 {
                     //This version is not supported anymore
-                    MessageBox.Show("Your version of WhiteCore (" + CurrentVersion + ", Released " + UpdaterNode.ChildNodes[1].InnerText + ") is not supported anymore.", "WhiteCore Updater");
+                    MainConsole.Instance.FatalFormat("[WhiteCore Updater]: Your version of WhiteCore ({0}, Released {1}) is not supported anymore.", CurrentVersion, UpdaterNode.ChildNodes[1].InnerText);
+                }
+                else
+                {
+                    MainConsole.Instance.Info("[WhiteCore Updater]: You are currently running the latest released version");
                 }
             }
             catch
