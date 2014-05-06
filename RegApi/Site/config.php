@@ -1,7 +1,7 @@
 <?php
  
-// Get your CAPS from https://secure-web2.secondlife.com/developers/third_party_reg/#what_are_cap
-//	and fill them in here.
+// Get your CAPS from calling the get_caps.php file on a webserver and checking the console.
+// Fill them in here so the index2.php can be run
  
 define('URI_CREATE_USER', 'http://127.0.0.1:8003/cap/20187d4d-fa4d-44e8-845e-ae023fdebf00/create_user');
 define('URI_GET_LAST_NAMES', 'http://127.0.0.1:8003/cap/160b5067-c01e-4870-8a78-cd5ec750c743/get_last_names');
