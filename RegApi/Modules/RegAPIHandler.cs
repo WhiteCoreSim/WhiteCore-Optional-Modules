@@ -160,29 +160,39 @@ namespace WhiteCore.Addon.RegAPI
 
         private void AddCapsUrls(OSDMap resp, UserAccount account)
         {
+            IGenericsConnector generics = Framework.Utilities.DataManager.RequestPlugin<IGenericsConnector>();
             //Check whether they can use the Api
             if ((account.UserFlags & RegApiAllowed) == RegApiAllowed)
             {
                 MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} is allowed to use the RegAPI", account.FirstName, account.LastName);
+                
+                // Remove all the old keys
+                generics.RemoveGeneric(UUID.Zero, "RegAPI");
+
                 if ((account.UserFlags & RegApiAddToGroup) == RegApiAddToGroup)
                     resp["add_to_group"] = AddSpecificUrl("add_to_group");
                 MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Add to Group : {2}", account.FirstName, account.LastName, resp["add_to_group"]);
+                generics.AddGeneric(account.PrincipalID, "RegAPI", "add_to_group", new OSDWrapper { Info = resp["add_to_group"] }.ToOSD());
 
                 if ((account.UserFlags & RegApiCheckName) == RegApiCheckName)
                     resp["check_name"] = AddSpecificUrl("check_name");
                 MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Check Name : {2}", account.FirstName, account.LastName, resp["check_name"]);
+                generics.AddGeneric(account.PrincipalID, "RegAPI", "check_name", new OSDWrapper { Info = resp["check_name"] }.ToOSD());
 
                 if ((account.UserFlags & RegApiCreateUser) == RegApiCreateUser)
                     resp["create_user"] = AddSpecificUrl("create_user");
                 MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Create User : {2}", account.FirstName, account.LastName, resp["create_user"]);
+                generics.AddGeneric(account.PrincipalID, "RegAPI", "create_user", new OSDWrapper { Info = resp["create_user"] }.ToOSD());
 
                 if ((account.UserFlags & RegApiGetErrorCodes) == RegApiGetErrorCodes)
                     resp["get_error_codes"] = AddSpecificUrl("get_error_codes");
                 MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Get Error Code : {2}", account.FirstName, account.LastName, resp["get_error_codes"]);
+                generics.AddGeneric(account.PrincipalID, "RegAPI", "get_error_codes", new OSDWrapper { Info = resp["get_error_codes"] }.ToOSD());
 
                 if ((account.UserFlags & RegApiGetLastNames) == RegApiGetLastNames)
                     resp["get_last_names"] = AddSpecificUrl("get_last_names");
                 MainConsole.Instance.InfoFormat("[RegAPI]: User {0} {1} - Get Last Names : {2}", account.FirstName, account.LastName, resp["get_last_names"]);
+                generics.AddGeneric(account.PrincipalID, "RegAPI", "get_last_names", new OSDWrapper { Info = resp["get_last_names"] }.ToOSD());
             }
         }
 
