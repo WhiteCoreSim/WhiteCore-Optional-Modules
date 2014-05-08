@@ -32,13 +32,18 @@ using System;
 using System.Reflection;
 using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.SceneInfo;
+using WhiteCore.Framework.Services;
+using WhiteCore.Framework.Servers.HttpServer;
+using WhiteCore.Framework.Servers.HttpServer.Implementation;
+using WhiteCore.Framework.Servers.HttpServer.Interfaces;
+using WhiteCore.Framework.ConsoleFramework;
 
-[assembly: AssemblyVersion("2014.4.22")]
-[assembly: AssemblyFileVersion("2014.4.22")]
+[assembly: AssemblyVersion("2014.5.8")]
+[assembly: AssemblyFileVersion("2014.5.8")]
 
 namespace WhiteCore.Modules.MarketPlaceAPI
 {
-    public class MarketPlaceAPIModule
+    public class MarketPlaceAPIModule : IService
     {
         // TODO: This is the explanation what the MarketPlaceAPI will do
         //
@@ -48,19 +53,32 @@ namespace WhiteCore.Modules.MarketPlaceAPI
         // - GetBalance(uuid)
         // - Charge (uuid, amount, text)
         //
-
-        #region Initialisation
-        public void Init()
-        {
-        }
-
+        
+        #region Startup
+        
         public string Name
         {
             get { return "MarketPlaceAPIModule"; }
+        }        
+        
+        public void Initialize(IConfigSource config, IRegistryCore registry)
+        {
         }
 
-        public void Close()
+        public void Start(IConfigSource config, IRegistryCore registry)
         {
+            IConfig handlerConfig = config.Configs["MarketPlace"];
+            if (handlerConfig.GetString("MarketPlaceHandler", "") != Name)
+            {
+                MainConsole.Instance.Info("[MarketPlaceAPI]: MarketPlaceAPI Handler not set");
+                return;
+            }
+            MainConsole.Instance.Info("[MarketPlaceAPI]: MarketPlaceAPI has been started");
+        }
+
+        public void FinishedStartup()
+        {
+            throw new NotImplementedException();
         }
         #endregion
 
