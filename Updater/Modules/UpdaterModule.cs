@@ -124,15 +124,28 @@ namespace WhiteCore.Addon.Updater
                     //If so, download the new version
                     if (result == DialogResult.Yes)
                     {
+                        string updateLink = "";
                         // Do a check if they are running on Windows .Net or Mono x86/x64
-                        // IsMicrosoftCLR()
-                        //(IntPtr.Size == 4 ? "x86" : "x64")));
-                        //
+                        if (!Utilities.IsLinuxOs)
+                        {
+                            updateLink = UpdaterNode.ChildNodes[5].InnerText;
+                        }
+                        else
+                        {
+                            if (!Utilities.Is64BitOs)
+                            {
+                                updateLink = UpdaterNode.ChildNodes[6].InnerText;
+                            }
+                            else
+                            {
+                                updateLink = UpdaterNode.ChildNodes[7].InnerText;
+                            }
+                        }
                         // UpdaterNode.ChildNodes[5].InnerText = Windows (x86/x64)
                         // UpdaterNode.ChildNodes[6].InnerText = Mono x86
                         // UpdaterNode.ChildNodes[7].InnerText = Mono x64
-                        
-                        Utilities.DownloadFile(UpdaterNode.ChildNodes[5].InnerText,
+
+                        Utilities.DownloadFile(updateLink,
                             "WhiteCore" + UpdaterNode.ChildNodes[2].InnerText + ".zip");
                         MessageBox.Show(string.Format("Downloaded to {0}, exiting for user to upgrade.", "WhiteCore" + UpdaterNode.ChildNodes[2].InnerText + ".zip"), "WhiteCore Updater");
                         Environment.Exit(0);
