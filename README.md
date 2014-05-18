@@ -3,6 +3,9 @@
 
 This is the Optional Modules Repository for WhiteCore
 
+*NOTE:  As of Version 0.9.2, the WhiteCore repository format has changed so ensure that you are using the correct format for your repo.
+This should not be a problem if you use the latest commits of the WhiteCore-Dev or a release version >= 0.9.2*
+
 # Installation
 
 There are two ways to install these modules, auto-installation, or manual compilation
@@ -21,4 +24,3 @@ The <?xml>, <Prebuild>, <Solution> and <Configuration> tags should not be includ
 The module source code will be included in the main WhiteCore solution when the "runprebuild" script is executed for your system.
 
 
-# Known Issues
