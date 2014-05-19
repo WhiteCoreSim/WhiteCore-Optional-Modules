@@ -2,42 +2,42 @@
 <Project frameworkVersion="v4_0" name="WhiteCore.Addon.Updater" path="addon-modules/Updater/Modules" type="Library">
 	<Configuration name="Debug" platform="x86">
 		<Options>
-			<OutputPath>../../../bin/</OutputPath>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
 		</Options>
 	</Configuration>
 	<Configuration name="Release" platform="x86">
 		<Options>
-			<OutputPath>../../../bin/</OutputPath>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
 		</Options>
 	</Configuration>
 	<Configuration name="Debug" platform="x64">
 		<Options>
-			<OutputPath>../../../bin/</OutputPath>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
 		</Options>
 	</Configuration>
 	<Configuration name="Release" platform="x64">
 		<Options>
-			<OutputPath>../../../bin/</OutputPath>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
 		</Options>
 	</Configuration>
 	<Configuration name="Debug" platform="AnyCPU">
 		<Options>
-			<OutputPath>../../../bin/</OutputPath>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
 		</Options>
 	</Configuration>
 	<Configuration name="Release" platform="AnyCPU">
 		<Options>
-			<OutputPath>../../../bin/</OutputPath>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
 		</Options>
 	</Configuration>
 
-	<ReferencePath>../../../bin/</ReferencePath>
+	<ReferencePath>../../../WhiteCoreSim/bin/</ReferencePath>
 	<Reference name="System"/>
 	<Reference name="System.Web"/>
 	<Reference name="System.Windows.Forms"/>		
 	<Reference name="System.Xml"/>
 
-	<Reference name="Nini" path="../../../bin/"/>
+	<Reference name="Nini" path="../../../WhiteCoreSim/bin/"/>
 
 	<Reference name="WhiteCore.Framework"/>
 
@@ -45,5 +45,6 @@
 		<Match pattern="*.cs" recurse="true">
 			<Exclude pattern="Tests"/>
 		</Match>
+		<Exclude name="obj" pattern="obj"/>
 	</Files>
 </Project>

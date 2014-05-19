@@ -2,36 +2,36 @@
 <Project frameworkVersion="v4.0" name="WhiteCore.Addon.DefaultInventoryToIARConverter" path="addon-modules/DefaultInventoryToIARConverter/Modules" type="Library">
   <Configuration name="Debug" platform="x86">
     <Options>
-      <OutputPath>../../../bin/</OutputPath>
+      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
     </Options>
   </Configuration>
   <Configuration name="Release" platform="x86">
     <Options>
-      <OutputPath>../../../bin/</OutputPath>
+      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
     </Options>
   </Configuration>
   <Configuration name="Debug" platform="x64">
     <Options>
-      <OutputPath>../../../bin/</OutputPath>
+      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
     </Options>
   </Configuration>
   <Configuration name="Release" platform="x64">
     <Options>
-      <OutputPath>../../../bin/</OutputPath>
+      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
     </Options>
   </Configuration>
   <Configuration name="Debug" platform="AnyCPU">
     <Options>
-      <OutputPath>../../../bin/</OutputPath>
+      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
     </Options>
   </Configuration>
   <Configuration name="Release" platform="AnyCPU">
     <Options>
-      <OutputPath>../../../bin/</OutputPath>
+      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
     </Options>
   </Configuration>
 
-  <ReferencePath>../../../bin/</ReferencePath>
+  <ReferencePath>../../../WhiteCoreSim/bin/</ReferencePath>
   <Reference localCopy="false" name="System"/>
   
   <Reference name="WhiteCore.Framework"/>
@@ -39,12 +39,13 @@
   <Reference name="WhiteCore.Simulation.Base"/>
   <Reference name="WhiteCore.Region"/>
   
-  <Reference name="Nini" path="../../../bin/"/>
-  <Reference name="OpenMetaverseTypes" path="../../../bin/"/>
-  <Reference name="OpenMetaverse" path="../../../bin/"/>
-  <Reference name="XMLRPC" path="../../../bin/"/>
+  <Reference name="Nini" path="../../../WhiteCoreSim/bin/"/>
+  <Reference name="OpenMetaverseTypes" path="../../../WhiteCoreSim/bin/"/>
+  <Reference name="OpenMetaverse" path="../../../WhiteCoreSim/bin/"/>
+  <Reference name="XMLRPC" path="../../../WhiteCoreSim/bin/"/>
 
   <Files>
     <Match pattern="*.cs" recurse="true"/>
+		<Exclude name="obj" pattern="obj"/>
   </Files>
 </Project>

@@ -3,7 +3,7 @@
  * 
  *  Copyright 2011 Matthew Beardmore
  *
- *  This file is part of WhiteCore.Addon.IRCChat.
+ *  This file is part of Aurora.Addon.IRCChat.
  *  Aurora.Addon.IRCChat is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *  Aurora.Addon.IRCChat is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *  You should have received a copy of the GNU General Public License along with Aurora.Addon.IRCChat. If not, see http://www.gnu.org/licenses/.
@@ -30,29 +30,23 @@
 */
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using WhiteCore.Framework;
 using Nini.Config;
 using MetaBuilders.Irc.Messages;
 using MetaBuilders.Irc.Network;
 using MetaBuilders.Irc;
+using log4net;
 using OpenMetaverse;
 using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.SceneInfo;
-using WhiteCore.Framework.ClientInterfaces;
-using WhiteCore.Framework.DatabaseInterfaces;
-using WhiteCore.Framework.Servers;
 using WhiteCore.Framework.PresenceInfo;
-using GridRegion = WhiteCore.Framework.Services.GridRegion;
-using WhiteCore.Framework.Utilities;
-using WhiteCore.Framework.Services;
-using WhiteCore.Framework.ConsoleFramework;
+using WhiteCore.Framework.ClientInterfaces;
 
-namespace WhiteCore.Addon.IRCChat
+namespace Aurora.Addon.IRCChat
 {
     public class IRCGroupService : INonSharedRegionModule
     {
+        private static readonly ILog m_log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private Dictionary<UUID, string> m_network = new Dictionary<UUID, string>();
         private Dictionary<UUID, string> m_channel = new Dictionary<UUID, string>();
         private Dictionary<UUID, string> m_gridName = new Dictionary<UUID, string>();
@@ -92,7 +86,7 @@ namespace WhiteCore.Addon.IRCChat
 
         private void InitClients ()
         {
-            IGroupsServiceConnector conn = WhiteCore.Framework.Utilities.DataManager.RequestPlugin<IGroupsServiceConnector>();
+            IGroupsServicesConnector conn = m_scene.RequestModuleInterface<IGroupsServicesConnector>();
             foreach(string s in m_config.GetKeys())
             {
                 if(s.EndsWith("_Network"))
@@ -152,7 +146,7 @@ namespace WhiteCore.Addon.IRCChat
             presence.ControllingClient.OnPreSendInstantMessage -= ControllingClient_OnPreSendInstantMessage;
         }
 
-        void EventManager_OnMakeChildAgent (IScenePresence presence, GridRegion destination)
+		void EventManager_OnMakeChildAgent (IScenePresence presence, GridRegion destination)
         {
             presence.ControllingClient.OnPreSendInstantMessage -= ControllingClient_OnPreSendInstantMessage;
         }
@@ -164,16 +158,16 @@ namespace WhiteCore.Addon.IRCChat
 
         bool ControllingClient_OnPreSendInstantMessage (IClientAPI remoteclient, GridInstantMessage im)
         {
-            string name = remoteclient == null ? im.FromAgentName : remoteclient.Name;
-            if(im.Dialog == (byte)InstantMessageDialog.SessionSend)
+            string name = remoteclient == null ? im.fromAgentName : remoteclient.Name;
+            if(im.dialog == (byte)InstantMessageDialog.SessionSend)
             {
                 Client client;
-                if(clients.TryGetValue(im.SessionID, out client))
+                if(clients.TryGetValue(im.imSessionID, out client))
                 {
                     try
                     {
                         if(client.Connection.Status == ConnectionStatus.Connected)
-                            client.SendChat("(grid:" + m_gridName[im.SessionID] + ") " + name + ": " + im.Message, m_channel[im.SessionID]);
+                            client.SendChat("(grid:" + m_gridName[im.imSessionID] + ") " + name + ": " + im.message, m_channel[im.imSessionID]);
                     }
                     catch
                     {
@@ -185,22 +179,12 @@ namespace WhiteCore.Addon.IRCChat
 
         private void chatting (Object sender, IrcMessageEventArgs<TextMessage> e, UUID groupID)
         {
-            IInstantMessagingService gMessaging = m_scene.RequestModuleInterface<IInstantMessagingService>();
+            IGroupsServicesConnector conn = m_scene.RequestModuleInterface<IGroupsServicesConnector>();
+            IGroupsMessagingModule gMessaging = m_scene.RequestModuleInterface<IGroupsMessagingModule>();
 
-            gMessaging.EnsureSessionIsStarted(groupID);
-            gMessaging.SendChatToSession(UUID.Zero, new GridInstantMessage()
-            {
-                FromAgentID = UUID.Random(),
-                FromAgentName = e.Message.Sender.Nick,
-                ToAgentID = UUID.Zero,
-                Dialog = (byte)InstantMessageDialog.SessionSend,
-                Message = e.Message.Text,
-                FromGroup = false,
-                SessionID = UUID.Zero,
-                Offline = 0,
-                BinaryBucket = new byte[0],
-                Timestamp = (uint)Util.UnixTimeSinceEpoch()
-            });
+            gMessaging.EnsureGroupChatIsStarted(groupID);
+            gMessaging.SendMessageToGroup(new GridInstantMessage(null, UUID.Random(), e.Message.Sender.Nick,
+                UUID.Zero, (byte)InstantMessageDialog.SessionSend, e.Message.Text, false, Vector3.Zero), groupID);
         }
 
         private void CreateIRCConnection (string network, string nick, string channel, UUID groupID)
@@ -256,7 +240,7 @@ namespace WhiteCore.Addon.IRCChat
             if(m_spamDebug)
             {
                 String data = "*** Disconnected: " + e.Data;
-                MainConsole.Instance.Warn("[RegionIRC]: " + data);
+                m_log.Warn("[RegionIRC]: " + data);
             }
         }
 
@@ -265,7 +249,7 @@ namespace WhiteCore.Addon.IRCChat
             if(m_spamDebug)
             {
                 String data = "*** Got: " + e.Data;
-                MainConsole.Instance.Warn("[RegionIRC]: " + data);
+                m_log.Warn("[RegionIRC]: " + data);
             }
         }
 
@@ -274,7 +258,7 @@ namespace WhiteCore.Addon.IRCChat
             if(m_spamDebug)
             {
                 String data = "*** Sent: " + e.Data;
-                MainConsole.Instance.Warn("[RegionIRC]: " + data);
+                m_log.Warn("[RegionIRC]: " + data);
             }
         }
 
