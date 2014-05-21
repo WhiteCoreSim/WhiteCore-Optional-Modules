@@ -46,10 +46,6 @@ namespace WhiteCore.Addon.Updater
         private const string m_urlToCheckForUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/updates.xml";
 
         #region Private Functions
-        private bool IsMicrosoftCLR()
-        {
-            return (Type.GetType("Mono.Runtime") == null);
-        }
 
         private bool Compare(string givenVersion, string CurrentVersion)
         {
