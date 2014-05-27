@@ -43,6 +43,18 @@ using WhiteCore.Framework.ConsoleFramework;
 
 namespace WhiteCore.Modules.MarketPlaceAPI
 {
+    public enum TransactionType2
+    {
+        // When buying something from the MarketPlace
+        MarketBuy      =   20001,
+        // When selling something on the MarketPlace
+        MarketSell     =   20002,
+        // MarketPlace Fee for placing something on the MarketPlace
+        MarketFee      =   20003,
+        // MarketPlace Advertising Fee for having an advertisement
+        MarketAdFee    =   20004
+    }
+
     public class MarketPlaceAPIModule : IService
     {
         // TODO: This is the explanation what the MarketPlaceAPI will do
@@ -78,19 +90,24 @@ namespace WhiteCore.Modules.MarketPlaceAPI
 
         public void FinishedStartup()
         {
-            throw new NotImplementedException();
+            
         }
         #endregion
 
         #region Money Regulators
         private void GetBalance(UUID agentID)
         {
-            throw new NotImplementedException();
+            
         }
 
         public bool Charge(UUID agentID, int amount, string text, TransactionType type)
         {
-            throw new NotImplementedException();
+            return true;
+        }
+
+        private bool Transfer(UUID toID, UUID fromID, int amount, string description, TransactionType2 type)
+        {
+            return true;
         }
         #endregion
     }
