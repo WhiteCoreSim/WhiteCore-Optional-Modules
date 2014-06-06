@@ -1,5 +1,4 @@
-﻿using WhiteCore.DataManager;
-using WhiteCore.Framework;
+﻿using WhiteCore.Framework;
 using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.SceneInfo;
@@ -20,10 +19,10 @@ namespace WhiteCore.Addon.AdvancedCurrency
         #region Declares
 
         private IGenericData m_gd;
-        private SimpleCurrencyConfig m_config;
+        private AdvancedCurrencyConfig m_config;
         private ISyncMessagePosterService m_syncMessagePoster;
         private IAgentInfoService m_userInfoService;
-        private const string _REALM = "simple_currency";
+        private const string _REALM = "advanced_currency";
 
         #endregion
 
@@ -48,10 +47,10 @@ namespace WhiteCore.Addon.AdvancedCurrency
                 defaultConnectionString = source.Configs[Name].GetString("ConnectionString", defaultConnectionString);
 
             if (GenericData != null)
-                GenericData.ConnectToDatabase(defaultConnectionString, "SimpleCurrency", true);
+                GenericData.ConnectToDatabase(defaultConnectionString, "AdvancedCurrency", true);
             DataManager.RegisterPlugin(Name, this);
 
-            m_config = new SimpleCurrencyConfig(config);
+            m_config = new AdvancedCurrencyConfig(config);
 
             Init(m_registry, Name, "", "/currency/", "CurrencyServerURI");
 
@@ -73,11 +72,11 @@ namespace WhiteCore.Addon.AdvancedCurrency
         #region Service Members
 
         [CanBeReflected(ThreatLevel = ThreatLevel.Low)]
-        public SimpleCurrencyConfig GetConfig()
+        public AdvancedCurrencyConfig GetConfig()
         {
             object remoteValue = DoRemoteByURL("CurrencyServerURI");
             if (remoteValue != null || m_doRemoteOnly)
-                return (SimpleCurrencyConfig) remoteValue;
+                return (AdvancedCurrencyConfig)remoteValue;
 
             return m_config;
         }
