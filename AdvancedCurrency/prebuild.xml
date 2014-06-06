@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<Project frameworkVersion="v4_0" name="WhiteCore.Addon.AdvancedCurrency" path="addon-modules/AdvancedCurrency/Modules" type="Library">
+	<Configuration name="Debug" platform="x86">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Release" platform="x86">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Debug" platform="x64">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Release" platform="x64">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Debug" platform="AnyCPU">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Release" platform="AnyCPU">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+
+	<ReferencePath>../../../WhiteCoreSim/bin/</ReferencePath>
+	<Reference name="System"/>
+	<Reference name="System.Web"/>
+	<Reference name="System.Windows.Forms"/>		
+	<Reference name="System.Xml"/>
+
+	<Reference name="Nini" path="../../../WhiteCoreSim/bin/"/>
+
+	<Reference name="WhiteCore.Framework"/>
+
+	<Files>
+		<Match pattern="*.cs" recurse="true">
+			<Exclude pattern="Tests"/>
+		</Match>
+		<Exclude name="obj" pattern="obj"/>
+	</Files>
+</Project>
