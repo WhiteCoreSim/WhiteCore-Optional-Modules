@@ -43,7 +43,8 @@ namespace WhiteCore.Addon.Updater
 {
     public class UpdaterPlugin :IService
     {
-        private const string m_urlToCheckForUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/updates.xml";
+        private const string m_urlToCheckForReleaseUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/release-updates.xml";
+        private const string m_urlToCheckForSnapShotUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/snapshot-updates.xml";
 
         #region Private Functions
 
@@ -82,13 +83,23 @@ namespace WhiteCore.Addon.Updater
                 MainConsole.Instance.Info("[WhiteCore Updater]: Checking for updates...");
                 const string CurrentVersion = VersionInfo.VERSION_NUMBER;
                 string LastestVersionToBlock = updateConfig.GetString("LatestRelease", VersionInfo.VERSION_NUMBER);
+                string site = "";
 
-                string WebSite = updateConfig.GetString("URLToCheckForUpdates", m_urlToCheckForUpdates);
+                // Check what type of update is set
+                if (updateConfig.GetInt("Updates", 0) != 0)
+                {
+                    site = updateConfig.GetString("URLToCheckForSnapShotUpdates", "");
+                }
+                else
+                {
+                    site = updateConfig.GetString("URLToCheckForReleaseUpdates", "");
+                }
+                string WebSite = updateConfig.GetString("URLToCheckForUpdates", site);
                 //Pull the xml from the website
                 string XmlData = Utilities.ReadExternalWebsite(WebSite);
                 if (string.IsNullOrEmpty(XmlData))
                 {
-                    MainConsole.Instance.ErrorFormat("[WhiteCore Updater]: Unable to reach {0} due to network error", m_urlToCheckForUpdates);
+                    MainConsole.Instance.ErrorFormat("[WhiteCore Updater]: Unable to reach {0} due to network error", site);
                     return;
                 }
                 XmlDocument doc = new XmlDocument();
