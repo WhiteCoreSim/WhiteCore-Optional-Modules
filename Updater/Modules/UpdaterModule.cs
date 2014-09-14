@@ -88,11 +88,11 @@ namespace WhiteCore.Addon.Updater
                 // Check what type of update is set
                 if (updateConfig.GetInt("Updates", 0) != 0)
                 {
-                    site = updateConfig.GetString("URLToCheckForSnapShotUpdates", "");
+                    site = updateConfig.GetString("URLToCheckForSnapShotUpdates", m_urlToCheckForSnapShotUpdates);
                 }
                 else
                 {
-                    site = updateConfig.GetString("URLToCheckForReleaseUpdates", "");
+                    site = updateConfig.GetString("URLToCheckForReleaseUpdates", m_urlToCheckForReleaseUpdates);
                 }
                 string WebSite = updateConfig.GetString("URLToCheckForUpdates", site);
                 //Pull the xml from the website
