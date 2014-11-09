@@ -38,8 +38,8 @@ using WhiteCore.Framework.Servers.HttpServer.Implementation;
 using WhiteCore.Framework.Servers.HttpServer.Interfaces;
 using WhiteCore.Framework.ConsoleFramework;
 
-[assembly: AssemblyVersion("2014.5.8")]
-[assembly: AssemblyFileVersion("2014.5.8")]
+[assembly: AssemblyVersion("2014.11.8")]
+[assembly: AssemblyFileVersion("2014.11.8")]
 
 namespace WhiteCore.Modules.MarketPlaceAPI
 {
@@ -60,13 +60,18 @@ namespace WhiteCore.Modules.MarketPlaceAPI
         // TODO: This is the explanation what the MarketPlaceAPI will do
         //
         // * Register the user as a MarketPlace user
+		//
+		// [register] gets input [STRING FullAvatarName, UUID MarketPlaceIdentifier] and outputs [UUID AvatarKey, BOOLEAN Registration]
         //
         // * External MarketPlace can use the following calls
-        // - GetBalance(uuid)
-        // - Charge (uuid, amount, text)
         //
-        
-        #region Startup
+		// [get_user_info] gets input [UUID AvatarKEY] and outputs [Balance of Avatar]
+        //
+		// [purchase_pre] gets input [UUID AvatarKEY, INTEGER amount] and outputs a true/false when the amount can be subtracted
+		//
+		// [purchasing] gets input [UUID AvatarKEY, INTEGER amount, INTEGER Transaction] and outputs [BOOLEAN success, INTEGER TransactionType2, UUID transaction]
+        //
+		#region Startup
         
         public string Name
         {
@@ -100,7 +105,7 @@ namespace WhiteCore.Modules.MarketPlaceAPI
             
         }
 
-        public bool Charge(UUID agentID, int amount, string text, TransactionType type)
+        public bool Charge(UUID agentID, int amount, string text, TransactionType2 type)
         {
             return true;
         }
