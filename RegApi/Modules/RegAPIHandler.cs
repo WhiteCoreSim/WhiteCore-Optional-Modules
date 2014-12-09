@@ -29,7 +29,6 @@ using Nini.Config;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -47,8 +46,8 @@ using WhiteCore.Framework.Services;
 using WhiteCore.Framework.Services.ClassHelpers.Profile;
 using WhiteCore.Framework.Utilities;
 
-[assembly: AssemblyVersion("2014.4.25")]
-[assembly: AssemblyFileVersion("2014.4.25")]
+[assembly: AssemblyVersion("2014.12.9")]
+[assembly: AssemblyFileVersion("2014.12.9")]
 
 namespace WhiteCore.Addon.RegAPI
 {
@@ -242,7 +241,7 @@ namespace WhiteCore.Addon.RegAPI
         private OSD AddUserToGroup(OSDMap map)
         {
             bool finished = false;
-            IGroupsServiceConnector groupsService = WhiteCore.Framework.Utilities.DataManager.RequestPlugin<IGroupsServiceConnector>();
+            IGroupsServiceConnector groupsService = DataManager.RequestPlugin<IGroupsServiceConnector>();
             if (groupsService != null)
             {
                 string first = map["first"];
@@ -324,7 +323,7 @@ namespace WhiteCore.Addon.RegAPI
                         user.Created = Util.ToUnixTime(time);
                         accountService.StoreUserAccount(user);
 
-                        IAgentConnector agentConnector = WhiteCore.Framework.Utilities.DataManager.RequestPlugin<IAgentConnector>();
+                        IAgentConnector agentConnector = DataManager.RequestPlugin<IAgentConnector>();
                         if (agentConnector != null)
                         {
                             agentConnector.CreateNewAgent(user.PrincipalID);
