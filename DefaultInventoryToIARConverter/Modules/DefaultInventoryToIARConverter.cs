@@ -41,8 +41,8 @@ using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Modules.Archivers;
 using WhiteCore.Region;
 
-[assembly: AssemblyVersion("2014.4.22")]
-[assembly: AssemblyFileVersion("2014.4.22")]
+[assembly: AssemblyVersion("2014.12.19")]
+[assembly: AssemblyFileVersion("2014.12.19")]
 
 namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 {
@@ -53,12 +53,11 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
     {
 		IConfig libConfig;
 		string IARName = "./DefaultInventory/DefaultInventory.iar";
-		bool m_enabled = false;
+		bool m_enabled = true;
 		bool m_busy = false;
 		IRegistryCore m_registry;
 
 
-		//protected static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         protected ILibraryService m_service;
 
 		/// <value>The name of the module</value>
@@ -77,6 +76,7 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 		/// <param name="registry">Place to register the modules into</param>
         public void Initialize(IConfigSource config, IRegistryCore registry)
         {
+            m_registry = registry;
 			libConfig = config.Configs["DefaultAssetsIARCreator"];
 
 			if (libConfig == null)
@@ -85,16 +85,15 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 				libConfig = iniSource.Configs["DefaultAssetsIARCreator"];
 			}
 
-			if ( libConfig != null )
-			{
-				m_enabled = libConfig.GetBoolean ( "Enabled", false );
+            if (libConfig != null)
+            {
+                m_enabled = libConfig.GetBoolean ("Enabled", false);
+                IARName = libConfig.GetString("NameOfIAR", IARName);
+            }
 
-				if ( m_enabled )
-				{
-					IARName = libConfig.GetString("NameOfIAR", IARName);
-					m_registry = registry;
-					AddConsoleCommands();
-				}
+			if ( m_enabled )
+			{
+				AddConsoleCommands();
 			}
         }
 
@@ -219,7 +218,7 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 				//Save the IAR of the default assets
                 MainConsole.Instance.Info ("[LIBDEF]: Saving default inventory to " + fileName);
 				InventoryArchiveWriteRequest write = new InventoryArchiveWriteRequest (Guid.NewGuid (), null, m_MockScene,
-                    uinfo, "/", new GZipStream (new FileStream (fileName, FileMode.Create), CompressionMode.Compress), true, rootFolder, assets);
+                    uinfo, "/", new GZipStream (new FileStream (fileName, FileMode.Create), CompressionMode.Compress), true, rootFolder, assets, null);
 				write.Execute ();
 			}
 
@@ -232,7 +231,7 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 		/// </summary>
 		/// <param name="scene">Not used</param>
 		/// <param name="cmd">Not used</param>
-		private void HandleDefInvHelp( IScene scene, string[] cmd )
+		void HandleDefInvHelp( IScene scene, string[] cmd )
 		{
 
 			MainConsole.Instance.Info (
@@ -244,7 +243,7 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 		/// <summary>
 		/// Adds the console commands.
 		/// </summary>
-		private void AddConsoleCommands()
+		void AddConsoleCommands()
 		{
 			if (MainConsole.Instance != null)
 			{
