@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<Project frameworkVersion="v4_0" name="WhiteCore.Addon.TidalWave" path="addon-modules/TidalWave/Modules" type="Library">
+	<Configuration name="Debug" platform="x86">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Release" platform="x86">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Debug" platform="x64">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Release" platform="x64">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Debug" platform="AnyCPU">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Release" platform="AnyCPU">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+
+	<ReferencePath>../../../WhiteCoreSim/bin/</ReferencePath>
+	<Reference name="Nini" path="../../../WhiteCoreSim/bin/"/>
+	<Reference name="OpenMetaverse" path="../../../WhiteCoreSim/bin/"/>
+	<Reference name="OpenMetaverse.StructuredData" path="../../../WhiteCoreSim/bin/"/>
+	<Reference name="OpenMetaverseTypes" path="../../../WhiteCoreSim/bin/"/>
+	<Reference name="System"/>
+	<Reference name="System.Web"/>
+	<Reference name="WhiteCore.Framework"/>
+
+	<Files>
+		<Match pattern="*.cs" recurse="true">
+			<Exclude pattern="Tests"/>
+			<Exclude name="obj" pattern="obj"/>
+		</Match>
+	</Files>
+</Project>
