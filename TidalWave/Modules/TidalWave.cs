@@ -26,23 +26,14 @@
  */
 
 using System;
-using System.IO;
-using System.Web;
-using System.Diagnostics;
 using System.Collections.Generic;
-
-using Nini.Config;
-
-using OpenMetaverse;
-using OpenMetaverse.StructuredData;
-
-using WhiteCore.Framework;
-using WhiteCore.Framework.ClientInterfaces;
-using WhiteCore.Framework.Modules;
-using WhiteCore.Framework.Services;
-using WhiteCore.Framework.ConsoleFramework;
-using WhiteCore.Framework.SceneInfo;
 using System.Reflection;
+using Nini.Config;
+using OpenMetaverse;
+using WhiteCore.Framework.ClientInterfaces;
+using WhiteCore.Framework.ConsoleFramework;
+using WhiteCore.Framework.Modules;
+using WhiteCore.Framework.SceneInfo;
 
 [assembly: AssemblyVersion("2015.2.15")]
 [assembly: AssemblyFileVersion("2015.2.15")]
@@ -162,15 +153,18 @@ namespace WhiteCore.Addon.TidalWave
             cycleRadians = cyclePos * Math.PI * 2;
             if (cyclePos < 0.5) m_tideDirection = false; else m_tideDirection = true;
             if (m_tideDirection != m_lastTideDirection)
-            { //if the tide changes re-calculate the tide times
+            { 
+            	//if the tide changes re-calculate the tide times
                 if (cyclePos < 0.5)
-                { // tide just changed to be high->low
+                { 
+                	// tide just changed to be high->low
                     m_lowTideTime = DateTime.Now.AddSeconds((double)(m_cycleTime * (0.5 - cyclePos)));
                     m_highTideTime = m_lowTideTime.AddSeconds((double)(m_cycleTime / 2));
                     m_tideAnnounceMsg = "High Tide";
                 }
                 else
-                { //tide just changed to be low->high
+                { 
+                	//tide just changed to be low->high
                     m_highTideTime = DateTime.Now.AddSeconds((double)(m_cycleTime * (1.0 - cyclePos)));
                     m_lowTideTime = m_highTideTime.AddSeconds((double)(m_cycleTime / 2));
                     m_tideAnnounceMsg = "Low Tide";
