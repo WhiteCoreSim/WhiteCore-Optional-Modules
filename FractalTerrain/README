@@ -1,0 +1,14 @@
+ *  Copyright 2011 Matthew Beardmore
+ *  Updated: May 2014, stormsonweathers, adapted for WhiteCore
+ *
+ *  This file is part of WhiteCore.Addon.FractalTerrain.
+ *  WhiteCore.Addon.FractalTerrain is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ *  WhiteCore.Addon.FractalTerrain is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *  You should have received a copy of the GNU General Public License along with WhiteCore.Addon.FractalTerrain. If not, see http://www.gnu.org/licenses/.
+ * Converted for WhiteCore by StormsOnWeathers
+ * Updated for add-on status and additional modifications - greythane
+ 
+ How to use:
+ Compile in the addon-modules folder with WhiteCore-Sim (like all other Optional-Modules)
+ Run WhiteCore.exe, change to the sim (using change region) that you wish to generate terrain for.
+ Type "generate fractal terrain" and it will walk you through it.

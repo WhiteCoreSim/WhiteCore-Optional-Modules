@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<Project frameworkVersion="v4_5" name="WhiteCore.Addon.FractalTerrain" path="addon-modules/FractalTerrain/Modules/" type="Library">
+	<Configuration name="Debug" platform="x86">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Release" platform="x86">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Debug" platform="x64">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Release" platform="x64">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Debug" platform="AnyCPU">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+	<Configuration name="Release" platform="AnyCPU">
+		<Options>
+			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+		</Options>
+	</Configuration>
+
+	<ReferencePath>../../../WhiteCoreSim/bin/</ReferencePath>
+	<Reference name="System"/>
+	<Reference name="System.Xml"/>
+	<Reference name="System.Drawing"/>
+
+	<Reference name="WhiteCore.DataManager"/>
+	<Reference name="WhiteCore.Framework"/>
+	<Reference name="WhiteCore.Simulation.Base"/>
+
+	<Reference name="Nini" path="../../../WhiteCoreSim/bin/"/>
+	<Reference name="OpenMetaverse" path="../../../WhiteCoreSim/bin/"/>
+	<Reference name="OpenMetaverse.StructuredData" path="../../../WhiteCoreSim/bin/"/>
+	<Reference name="OpenMetaverseTypes" path="../../../WhiteCoreSim/bin/"/>
+
+	<Files>
+		<Match pattern="*.cs" recurse="true">
+			<Exclude name="obj" pattern="obj"/>
+		</Match>
+	</Files>
+</Project>
