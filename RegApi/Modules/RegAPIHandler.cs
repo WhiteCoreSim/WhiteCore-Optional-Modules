@@ -129,7 +129,7 @@ namespace WhiteCore.Addon.RegAPI
             return encoding.GetBytes(xmlString);
         }
 
-        private byte[] ProcessLogin(OSDMap map)
+        byte[] ProcessLogin(OSDMap map)
         {
             bool Verified = false;
             string FirstName = map["first_name"].AsString();
@@ -157,7 +157,7 @@ namespace WhiteCore.Addon.RegAPI
             return encoding.GetBytes(xmlString);
         }
 
-        private void AddCapsUrls(OSDMap resp, UserAccount account)
+        void AddCapsUrls(OSDMap resp, UserAccount account)
         {
             IGenericsConnector generics = Framework.Utilities.DataManager.RequestPlugin<IGenericsConnector>();
             //Check whether they can use the Api
@@ -200,7 +200,7 @@ namespace WhiteCore.Addon.RegAPI
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private string AddSpecificUrl(string type)
+        string AddSpecificUrl(string type)
         {
             string capPath = "/cap/regapi/"+UUID.Random();
             m_server.AddStreamHandler(new GenericStreamHandler("GET", capPath, 
@@ -238,7 +238,7 @@ namespace WhiteCore.Addon.RegAPI
             return MainServer.Instance.ServerURI + capPath;
         }
 
-        private OSD AddUserToGroup(OSDMap map)
+        OSD AddUserToGroup(OSDMap map)
         {
             bool finished = false;
             IGroupsServiceConnector groupsService = DataManager.RequestPlugin<IGroupsServiceConnector>();
@@ -261,7 +261,7 @@ namespace WhiteCore.Addon.RegAPI
             return finished;
         }
 
-        private OSD CheckName(OSDMap map)
+        OSD CheckName(OSDMap map)
         {
             string userName = map["username"];
             int last_name_id = map["last_name_id"];
@@ -285,7 +285,7 @@ namespace WhiteCore.Addon.RegAPI
         /// </summary>
         /// <param name="map"></param>
         /// <returns></returns>
-        private OSD CreateUser(OSDMap map)
+        OSD CreateUser(OSDMap map)
         {
             //Required params
             string username = map["username"];
@@ -375,7 +375,7 @@ namespace WhiteCore.Addon.RegAPI
             return resp;
         }
 
-        private OSD GetErrorCode(OSDMap map)
+        OSD GetErrorCode(OSDMap map)
         {
             // TODO: Send back the Errorcodes that can occur when requesting information
             //       from the RegAPI.
@@ -384,7 +384,7 @@ namespace WhiteCore.Addon.RegAPI
             return true;
         }
 
-        private OSD GetLastNames(OSDMap map)
+        OSD GetLastNames(OSDMap map)
         {
             // TODO: Write the database call that sends the query "get 10 different last names" and put them in the m_lastNameRegistry
             //       so the system can send those to the requesting client.
