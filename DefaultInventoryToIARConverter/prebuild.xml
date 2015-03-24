@@ -1,34 +1,34 @@
 <?xml version="1.0" ?>
-<Project frameworkVersion="v4.0" name="WhiteCore.Addon.DefaultInventoryToIARConverter" path="addon-modules/DefaultInventoryToIARConverter/Modules" type="Library">
+<Project frameworkVersion="v4_5" name="WhiteCore.Addon.DefaultInventoryToIARConverter" path="addon-modules/DefaultInventoryToIARConverter/Modules" type="Library">
   <Configuration name="Debug" platform="x86">
-    <Options>
-      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
-    </Options>
+	<Options>
+	  <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+	</Options>
   </Configuration>
   <Configuration name="Release" platform="x86">
-    <Options>
-      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
-    </Options>
+	<Options>
+	  <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+	</Options>
   </Configuration>
   <Configuration name="Debug" platform="x64">
-    <Options>
-      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
-    </Options>
+	<Options>
+	  <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+	</Options>
   </Configuration>
   <Configuration name="Release" platform="x64">
-    <Options>
-      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
-    </Options>
+	<Options>
+	  <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+	</Options>
   </Configuration>
   <Configuration name="Debug" platform="AnyCPU">
-    <Options>
-      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
-    </Options>
+	<Options>
+	  <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+	</Options>
   </Configuration>
   <Configuration name="Release" platform="AnyCPU">
-    <Options>
-      <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
-    </Options>
+	<Options>
+	  <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
+	</Options>
   </Configuration>
 
   <ReferencePath>../../../WhiteCoreSim/bin/</ReferencePath>
@@ -45,7 +45,8 @@
   <Reference name="XMLRPC" path="../../../WhiteCoreSim/bin/"/>
 
   <Files>
-    <Match pattern="*.cs" recurse="true"/>
+	<Match pattern="*.cs" recurse="true">
 		<Exclude name="obj" pattern="obj"/>
+	</Match>
   </Files>
 </Project>

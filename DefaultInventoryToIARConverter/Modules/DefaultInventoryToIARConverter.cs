@@ -32,17 +32,20 @@ using System.IO.Compression;
 using System.Reflection;
 using Nini.Config;
 using OpenMetaverse;
-using WhiteCore.Framework.Services;
+using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.SceneInfo;
+using WhiteCore.Framework.Services;
 using WhiteCore.Framework.Services.ClassHelpers.Assets;
 using WhiteCore.Framework.Services.ClassHelpers.Inventory;
-using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Modules.Archivers;
 using WhiteCore.Region;
 
 [assembly: AssemblyVersion("2014.12.19")]
 [assembly: AssemblyFileVersion("2014.12.19")]
+[assembly: AssemblyTitle("DefaultInventoryToIAR")]
+[assembly: AssemblyCompany("WhiteCore-Sim.org")]
+[assembly: AssemblyDescription("WhiteCore Default inventory export module")]
 
 namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 {
@@ -54,7 +57,7 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 		IConfig libConfig;
 		string IARName = "./DefaultInventory/DefaultInventory.iar";
 		bool m_enabled = true;
-		bool m_busy = false;
+		bool m_busy;
 		IRegistryCore m_registry;
 
 
@@ -115,7 +118,7 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-		private void HandleDefInvSave( IScene scene, string[] cmd )
+		void HandleDefInvSave( IScene scene, string[] cmd )
 		{
 			if (!m_enabled)
 				return;
@@ -254,6 +257,7 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 					HandleDefInvSave,
 					false,
                     true);
+                
 				MainConsole.Instance.Commands.AddCommand (
                     "save default inventory help",
                     "save default inventory help",
@@ -263,7 +267,5 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
                     true);
 			}
 		}
-
-
     }
 }
