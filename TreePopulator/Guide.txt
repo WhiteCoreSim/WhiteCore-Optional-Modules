@@ -43,7 +43,7 @@ Configuration
 =============
 
 The Tree generator module is disabled from loading by default and needs to be enabled in the 'Nature.ini' 
-  configuration file.
+  configuration file. (Found in Config/Sim/Modules)
  
 [Trees]
     ;; Enable this to include access to the TreeGenerator module

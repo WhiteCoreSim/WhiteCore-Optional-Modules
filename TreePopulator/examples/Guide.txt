@@ -43,7 +43,7 @@ Configuration
 =============
 
 The Tree generator module is disabled from loading by default and needs to be enabled in the 'Nature.ini' 
-  configuration file.
+  configuration file. This can be found in the "Config/Sim/Modules" folder.
  
 [Trees]
     ;; Enable this to include access to the TreeGenerator module
@@ -53,8 +53,11 @@ The Tree generator module is disabled from loading by default and needs to be en
 
 
 TIP:  the 'active_trees' setting
-If you set 'active_trees = true' in the ini file, trees will commence growing immediately. This 'may' cause WhiteCore startup problems depending upon your configuration.
-If you are happy with your configuration you can try enabling this if you wish to have a region with a growth pattern that emulates and essentially will become, a "Living Region" with the tree Life Cycle going on.
+If you set 'active_trees = true' in the ini file, trees will commence growing immediately. 
+This 'may' cause WhiteCore startup problems depending upon your configuration.
+If you are happy with your configuration you can try enabling this if you wish to have a 
+region with a growth pattern that emulates and essentially will become, a "Living Region" 
+with the tree Life Cycle going on.
 
 
 Use
@@ -96,7 +99,7 @@ It would be handy if you had an inworld scripted device which used osConsole Com
  to the tree module for changing Tree Copses and processing a more organic environment.
 
 Deactivate when you are done and see your Handy Work. It is pretty cool to watch it while the trees grow, 
-but it may take some time to start as there is a LifeCycle in play but action sppeds up as they mature and seed out, 
+but it may take some time to start as there is a LifeCycle in play but action speeds up as they mature and seed out, 
 it's a lots of fun to watch.
 
 Special Note:
@@ -153,14 +156,14 @@ NOTES:  A few things to remember
 Unverified comments at this time
 ================================
 - I tried forests of 2000, 1000 ,500 Pines. I wanted to keep a kind of house in the middle .. of course trees 
-  invaded my tiny construction ... and i had to remove them manually . but .. it seems in some cases the seeds avoid 
+  invaded my tiny construction ... and I had to remove them manually . but .. it seems in some cases the seeds avoid 
   to occupy territories as much as they can .. Not all the time and i'm not sure of it but it seemed to me to do so .. 
   
   ??As a suggestion, maybe it could be possible to put a texture on the ground and the seeds would avoid those places ??... haha ..
 
 - when using different Copses on a region, when you switch the "tree active" command to true/false/true
-  (not sure of the number of times) , i noticed underwater plants, which previously behaved accordingly to my parameters
-  of high and low lines, began to grow on the hills above water. I noticed that behaviour while i was working on a "land"
+  (not sure of the number of times) , I noticed underwater plants, which previously behaved accordingly to my parameters
+  of high and low lines, began to grow on the hills above water. I noticed that behaviour while I was working on a "land"
   copse, reswitching the tree active to true. Coming back after a while , I was surprised to find seaswords on the top of 
-  a quite desertic mountain .. So as a workaround , i think it's better to work step by step (Copse by Copse) and switch 
+  a quite desertic mountain .. So as a workaround , I think it's better to work step by step (Copse by Copse) and switch 
   the "Freeze Copse true" command once a copse is finished. ... 

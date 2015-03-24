@@ -27,24 +27,27 @@
 
 using System;
 using System.Collections.Generic;
-using System.Timers;
-using System.Xml;
-using System.Xml.Serialization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using OpenMetaverse;
+using System.Timers;
+using System.Xml;
+using System.Xml.Serialization;
 using Nini.Config;
+using OpenMetaverse;
+using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Framework.Modules;
+using WhiteCore.Framework.PresenceInfo;
 using WhiteCore.Framework.SceneInfo;
 using WhiteCore.Framework.SceneInfo.Entities;
 using WhiteCore.Framework.Utilities;
-using WhiteCore.Framework.ConsoleFramework;
-using WhiteCore.Framework.PresenceInfo;
 using WhiteCore.Region;
 
-[assembly: AssemblyVersion("2014.4.22")]
-[assembly: AssemblyFileVersion("2014.4.22")]
+[assembly: AssemblyVersion("2015.03.24")]
+[assembly: AssemblyFileVersion("2015.03.24")]
+[assembly: AssemblyTitle("TreeGenerator")]
+[assembly: AssemblyCompany("WhiteCore-Sim.org")]
+[assembly: AssemblyDescription("WhiteCore tree generation module")]
 
 namespace WhiteCore.Addon.TreePopulator
 {
@@ -53,9 +56,8 @@ namespace WhiteCore.Addon.TreePopulator
     /// </summary>
     public class TreePopulatorModule : INonSharedRegionModule, IVegetationModule
     {
-        //private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private IScene m_scene;
-		private bool m_enabled = false;
+        IScene m_scene;
+		bool m_enabled;
 
         [XmlRootAttribute(ElementName = "Copse", IsNullable = false)]
         public class Copse
@@ -88,7 +90,7 @@ namespace WhiteCore.Addon.TreePopulator
 			/// <param name="planted">If set to <c>true</c> planted.</param>
 			public Copse(string fileName, Boolean planted) 
             {
-                Copse cp = (Copse)DeserializeObject(fileName);
+                var cp = (Copse)DeserializeObject(fileName);
 
                 this.m_name = cp.m_name;
                 this.m_frozen = cp.m_frozen;
@@ -162,11 +164,11 @@ namespace WhiteCore.Addon.TreePopulator
             }
         }
 
-        private List<Copse> m_copse;
+        List<Copse> m_copse;
 
-		private IConfig treeConfig;
-		private double m_update_ms = 2000.0; 	// msec between updates 
-		private bool m_active_trees = false;
+		IConfig treeConfig;
+		double m_update_ms = 2000.0; 	// msec between updates 
+		bool m_active_trees;
 
         Timer CalculateTrees;
 
@@ -193,7 +195,6 @@ namespace WhiteCore.Addon.TreePopulator
 			m_scene = scene;
             if ( m_enabled )
             {
-                //m_scene = scene;
 				m_scene.RegisterModuleInterface<IVegetationModule>(this);
 				m_scene.SceneGraph.RegisterEntityCreatorModule(this);
                 AddConsoleCommands();
@@ -210,14 +211,11 @@ namespace WhiteCore.Addon.TreePopulator
             {
 				ReloadCopse();
                 if ( m_copse.Count > 0 )
-				{
                     MainConsole.Instance.Info ( "[TREES]: Copse load complete" );
-				}
-				// are we actively growing trees?
+
+                // are we actively growing trees?
 				if ( m_active_trees )
-				{
 					activeizeTreeze (true);
-				}
             }
         }
 
@@ -259,8 +257,8 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <returns><c>true</c>, if check valid region, <c>false</c> otherwise.</returns>	
 		/// <param name="scene">Scene.</param>
-		private Boolean TreeCheckValidRegion( IScene scene )
-		{
+		Boolean TreeCheckValidRegion( IScene scene )
+        {
 			IScene selectedScene = MainConsole.Instance.ConsoleScene;
              
             if ( selectedScene == null )
@@ -268,9 +266,7 @@ namespace WhiteCore.Addon.TreePopulator
 				MainConsole.Instance.Info ("[TREES]: The 'tree' commands only operate on a region" +
 				" \n          Please change to a region first");
             } else if ( selectedScene == scene )
-			{
 				return true;
-			}
 
 			return false;
 		}
@@ -280,12 +276,10 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-		private void HandleTreeActive(IScene scene, string[] cmd)
+		void HandleTreeActive(IScene scene, string[] cmd)
         {
             if ( !TreeCheckValidRegion( m_scene ) )
-            {
 				return;
-			}
 			
             if ( cmd.Count() < 3 ) 
             {
@@ -297,20 +291,19 @@ namespace WhiteCore.Addon.TreePopulator
 			
             bool activeState = Boolean.Parse(cmd[2]);
 
-            if ( activeState && ! this.m_active_trees )
+            if ( activeState && ! m_active_trees )
             {
                 MainConsole.Instance.Info ( "[TREES]: Activating Trees" );
 				activeizeTreeze( true );
             }
-            else if ( !activeState && this.m_active_trees )
+            else if ( !activeState && m_active_trees )
             {
                 MainConsole.Instance.Info ( "[TREES]: Disabling Trees" );
 				activeizeTreeze( false );
             }
             else
-            {
                 MainConsole.Instance.Info ( "[TREES]: Already "+ ( m_active_trees ? "Active" : "Disabled" ) );
-            }
+
         }
 
 		/// <summary>
@@ -318,7 +311,7 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-		private void HandleTreeFreeze(IScene scene, string[] cmd)
+		void HandleTreeFreeze(IScene scene, string[] cmd)
 		{
             string copseName = string.Empty;
             if ( !TreeCheckValidRegion ( m_scene ) )
@@ -350,7 +343,7 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 	    /// <param name="cmd">Cmd.</param>
-		private void HandleTreeUnFreeze(IScene scene, string[] cmd)
+		void HandleTreeUnFreeze(IScene scene, string[] cmd)
 		{
             string copseName = string.Empty;
             if ( !TreeCheckValidRegion ( m_scene ) )
@@ -373,7 +366,8 @@ namespace WhiteCore.Addon.TreePopulator
                 if (copseName.ToLower() == "quit")
                     return;
             }
-            this.HandleTreeFreezeState ( copseName, false );
+
+            HandleTreeFreezeState ( copseName, false );
 		}
 
 		/// <summary>
@@ -381,30 +375,31 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="copseName">Copse name.</param>
 		/// <param name="freezeState">If set to <c>true</c> freeze state.</param>
-		private void HandleTreeFreezeState(string copseName, Boolean freezeState)
+		void HandleTreeFreezeState(string copseName, Boolean freezeState)
 		{
             foreach ( Copse cp in m_copse )
             {
-                if ( ( cp.m_name == copseName) && ( (!cp.m_frozen && freezeState) || (cp.m_frozen && !freezeState) ) )
+                if ((cp.m_name == copseName) && ((!cp.m_frozen && freezeState) || (cp.m_frozen && !freezeState)))
                 {
                     cp.m_frozen = freezeState;
-                    foreach ( UUID tree in cp.m_trees )
+                    foreach (UUID tree in cp.m_trees)
                     {
                         IEntity ent;
-                        if ( m_scene.Entities.TryGetValue( tree, out ent ) && ent is ISceneEntity )
+                        if (m_scene.Entities.TryGetValue (tree, out ent) && ent is ISceneEntity)
                         {
-                            ISceneChildEntity sop = ( (ISceneEntity) ent ).RootChild;
-                            sop.Name = ( freezeState ? sop.Name.Replace ("ATPM", "FTPM") : sop.Name.Replace ( "FTPM", "ATPM" ) );
+                            ISceneChildEntity sop = ((ISceneEntity)ent).RootChild;
+                            sop.Name = (freezeState ? sop.Name.Replace ("ATPM", "FTPM") : sop.Name.Replace ("FTPM", "ATPM"));
                             sop.ParentEntity.HasGroupChanged = true;
                         }
                     }
 
-                    MainConsole.Instance.Info ( "[TREES]: Activity for copse "+copseName+" is now "+ (freezeState ? "frozen" : "unfrozen"));
+                    MainConsole.Instance.Info ("[TREES]: Activity for copse " + copseName + " is now " + (freezeState ? "frozen" : "unfrozen"));
                     return;
                 }
-                else if (( cp.m_name == copseName ) && ( ( cp.m_frozen && freezeState ) || ( !cp.m_frozen && !freezeState ) ) )
+
+                if ((cp.m_name == copseName) && ((cp.m_frozen && freezeState) || (!cp.m_frozen && !freezeState)))
                 {
-                    MainConsole.Instance.Info ( "[TREES]: Copse '" + copseName + " is already in the requested freeze state" );
+                    MainConsole.Instance.Info ("[TREES]: Copse '" + copseName + " is already in the requested freeze state");
                     return; 
                 }
             }
@@ -416,12 +411,10 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-	    private void HandleTreeLoad(IScene scene, string[] cmd)
+	    void HandleTreeLoad(IScene scene, string[] cmd)
         {
             if ( !TreeCheckValidRegion( m_scene ) )
-            {
 				return;
-			}
 
             if ( cmd.Count() < 3 )
 			{
@@ -433,9 +426,7 @@ namespace WhiteCore.Addon.TreePopulator
             string extension = Path.GetExtension( fileName );
 
             if ( extension == string.Empty)
-            {
 				fileName = fileName+".copse";
-			}
 
             if ( !File.Exists( fileName ) )
             {
@@ -444,7 +435,7 @@ namespace WhiteCore.Addon.TreePopulator
 			}
 
             MainConsole.Instance.Info ( "[TREES]: Loading copse definition...." );
-            Copse newCopse = new Copse( cmd[2], false );
+            var newCopse = new Copse( cmd[2], false );
 
             foreach ( Copse cp in m_copse )
             {
@@ -455,7 +446,7 @@ namespace WhiteCore.Addon.TreePopulator
                 }
             }
 
-            this.m_copse.Add( newCopse );
+            m_copse.Add( newCopse );
             MainConsole.Instance.Info ( "[TREES]: Loaded copse: " + newCopse );
         }
 
@@ -464,11 +455,11 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-		private void HandleTreeSave(IScene scene, string[] cmd)
+		void HandleTreeSave(IScene scene, string[] cmd)
 		{
-            if ( !TreeCheckValidRegion( m_scene ) ) {
+            if ( !TreeCheckValidRegion( m_scene ) ) 
 				return;
-			}
+			
 
             if ( cmd.Count() < 4 )
 			{
@@ -483,9 +474,7 @@ namespace WhiteCore.Addon.TreePopulator
             string extension = Path.GetExtension( fileName );
 
             if (extension == string.Empty)
-            {
                 fileName = fileName + ".copse";
-		    }
 
             string fileDir = Path.GetDirectoryName( fileName );
             if ( fileDir == "" ) { fileDir = "./"; }
@@ -503,7 +492,7 @@ namespace WhiteCore.Addon.TreePopulator
 			}
 
 			//MainConsole.Instance.Info("[TREES]: Saving copse definition....");
-            foreach ( Copse cp in this.m_copse )
+            foreach ( Copse cp in m_copse )
 		    {
                 if ( cp.m_name == copseName )
 				{
@@ -519,12 +508,11 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-        private void HandleTreePlant( IScene scene, string[] cmd)
+        void HandleTreePlant( IScene scene, string[] cmd)
         {
             string copseName = string.Empty;
-			if ( !TreeCheckValidRegion(m_scene) ) {
+			if ( !TreeCheckValidRegion(m_scene) ) 
 				return;
-			}
 
             if (cmd.Count() > 2)
                 copseName = cmd[2].Trim();
@@ -553,11 +541,10 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-        private void HandleTreeRate( IScene scene, string[] cmd )
+        void HandleTreeRate( IScene scene, string[] cmd )
         {
-            if ( !TreeCheckValidRegion( m_scene ) ) {
+            if ( !TreeCheckValidRegion( m_scene ) ) 
 				return;
-			}
 
             if ( cmd.Count() < 3 )
 			{
@@ -580,9 +567,7 @@ namespace WhiteCore.Addon.TreePopulator
                 MainConsole.Instance.Info ( "[TREES]: Update rate set to "+ updateRate.ToString("0.00")+" Sec" );
             }
             else
-            {
                 MainConsole.Instance.Info ( "[TREES]: minimum update rate is 1 Sec" );
-            }
         }
 
 		/// <summary>
@@ -590,16 +575,13 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-		private void HandleTreeReload(IScene scene, string[] cmd)
+		void HandleTreeReload(IScene scene, string[] cmd)
         {
-            if ( !TreeCheckValidRegion( m_scene ) ) {
+            if ( !TreeCheckValidRegion( m_scene ) ) 
 				return;
-			}
 
             if ( m_active_trees )
-            {
                 CalculateTrees.Stop();
-            }
 
             ReloadCopse();
 
@@ -616,7 +598,7 @@ namespace WhiteCore.Addon.TreePopulator
                 if ( resp[0] == 'y' ) 
                 {
                     MainConsole.Instance.Info ( "[TREES]: Activating Trees" );
-                    this.activeizeTreeze( true );
+                    activeizeTreeze( true );
                 }
             }
 
@@ -627,7 +609,7 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-        private void HandleTreeRemove( IScene scene, string[] cmd )
+        void HandleTreeRemove( IScene scene, string[] cmd )
         {
             string copseName = string.Empty;
 
@@ -655,7 +637,7 @@ namespace WhiteCore.Addon.TreePopulator
 
 			Copse copseIdentity = null;
 
-            foreach ( Copse cp in this.m_copse )
+            foreach ( Copse cp in m_copse )
             {
                 if ( cp.m_name == copseName )
                 {
@@ -665,7 +647,7 @@ namespace WhiteCore.Addon.TreePopulator
 
             if (copseIdentity != null)
             {
-                List<ISceneEntity> groups = new List<ISceneEntity>();
+                var groups = new List<ISceneEntity>();
                 foreach ( UUID tree in copseIdentity.m_trees)
                 {
                     IEntity entity;
@@ -677,17 +659,14 @@ namespace WhiteCore.Addon.TreePopulator
                 }
                 IBackupModule backup = m_scene.RequestModuleInterface<IBackupModule>();
                 if ( backup != null )
-                {
                     backup.DeleteSceneObjects(groups.ToArray(), true, true );
-                }
+              
                 copseIdentity.m_trees = new List<UUID>();
                 m_copse.Remove(copseIdentity);
                 MainConsole.Instance.Info ( "[TREES]: Copse "+copseName+" has been removed" );
             }
             else
-            {
                 MainConsole.Instance.Info ( "[TREES]: Copse "+copseName+" was not found" );
-            }
         }
 
 		/// <summary>
@@ -695,12 +674,11 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-        private void HandleTreeStatistics( IScene scene, string[] cmd )
+        void HandleTreeStatistics( IScene scene, string[] cmd )
         {
-			if ( !TreeCheckValidRegion(m_scene) ) {
+			if ( !TreeCheckValidRegion(m_scene) ) 
 				return;
-		     }
-
+		     
             MainConsole.Instance.Info( "[TREES]: Active: " +  (m_active_trees ? "Yes" : "Disabled") + 
                 ";  Update Rate: " + ( m_update_ms/1000 ).ToString("0.00")+" Sec" );
 
@@ -714,7 +692,7 @@ namespace WhiteCore.Addon.TreePopulator
         /// <returns>The response.</returns>
         /// <param name="infoMsg">information message.</param>
         /// <param name="defaultReturn">Default return.</param>
-        private static string ReadLine( string infoMsg, string defaultReturn )
+        static string ReadLine( string infoMsg, string defaultReturn )
 		{
             Console.Write( infoMsg + ": [" + defaultReturn + "] > " );
 			string mode = Console.ReadLine();
@@ -731,7 +709,7 @@ namespace WhiteCore.Addon.TreePopulator
 		/// <returns>The copse definitions.</returns>
 		/// <param name="cp">Cp.</param>
 		/// <param name="advancedOptions">If set to <c>true</c> advanced options.</param>
-		private static Copse GetCopseDefinitions(Copse cp, bool advancedOptions)
+		static Copse GetCopseDefinitions(Copse cp, bool advancedOptions)
 		{
 			int treeType = GetTreeType ((int) cp.m_tree_type);
 			cp.m_tree_type = (Tree)treeType; 
@@ -784,7 +762,7 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <returns>The tree type.</returns>
 		/// <param name="treeType">Tree type.</param>
-		private static int GetTreeType(int treeType)
+		static int GetTreeType(int treeType)
 		{
 			Console.ForegroundColor = ConsoleColor.Cyan;
 			Console.WriteLine("The available trees are...\n"+
@@ -804,7 +782,7 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <returns>The tree name.</returns>
 		/// <param name="treeType">Tree type.</param>
-		private static string GetTreeName(int treeType)
+		static string GetTreeName(int treeType)
 		{
 			switch (treeType)
 			{
@@ -838,7 +816,7 @@ namespace WhiteCore.Addon.TreePopulator
 		/// Plants the initial tree of a copse.
 		/// </summary>
 		/// <param name="copseName">Copse name.</param>
-		private void PlantTreeCopse(string copseName)
+		void PlantTreeCopse(string copseName)
 		{
 			MainConsole.Instance.Info ( "[TREES]: New tree planting for copse " + copseName );
 			UUID uuid = m_scene.RegionInfo.EstateSettings.EstateOwner;
@@ -871,20 +849,25 @@ namespace WhiteCore.Addon.TreePopulator
 						}
 					} 
 					else
-					{
 						MainConsole.Instance.Info ( "[TREES]: Copse " + copseName + " has already been planted?" );
-					}
-				}
+
+                }
 			}
 		}
 
-		private void ListExistingCopse()
+		void ListExistingCopse()
 		{
 			foreach ( Copse cp in m_copse )
-			{
 				MainConsole.Instance.Info (
-					string.Format ("[TREES]: Copse {0}: {1} {2} trees at {3}, {4} ;  {5}", cp.m_name, cp.m_trees.Count, GetTreeName ((int) cp.m_tree_type), cp.m_seed_point.X, cp.m_seed_point.Y, (cp.m_frozen ? "Frozen" : "Growing")));
-			}
+					string.Format ("[TREES]: Copse {0}: {1} {2} trees at {3}, {4} ;  {5}",
+                        cp.m_name,
+                        cp.m_trees.Count,
+                        GetTreeName ((int) cp.m_tree_type),
+                        cp.m_seed_point.X,
+                        cp.m_seed_point.Y,
+                        (cp.m_frozen ? "Frozen" : "Growing")
+                    )
+                );
 		}
 
 		/// <summary>
@@ -892,16 +875,14 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-		private void HandleTreeConfigure(IScene scene, string[] cmd)
+		void HandleTreeConfigure(IScene scene, string[] cmd)
 		{
-            if ( !TreeCheckValidRegion(m_scene) ) {
+            if ( !TreeCheckValidRegion(m_scene) ) 
 				return;
-			}
 
             bool advancedOptions = false;
             if ( cmd.Count() == 3 ) {
-                if (cmd[2].ToLower() == "true") 
-                    advancedOptions = true;
+                advancedOptions |= cmd [2].ToLower () == "true";
 			}
             			
 			string resp = "no";
@@ -915,12 +896,10 @@ namespace WhiteCore.Addon.TreePopulator
 			resp = ReadLine("Do you want to configure a new copse of trees now?", resp).ToLower();
 
 			if ( resp[0] != 'y' )
-			{
 				return;
-			}
 
 			// here we go... set some defaults for ease of use
-			Copse newCopse = new Copse();
+			var newCopse = new Copse();
 
 			newCopse.m_name = "Mycopse";
 			newCopse.m_frozen = false;
@@ -944,7 +923,7 @@ namespace WhiteCore.Addon.TreePopulator
 			Console.WriteLine("\n\n");
 			Console.ResetColor();
 
-            bool nameCheckOk = true;
+            bool nameCheckOk;
 			do
 			{
                 newCopse.m_name = ReadLine ("What will you call this copse of trees ('quit' to abort) ?", newCopse.m_name);
@@ -963,9 +942,7 @@ namespace WhiteCore.Addon.TreePopulator
 			} while (!nameCheckOk);
 			
 			if ( newCopse.m_name.ToLower() == "quit" )		// provide an "out"
-			{
 				return;
-			}
 
 			GetCopseDefinitions (newCopse, advancedOptions);
             m_copse.Add(newCopse);
@@ -978,9 +955,7 @@ namespace WhiteCore.Addon.TreePopulator
 			string plantNow;
 			plantNow = ReadLine("Do you want to plant this copse now?", "no");
 			if( plantNow[0] == 'y' )
-			{
 				PlantTreeCopse (newCopse.m_name);
-			}	
 
             if ( !m_active_trees )
 			{
@@ -1003,16 +978,14 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Scene.</param>
 		/// <param name="cmd">Cmd.</param>
-		private void HandleTreeUpdate(IScene scene, string[] cmd)
+		void HandleTreeUpdate(IScene scene, string[] cmd)
 		{
-			if ( !TreeCheckValidRegion(m_scene) ) {
+			if ( !TreeCheckValidRegion(m_scene) ) 
 				return;
-			}
 
 			bool advancedOptions = false;
-			if ( cmd.Count() == 3 ) {
+			if ( cmd.Count() == 3 ) 
 				advancedOptions = Boolean.Parse( cmd[2] );
-			}
 
 			Console.ForegroundColor = ConsoleColor.Green;
 			Console.WriteLine("\n\n************* WhiteCore Tree Configuration *************");
@@ -1070,7 +1043,7 @@ namespace WhiteCore.Addon.TreePopulator
 				Console.WriteLine( "Disabling growth whilst re-configuring");
 				Console.ResetColor();
 
-				this.activeizeTreeze( false );
+				activeizeTreeze( false );
 			}
 
 			GetCopseDefinitions (updateCopse, advancedOptions);
@@ -1078,7 +1051,7 @@ namespace WhiteCore.Addon.TreePopulator
 			// update this definition
 			foreach (Copse cp in m_copse)
 			{
-			if (cp.m_name == updateCopse.m_name)
+			    if (cp.m_name == updateCopse.m_name)
 				{
 
 					// cp.m_name = updateCopse.m_name;
@@ -1108,10 +1081,9 @@ namespace WhiteCore.Addon.TreePopulator
 			{
 				string plantNow;
 				plantNow = ReadLine("Do you want to plant this copse now?", "no");
-				if(plantNow[0] == 'y')
-				{
+				
+                if(plantNow[0] == 'y')
 				PlantTreeCopse (updateCopse.m_name);
-				}
 			}	
 
 			if ( oldState )
@@ -1129,12 +1101,10 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="scene">Not used</param>
 		/// <param name="cmd">Not used</param>
-        private void HandleTreeHelp( IScene scene, string[] cmd )
+        void HandleTreeHelp( IScene scene, string[] cmd )
         {
             if ( MainConsole.Instance.ConsoleScene != m_scene )
-            {
                 return;
-            }
 
 			MainConsole.Instance.Info(
 				"tree active <state> - Change active growing state of the trees module."+
@@ -1174,7 +1144,7 @@ namespace WhiteCore.Addon.TreePopulator
 		/// <summary>
 		/// Adds the console commands.
 		/// </summary>
-		private void AddConsoleCommands()
+		void AddConsoleCommands()
         {
             if (MainConsole.Instance != null)
             {
@@ -1185,6 +1155,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeActive,
                     true,
                     false);
+
                 MainConsole.Instance.Commands.AddCommand (
                     "tree freeze",
                     "tree freeze <copse> <freeze>",
@@ -1192,6 +1163,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeFreeze,
                     true,
                     false);
+
 				MainConsole.Instance.Commands.AddCommand (
                     "tree unfreeze",
 					"tree unfreeze <copse>",
@@ -1199,6 +1171,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeUnFreeze,
                     true,
                     false);
+
                 MainConsole.Instance.Commands.AddCommand (
                     "tree load",
                     "tree load <filename>", 
@@ -1206,6 +1179,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeLoad,
                     true,
                     false);
+
 				MainConsole.Instance.Commands.AddCommand (
                     "tree save",
 					"tree save <copse> <filename>", 
@@ -1213,6 +1187,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeSave,
                     true,
                     false);
+
                 MainConsole.Instance.Commands.AddCommand (
                     "tree plant",
                     "tree plant [copse]", 
@@ -1220,6 +1195,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreePlant,
                     true,
                     false);
+
                 MainConsole.Instance.Commands.AddCommand (
                     "tree rate",
                     "tree rate <updateRate>",
@@ -1227,6 +1203,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeRate,
                     true,
                     false);
+
                 MainConsole.Instance.Commands.AddCommand (
                     "tree reload",
 					"tree reload", 
@@ -1234,6 +1211,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeReload,
                     true,
                     false);
+
 				MainConsole.Instance.Commands.AddCommand (
                     "tree remove",
                     "tree remove [copse]",
@@ -1241,6 +1219,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeRemove,
                     true,
                     false);
+
 				MainConsole.Instance.Commands.AddCommand (
                     "tree stats",
 					"tree stats",
@@ -1248,6 +1227,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeStatistics,
                     true,
                     false);
+
                 MainConsole.Instance.Commands.AddCommand (
                     "tree help",
 					"tree help",
@@ -1255,6 +1235,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeHelp,
                     true,
                     false);
+
 				MainConsole.Instance.Commands.AddCommand (
                     "tree configure",
 					"tree configure [advanced]",
@@ -1262,6 +1243,7 @@ namespace WhiteCore.Addon.TreePopulator
 					HandleTreeConfigure,
                     true,
                     false);
+
 				MainConsole.Instance.Commands.AddCommand (
 					"tree update",
 					"tree update [advanced]",
@@ -1290,7 +1272,7 @@ namespace WhiteCore.Addon.TreePopulator
         public ISceneEntity AddTree (
             UUID uuid, UUID groupID, Vector3 scale, Quaternion rotation, Vector3 position, Tree treeType, bool newTree )
         {
-            PrimitiveBaseShape treeShape = new PrimitiveBaseShape();
+            var treeShape = new PrimitiveBaseShape();
             treeShape.PathCurve = 16;
             treeShape.PathEnd = 49900;
             treeShape.PCode = newTree ? (byte)PCode.NewTree : (byte)PCode.Tree;
@@ -1307,7 +1289,7 @@ namespace WhiteCore.Addon.TreePopulator
         /// <summary>
         /// The creation capabilities.
         /// </summary>
-        protected static readonly PCode[] creationCapabilities = new PCode[] { PCode.NewTree, PCode.Tree };
+        protected static readonly PCode[] creationCapabilities = { PCode.NewTree, PCode.Tree };
 
         /// <summary>
         /// The entities that this class is capable of creating. These match the PCode format.
@@ -1319,14 +1301,13 @@ namespace WhiteCore.Addon.TreePopulator
         /// <summary>
         /// Create a tree entity
         /// </summary>
-        /// <param name="baseEntity"></param>
+        /// <param name="sceneObject">Scene object.</param>
         /// <param name="ownerID"></param>
         /// <param name="groupID"></param>
         /// <param name="pos"></param>
         /// <param name="rot"></param>
         /// <param name="shape"></param>
         /// <returns>The tree entity created, or null if the creation failed</returns>
-        /// <param name="sceneObject">Scene object.</param>
         public ISceneEntity CreateEntity(
             ISceneEntity sceneObject, UUID ownerID, UUID groupID, Vector3 pos, Quaternion rot, PrimitiveBaseShape shape)
         {
@@ -1389,9 +1370,9 @@ namespace WhiteCore.Addon.TreePopulator
         {
             try
             {
-                XmlSerializer xs = new XmlSerializer( typeof( Copse ) );
+                var xs = new XmlSerializer( typeof( Copse ) );
 
-                using ( XmlTextWriter writer = new XmlTextWriter( fileName, Util.UTF8 ) )
+                using ( var writer = new XmlTextWriter( fileName, Util.UTF8 ) )
                 {
                     writer.Formatting = Formatting.Indented;
                     xs.Serialize(writer, obj);
@@ -1412,9 +1393,9 @@ namespace WhiteCore.Addon.TreePopulator
         {
             try
             {
-                XmlSerializer xs = new XmlSerializer( typeof( Copse ) );
+                var xs = new XmlSerializer( typeof( Copse ) );
 
-                using ( FileStream fs = new FileStream( fileName, FileMode.Open, FileAccess.Read ) )
+                using ( var fs = new FileStream( fileName, FileMode.Open, FileAccess.Read ) )
                 {
                     return xs.Deserialize(fs);
                 }
@@ -1428,9 +1409,9 @@ namespace WhiteCore.Addon.TreePopulator
         /// <summary>
         /// Reloads the copse definitions.
         /// </summary>
-        private void ReloadCopse()
+        void ReloadCopse()
         {
-            this.m_copse = new List<Copse>();
+            m_copse = new List<Copse>();
 
             ISceneEntity[] objs = m_scene.Entities.GetEntities ();
             foreach( ISceneEntity grp in objs )
@@ -1441,7 +1422,7 @@ namespace WhiteCore.Addon.TreePopulator
                     try
                     {
                         bool copsefound = false;
-                        Copse copse = new Copse( grp.Name );
+                        var copse = new Copse( grp.Name );
 
                         foreach( Copse cp in m_copse )
                         {
@@ -1474,18 +1455,16 @@ namespace WhiteCore.Addon.TreePopulator
         /// Start or stop growing trees.
         /// </summary>
         /// <param name="activeYN">If set to <c>true</c> active.</param>
-        private void activeizeTreeze( bool activeYN )
+        void activeizeTreeze( bool activeYN )
         {
             if ( activeYN )
             {
                 CalculateTrees = new Timer(m_update_ms);
                 CalculateTrees.Elapsed += CalculateTrees_Elapsed;
                 CalculateTrees.Start();
-            }
-            else 
-            {
+            } else 
                 CalculateTrees.Stop();
-            }
+           
 			// save curent state
 			m_active_trees = activeYN;
         } 
@@ -1493,7 +1472,7 @@ namespace WhiteCore.Addon.TreePopulator
         /// <summary>
         /// Grows the trees in a copse.
         /// </summary>
-        private void growTrees()
+        void growTrees()
         {
             foreach ( Copse copse in m_copse )
             {
@@ -1514,9 +1493,8 @@ namespace WhiteCore.Addon.TreePopulator
                             }
                         }
                         else
-                        {
                             MainConsole.Instance.Debug ( "[TREES]: Tree not in scene "+ tree );
-                        }
+
                     }
                 }
             }
@@ -1525,7 +1503,7 @@ namespace WhiteCore.Addon.TreePopulator
         /// <summary>
         /// Seeds the trees in a copse.
         /// </summary>
-        private void seedTrees()
+        void seedTrees()
         {
             foreach ( Copse copse in m_copse )
             {
@@ -1544,16 +1522,14 @@ namespace WhiteCore.Addon.TreePopulator
                                 if (s_tree.Scale.Z > ( copse.m_initial_scale.Z + (copse.m_maximum_scale.Z - copse.m_initial_scale.Z) / 4.0) ) 
                                 {
                                     if ( Util.RandomClass.NextDouble() > 0.75 )
-                                    {
                                         SpawnChild( copse, s_tree );
-                                    }
+
                                 }
                             }
                         }
                         else
-                        {
                             MainConsole.Instance.Debug ( "[TREES]: Tree not in scene "+ tree );
-                        }
+
                     }
                 }
             }
@@ -1562,13 +1538,13 @@ namespace WhiteCore.Addon.TreePopulator
         /// <summary>
         /// Kills trees from a copse.
         /// </summary>
-        private void killTrees()
+        void killTrees()
         {
             foreach ( Copse copse in m_copse )
             {
                 if ( !copse.m_frozen && copse.m_trees.Count >= copse.m_tree_quantity )
                 {
-                    List<ISceneEntity> groups = new List<ISceneEntity>();
+                    var groups = new List<ISceneEntity>();
                     foreach ( UUID tree in copse.m_trees )
                     {
                         double killLikelyhood = 0.0;
@@ -1610,16 +1586,12 @@ namespace WhiteCore.Addon.TreePopulator
                             }
                         }
                         else
-                        {
 							MainConsole.Instance.Debug ("[TREES]: Tree not in scene "+ tree);
-                        }
                     }
 
                     IBackupModule backup = m_scene.RequestModuleInterface<IBackupModule>();
                     if ( backup != null )
-                    {
                         backup.DeleteSceneObjects( groups.ToArray(), true, true );
-                    }
                 }
             }
         }
@@ -1629,9 +1601,9 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="copse">Copse.</param>
 		/// <param name="s_tree">S_tree.</param>
-		private void SpawnChild ( Copse copse, ISceneChildEntity s_tree )
+		void SpawnChild ( Copse copse, ISceneChildEntity s_tree )
         {
-            Vector3 position = new Vector3();
+            var position = new Vector3();
 
             double randX = ((Util.RandomClass.NextDouble() * 2.0) - 1.0) * (s_tree.Scale.X * 3);
             double randY = ((Util.RandomClass.NextDouble() * 2.0) - 1.0) * (s_tree.Scale.X * 3);
@@ -1655,12 +1627,12 @@ namespace WhiteCore.Addon.TreePopulator
 		/// <param name="uuid">UUID.</param>
 		/// <param name="copse">Copse.</param>
 		/// <param name="position">Position.</param>
-		private void CreateTree( UUID uuid, Copse copse, Vector3 position )
+		void CreateTree( UUID uuid, Copse copse, Vector3 position )
         {
             position.Z = m_scene.RequestModuleInterface<ITerrainChannel>()[(int)position.X, (int)position.Y];
             if (position.Z >= copse.m_treeline_low && position.Z <= copse.m_treeline_high)
             {
-                SceneObjectGroup tree = (SceneObjectGroup) AddTree(uuid, UUID.Zero, copse.m_initial_scale, Quaternion.Identity, position, copse.m_tree_type, false);
+                var tree = (SceneObjectGroup) AddTree(uuid, UUID.Zero, copse.m_initial_scale, Quaternion.Identity, position, copse.m_tree_type, false);
 
                 tree.Name = copse.ToString();
                 copse.m_trees.Add(tree.UUID);
@@ -1673,7 +1645,7 @@ namespace WhiteCore.Addon.TreePopulator
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="e">E.</param>
-		private void CalculateTrees_Elapsed( object sender, ElapsedEventArgs e )
+		void CalculateTrees_Elapsed( object sender, ElapsedEventArgs e )
         {
             growTrees();
             seedTrees();

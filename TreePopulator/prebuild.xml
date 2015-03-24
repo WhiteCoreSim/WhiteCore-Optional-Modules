@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<Project frameworkVersion="v4_0" name="WhiteCore.Addon.TreePopulator" path="addon-modules/TreePopulator/Modules/" type="Library">
+<Project frameworkVersion="v4_5" name="WhiteCore.Addon.TreePopulator" path="addon-modules/TreePopulator/Modules/" type="Library">
 	<Configuration name="Debug" platform="x86">
 		<Options>
 			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
@@ -34,13 +34,10 @@
 	<ReferencePath>../../../WhiteCoreSim/bin/</ReferencePath>
 	<Reference name="System"/>
 	<Reference name="System.Xml"/>
-	<Reference name="System.Drawing"/>
-	<Reference name="System.Web"/>
 
 	<Reference name="WhiteCore.Framework"/>
 	<Reference name="WhiteCore.Region"/>
 
-	<Reference name="log4net" path="../../../WhiteCoreSim/bin/"/>
 	<Reference name="Nini" path="../../../WhiteCoreSim/bin/"/>
 	<Reference name="OpenMetaverse" path="../../../WhiteCoreSim/bin/"/>
 	<Reference name="OpenMetaverse.StructuredData" path="../../../WhiteCoreSim/bin/"/>
@@ -49,8 +46,7 @@
 
 	<Files>
 		<Match pattern="*.cs" recurse="true">
-		<Exclude name="obj" pattern="obj"/>
-		<Exclude name="Tests" pattern="Tests"/>
+			<Exclude name="obj" pattern="obj"/>
 		</Match>
 	</Files>
 </Project>
