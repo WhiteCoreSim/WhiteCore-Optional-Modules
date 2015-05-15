@@ -38,7 +38,8 @@
 	<Reference name="WhiteCore.Framework"/>
 
 	<Files>
-		<Match pattern="*.cs" recurse="true"/>
-		<Exclude name="obj" pattern="obj"/>
+		<Match pattern="*.cs" recurse="true">
+			<Exclude name="obj" pattern="obj"/>
+		</Match>
 	</Files>
 </Project>

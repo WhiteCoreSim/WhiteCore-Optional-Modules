@@ -26,22 +26,19 @@
  */
 
 using System;
-using System.IO;
-using System.Web;
-using System.Diagnostics;
 using System.Collections.Generic;
-
-using Nini.Config;
-
-using WhiteCore.Framework;
-using WhiteCore.Framework.Modules;
-using WhiteCore.Framework.Services;
-using WhiteCore.Framework.ConsoleFramework;
-using WhiteCore.Framework.SceneInfo;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using System.Web;
+using Nini.Config;
+using WhiteCore.Framework.ConsoleFramework;
+using WhiteCore.Framework.Modules;
+using WhiteCore.Framework.SceneInfo;
+using WhiteCore.Framework.Services;
 
-[assembly: AssemblyVersion("2014.4.22")]
-[assembly: AssemblyFileVersion("2014.4.22")]
+[assembly: AssemblyVersion("2015.5.15")]
+[assembly: AssemblyFileVersion("2015.5.15")]
 
 namespace WhiteCore.Addon.HelpHTML
 {
@@ -59,31 +56,35 @@ namespace WhiteCore.Addon.HelpHTML
 
         public void Initialize(IGenericData GenericData, IConfigSource source, IRegistryCore simBase, string DefaultConnectionString)
         {
-            loaded = DateTime.Now;
-            MainConsole.Instance.Commands.AddCommand("helphtml", "helphtml", "output help as html document", loadHelp, false, true);
+            loadDateTime = DateTime.Now;
+            MainConsole.Instance.Commands.AddCommand(
+                "helphtml",
+                "helphtml [helpPath]",
+                "output help as html document [to an optional path]",
+                loadHelp, false, true);
         }
 
         #endregion
 
-        private DateTime loaded;
+        DateTime loadDateTime;
 
-        private string cmd2helpFile(string[] cmd)
+        string cmd2helpFile(string[] cmd)
         {
             string helpFile = "index";
 
             return "help/" + helpFile + ".html";
         }
 
-        private string cmd2helpTitle(string[] cmd)
+        string cmd2helpTitle(string[] cmd)
         {
             return "WhiteCore Help";
         }
 
-        private void loadHelp(IScene scene, string[] cmd)
+        void loadHelp(IScene scene, string[] cmd)
         {
             string fileName = cmd2helpFile(cmd);
 
-            if (!File.Exists(fileName) || File.GetLastWriteTime(fileName).CompareTo(loaded) < 0)
+            if (!File.Exists(fileName) || File.GetLastWriteTime(fileName).CompareTo(loadDateTime) < 0)
             {
                 MainConsole.Instance.Info("Help file is probably stale, writing new one.");
                 writeHtmlOutput(cmd);
@@ -93,25 +94,25 @@ namespace WhiteCore.Addon.HelpHTML
             MainConsole.Instance.Info("Help file should be opened in your browser");
         }
 
-        private static readonly string[] header1 = new string[4]{
+        static readonly string[] header1 = new string[4]{
             "<!DOCTYPE html>",
             "<html>",
             "<head>",
             "<style>section > section{ font-size: .95em; } .args{ font-family: monospace; }</style>"
         };
 
-        private static readonly string[] header2 = new string[3]{
+        static readonly string[] header2 = new string[3]{
             "<meta charset=\"UTF-8\" />",
             "</head>",
             "<body>"
         };
 
-        private static readonly string[] footer = new string[2]{
+        static readonly string[] footer = new string[2]{
             "</body>",
             "</html>"
         };
 
-        private void writeHtmlOutput(string[] cmd)
+        void writeHtmlOutput(string[] cmd)
         {
             string fileName = cmd2helpFile(cmd);
             
@@ -158,12 +159,24 @@ namespace WhiteCore.Addon.HelpHTML
             {
                 int argStart = help.IndexOf('[');
                 int argEnd = help.IndexOf("]: ");
-                string helpCmd = help.Substring(0, argStart - 2);
+                string helpCmd;
+                if (argStart > 2)
+                    helpCmd = help.Substring (0, argStart - 2);
+                else
+                    helpCmd = help;
+
+
                 contents.AddRange(new string[]{
                     "<section>",
                     "<h1>" + HttpUtility.HtmlEncode(helpCmd) + "</h1>",
                 });
-                string args = help.Substring(argStart + 1, argEnd - argStart - 1).Trim();
+
+                string args;
+                if (argEnd > argStart)
+                    args = help.Substring (argStart + 1, argEnd - argStart - 1).Trim ();
+                else
+                    args = "";
+
                 if(args != string.Empty && args != helpCmd){
                     contents.Add("<p class=args>" + HttpUtility.HtmlEncode(args) + "</p>");
                 }
