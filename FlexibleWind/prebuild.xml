@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Project frameworkVersion="v4_0" name="WhiteCore.Addon.FlexibleWind" path="addon-modules/FlexibleWind/Modules" type="Library">
+<Project frameworkVersion="v4_5" name="WhiteCore.Addon.FlexibleWind" path="addon-modules/FlexibleWind/Modules" type="Library">
 	<Configuration name="Debug" platform="x86">
 		<Options>
 			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
@@ -35,15 +35,18 @@
 		<Reference name="System.Xml"/>
 		<Reference name="System.Drawing"/>
 		<Reference name="System.Runtime.Remoting"/>
-		<Reference name="AForge.Math" path="../../../WhiteCoreSim/bin/"/>
+		<Reference name="AForge.Math" path="../../../WhiteCoreSim/bin/" localCopy="true"/>
 		<Reference name="Nini" path="../../../WhiteCoreSim/bin/"/>
 		<Reference name="OpenMetaverseTypes" path="../../../WhiteCoreSim/bin/"/>
 		<Reference name="OpenMetaverse" path="../../../WhiteCoreSim/bin/"/>
-		<Reference name="WhiteCore.Framework" path="../../../WhiteCoreSim/bin/"/>
+		<Reference name="WhiteCore.Framework" />
 		<Reference name="XMLRPC" path="../../../WhiteCoreSim/bin/"/>
 
 
-	<Files>
-		<Match pattern="*.cs" recurse="true"/>
-	</Files>
-</Project>
+	  <Files>
+		<Match pattern="*.cs" recurse="true">
+			<Exclude name="obj" pattern="obj"/>
+			<Match pattern="../Modules/*.dll" recurse="false" buildAction="None" destination="$(OutputPath)"/>
+		</Match>
+	  </Files>
+    </Project>
