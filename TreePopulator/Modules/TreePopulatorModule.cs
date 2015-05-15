@@ -27,24 +27,24 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Timers;
 using System.Xml;
 using System.Xml.Serialization;
-using Nini.Config;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using OpenMetaverse;
-using WhiteCore.Framework.ConsoleFramework;
+using Nini.Config;
 using WhiteCore.Framework.Modules;
-using WhiteCore.Framework.PresenceInfo;
 using WhiteCore.Framework.SceneInfo;
 using WhiteCore.Framework.SceneInfo.Entities;
 using WhiteCore.Framework.Utilities;
+using WhiteCore.Framework.ConsoleFramework;
+using WhiteCore.Framework.PresenceInfo;
 using WhiteCore.Region;
 
-[assembly: AssemblyVersion("2015.03.24")]
-[assembly: AssemblyFileVersion("2015.03.24")]
+[assembly: AssemblyVersion("2014.12.19")]
+[assembly: AssemblyFileVersion("2014.12.19")]
 [assembly: AssemblyTitle("TreeGenerator")]
 [assembly: AssemblyCompany("WhiteCore-Sim.org")]
 [assembly: AssemblyDescription("WhiteCore tree generation module")]

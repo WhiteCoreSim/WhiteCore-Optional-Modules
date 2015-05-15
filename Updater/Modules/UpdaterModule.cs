@@ -27,32 +27,31 @@
 
 using System;
 using System.Reflection;
-using System.Xml;
 using System.Windows.Forms;
+using System.Xml;
 using Nini.Config;
-using WhiteCore.Framework;
-using WhiteCore.Framework.Services;
-using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.ConsoleFramework;
+using WhiteCore.Framework.Modules;
+using WhiteCore.Framework.Services;
 using WhiteCore.Framework.Utilities;
 
-[assembly: AssemblyVersion("2014.5.4")]
-[assembly: AssemblyFileVersion("2014.5.4")]
+[assembly: AssemblyVersion("2015.5.15")]
+[assembly: AssemblyFileVersion("2015.5.15")]
 
 namespace WhiteCore.Addon.Updater
 {
     public class UpdaterPlugin :IService
     {
-        private const string m_urlToCheckForReleaseUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/release-updates.xml";
-        private const string m_urlToCheckForSnapShotUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/snapshot-updates.xml";
+        const string m_urlToCheckForReleaseUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/release-updates.xml";
+        const string m_urlToCheckForSnapShotUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/snapshot-updates.xml";
 
         #region Private Functions
 
-        private bool Compare(string givenVersion, string CurrentVersion)
+        bool Compare(string givenVersion, string CurrentVersion)
         {
             string[] given = givenVersion.Split('.');
             string[] current = CurrentVersion.Split('.');
-            for (int i = 0; i < (int)Math.Max(given.Length, current.Length); i++)
+            for (int i = 0; i < Math.Max(given.Length, current.Length); i++)
             {
                 if (i == given.Length || i == current.Length)
                     break;

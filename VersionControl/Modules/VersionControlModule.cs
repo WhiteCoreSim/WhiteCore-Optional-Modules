@@ -26,27 +26,26 @@
  */
 
 using System;
-using System.Linq;
 using System.Timers;
+using Nini.Config;
 using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.SceneInfo;
-using Nini.Config;
-using WhiteCore.Framework;
+using WhiteCore.Framework.Utilities;
 
 namespace WhiteCore.AddOn.VersionControl
 {
     public class VersionControlModule : INonSharedRegionModule
     {
-        private bool m_Enabled;
+        bool m_Enabled;
 
         //Auto OAR configs
-        private bool m_autoOAREnabled;
-        private float m_autoOARTime = 1; //In days
-        private Timer m_autoOARTimer;
-        private IScene m_Scene;
+        bool m_autoOAREnabled;
+        float m_autoOARTime = 1; //In days
+        Timer m_autoOARTimer;
+        IScene m_Scene;
 
-        private int nextVersion = 1;
+        int nextVersion = 1;
 
         #region INonSharedRegionModule Members
 
@@ -97,27 +96,39 @@ namespace WhiteCore.AddOn.VersionControl
                 m_autoOARTimer.Enabled = true;
                 m_Scene = scene;
             }
-            //MainConsole.Instance.Commands.AddCommand("save version", "save version <description>", "Saves the current region as the next incremented version in the version control module.", SaveVersion(""),true, false);
+
+            MainConsole.Instance.Commands.AddCommand(
+                "save version",
+                "save version <description>",
+                "Saves a region OAR with incremented version details.", 
+                SaveVersionCmd, true, false);
         }
 
         #endregion
 
-        private void SaveOAR(object sender, ElapsedEventArgs e)
+        void SaveOAR(object sender, ElapsedEventArgs e)
         {
-            Save("AutomaticBackup");
+            SaveVersion("AutomaticBackup");
         }
 
-        protected void SaveVersion(string module, string[] cmdparams)
+        protected void SaveVersionCmd(IScene scene, string[] cmdparams)
         {
+            string description = "";
+
             if (cmdparams.Length < 3)
-                return;
+            {
+                description = MainConsole.Instance.Prompt ("Enter a description for this version", description);
+                if (description == "")
+                    return;
+            } else
+                description = Util.CombineParams(cmdparams, 2); // in case of spaces 
 
             cmdparams[0] = "";
             cmdparams[1] = "";
-            Save(cmdparams.Aggregate("", (current, param) => current + param));
+            SaveVersion (description);
         }
 
-        public void Save(string Description)
+        public void SaveVersion(string Description)
         {
             string tag = "";
             tag += "Region." + m_Scene.RegionInfo.RegionName;

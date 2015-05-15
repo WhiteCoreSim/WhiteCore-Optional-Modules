@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<Project frameworkVersion="v4_0" name="WhiteCore.Addon.VersionControl" path="addon-modules/VersionControl/Modules" type="Library">
+<Project frameworkVersion="v4_5" name="WhiteCore.Addon.VersionControl" path="addon-modules/VersionControl/Modules" type="Library">
 	<Configuration name="Debug" platform="x86">
 		<Options>
 			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
@@ -43,8 +43,7 @@
 
 	<Files>
 		<Match pattern="*.cs" recurse="true">
-			<Exclude pattern="Tests"/>
-		</Match>
-		<Exclude name="obj" pattern="obj"/>
+			<Exclude name="obj" pattern="obj"/>
+		</Match>	
 	</Files>
 </Project>
