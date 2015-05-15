@@ -49,7 +49,8 @@
   <Reference name="OpenMetaverseTypes" path="../../../WhiteCoreSim/bin/"/>
 
   <Files>
-    <Match pattern="*.cs" recurse="true"/>
-	<Exclude name="obj" pattern="obj"/>
+    <Match pattern="*.cs" recurse="true">
+		<Exclude name="obj" pattern="obj"/>
+	</Match>
   </Files>
 </Project>

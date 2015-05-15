@@ -139,8 +139,6 @@ namespace WhiteCore.Addon.FractalTerrain
                     c[x, y] = (land[x, y] * scaling) + (float)scene.RegionInfo.RegionSettings.WaterHeight + baseHeight;
                 }
             }
-
-            // sett new terrain
             scene.RequestModuleInterface<ITerrainModule>().TerrainMap = c;
             scene.RequestModuleInterface<ITerrainModule>().TaintTerrain();
             scene.RegisterModuleInterface<ITerrainChannel>(c);

@@ -26,15 +26,15 @@
  */
 
 using System;
+using System.Collections;
 using System.Text;
 using Nini.Config;
 using OpenMetaverse.StructuredData;
-using System.Collections;
-using WhiteCore.Framework.Services;
-using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.ConsoleFramework;
-using WhiteCore.Framework.Servers.HttpServer.Implementation;
+using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.Servers;
+using WhiteCore.Framework.Servers.HttpServer.Implementation;
+using WhiteCore.Framework.Services;
 
 namespace FreeswitchVoice
 {
@@ -256,7 +256,7 @@ namespace FreeswitchVoice
             }
         }
 
-        private byte[] HandleRegister(string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        byte[] HandleRegister(string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
             MainConsole.Instance.Info("[FreeSwitchDirectory] HandleRegister called");
 
@@ -288,7 +288,7 @@ namespace FreeswitchVoice
                 domain, user, password, Context));
         }
 
-        private byte[] HandleInvite(string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        byte[] HandleInvite(string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
             MainConsole.Instance.Info("[FreeSwitchDirectory] HandleInvite called");
 
@@ -332,7 +332,7 @@ namespace FreeswitchVoice
                 domain, user, password, sipRequestUser, Context));
         }
 
-        private byte[] HandleLocateUser(String Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        byte[] HandleLocateUser(String Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
             MainConsole.Instance.Info("[FreeSwitchDirectory] HandleLocateUser called");
 
@@ -362,7 +362,7 @@ namespace FreeswitchVoice
                 domain, user));
         }
 
-        private byte[] HandleConfigSofia(string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        byte[] HandleConfigSofia(string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
             MainConsole.Instance.Info("[FreeSwitchDirectory] HandleConfigSofia called");
 

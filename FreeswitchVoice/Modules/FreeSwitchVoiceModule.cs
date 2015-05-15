@@ -27,41 +27,41 @@
  */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Security;
-using System.Web;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Collections;
-using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Web;
+using Nini.Config;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
-using Nini.Config;
-using WhiteCore.Framework.Servers.HttpServer;
-using System.Text.RegularExpressions;
-using WhiteCore.Framework.SceneInfo;
+using WhiteCore.Framework.ConsoleFramework;
 using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.PresenceInfo;
+using WhiteCore.Framework.SceneInfo;
 using WhiteCore.Framework.Servers;
-using WhiteCore.Framework.Services;
-using WhiteCore.Framework.Utilities;
+using WhiteCore.Framework.Servers.HttpServer;
 using WhiteCore.Framework.Servers.HttpServer.Implementation;
 using WhiteCore.Framework.Servers.HttpServer.Interfaces;
-using WhiteCore.Framework.ConsoleFramework;
+using WhiteCore.Framework.Services;
+using WhiteCore.Framework.Utilities;
 
 namespace FreeswitchVoice
 {
     public class FreeSwitchVoiceModule : INonSharedRegionModule, IVoiceModule
     {
         // Control info
-        private static bool m_Enabled = false;
+        static bool m_Enabled = false;
 
         // FreeSwitch server is going to contact us and ask us all
         // sorts of things.
 
         // SLVoice client will do a GET on this prefix
-        private static string m_freeSwitchAPIPrefix;
+        static string m_freeSwitchAPIPrefix;
 
         // We need to return some information to SLVoice
         // figured those out via curl
@@ -69,22 +69,22 @@ namespace FreeswitchVoice
         //
         // need to figure out whether we do need to return ALL of
         // these...
-        private static string m_freeSwitchRealm;
-        private static string m_freeSwitchSIPProxy;
-        private static bool m_freeSwitchAttemptUseSTUN;
-        private static string m_freeSwitchEchoServer;
-        private static int m_freeSwitchEchoPort;
-        private static string m_freeSwitchDefaultWellKnownIP;
-        private static int m_freeSwitchDefaultTimeout;
-        private static string m_freeSwitchUrlResetPassword;
-        private uint m_freeSwitchServicePort;
-        private string m_openSimWellKnownHTTPAddress;
-        //private string m_freeSwitchContext;
+        static string m_freeSwitchRealm;
+        static string m_freeSwitchSIPProxy;
+        static bool m_freeSwitchAttemptUseSTUN;
+        static string m_freeSwitchEchoServer;
+        static int m_freeSwitchEchoPort;
+        static string m_freeSwitchDefaultWellKnownIP;
+        static int m_freeSwitchDefaultTimeout;
+        static string m_freeSwitchUrlResetPassword;
+        uint m_freeSwitchServicePort;
+        string m_openSimWellKnownHTTPAddress;
+        //string m_freeSwitchContext;
 
-        private readonly Dictionary<string, string> m_UUIDName = new Dictionary<string, string>();
-        private Dictionary<string, string> m_ParcelAddress = new Dictionary<string, string>();
+        readonly Dictionary<string, string> m_UUIDName = new Dictionary<string, string>();
+        Dictionary<string, string> m_ParcelAddress = new Dictionary<string, string>();
 
-        private IFreeswitchService m_FreeswitchService;
+        IFreeswitchService m_FreeswitchService;
 
         public void Initialise(IConfigSource config)
         {
@@ -701,7 +701,7 @@ namespace FreeswitchVoice
             return bodyParams;
         }
 
-        private string ChannelUri(IScene scene, LandData land)
+        string ChannelUri(IScene scene, LandData land)
         {
             string channelUri = null;
 
@@ -752,7 +752,7 @@ namespace FreeswitchVoice
             return channelUri;
         }
 
-        private static bool CustomCertificateValidation(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
+        static bool CustomCertificateValidation(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
         {
             return true;
         }
