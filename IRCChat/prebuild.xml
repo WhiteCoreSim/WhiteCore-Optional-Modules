@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<Project frameworkVersion="v4_0" name="WhiteCore.Addon.IRCChat" path="addon-modules/IRCChat/Modules/" type="Library">
+<Project frameworkVersion="v4_5" name="WhiteCore.Addon.IRCChat" path="addon-modules/IRCChat/Modules/" type="Library">
 	<Configuration name="Debug" platform="x86">
 		<Options>
 			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
@@ -34,27 +34,19 @@
 	<ReferencePath>../../../WhiteCoreSim/bin/</ReferencePath>
 	<Reference name="System"/>
 	<Reference name="System.Core"/>
-	<Reference name="System.Xml"/>
-	<Reference name="System.Drawing"/>
-	<Reference name="System.Web"/>
-	<Reference name="WindowsBase"/>
+	<Reference name="System.Runtime.Serialization"/>
 
 	<Reference name="WhiteCore.DataManager"/>
 	<Reference name="WhiteCore.Framework"/>
 	<Reference name="WhiteCore.Simulation.Base"/>
-	<Reference name="WhiteCore.Region.Framework"/>
-	<Reference name="MetaBuilders.Irc.dll"/>
 
-	<Reference name="log4net" path="../../../WhiteCoreSim/bin/"/>
 	<Reference name="Nini" path="../../../WhiteCoreSim/bin/"/>
 	<Reference name="OpenMetaverse" path="../../../WhiteCoreSim/bin/"/>
-	<Reference name="OpenMetaverse.StructuredData" path="../../../WhiteCoreSim/bin/"/>
 	<Reference name="OpenMetaverseTypes" path="../../../WhiteCoreSim/bin/"/>
-	<Reference name="XMLRPC" path="../../../WhiteCoreSim/bin/"/>
 
 	<Files>
-		<Match pattern="*.cs" recurse="true"/>
-		<Match pattern="*.dll" recurse="false" buildAction="None" copyToOutput="Always"/>
-		<Exclude name="obj" pattern="obj"/>
+		<Match pattern="*.cs" recurse="true">
+			<Exclude name="obj" pattern="obj"/>
+		</Match>
 	</Files>
 </Project>

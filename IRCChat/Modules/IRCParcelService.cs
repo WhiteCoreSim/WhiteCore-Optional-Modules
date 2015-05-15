@@ -34,363 +34,374 @@ using Nini.Config;
 using MetaBuilders.Irc.Messages;
 using MetaBuilders.Irc.Network;
 using MetaBuilders.Irc;
-using log4net;
 using OpenMetaverse;
-using WhiteCore.Framework.Modules;
-using WhiteCore.Framework.SceneInfo;
 using WhiteCore.Framework.PresenceInfo;
 using WhiteCore.Framework.ClientInterfaces;
+using WhiteCore.Framework.Utilities;
+using WhiteCore.Framework.Modules;
+using WhiteCore.Framework.SceneInfo;
+using GridRegion = WhiteCore.Framework.Services.GridRegion;
+using WhiteCore.Framework.Servers;
+using WhiteCore.Framework.ConsoleFramework;
 
-namespace Aurora.Addon.IRCChat
+namespace WhiteCore.Addon.IRCChat
 {
-    public class IRCParcelService : INonSharedRegionModule
-    {
-        private static readonly ILog m_log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	public class IRCParcelService : INonSharedRegionModule
+	{
+		Dictionary<UUID, string> m_network = new Dictionary<UUID, string>();
+		Dictionary<UUID, string> m_channel = new Dictionary<UUID, string>();
+		IScene m_scene;
+		bool m_spamDebug = false;
+		bool m_enabled = false;
+		int m_chatToIRCChannel = 0;
+		Dictionary<UUID, Client> clients = new Dictionary<UUID,Client>();
+		IConfig m_config;
 
-        private Dictionary<UUID, string> m_network = new Dictionary<UUID, string>();
-        private Dictionary<UUID, string> m_channel = new Dictionary<UUID, string>();
-        private IScene m_scene;
-        private bool m_spamDebug = false;
-        private bool m_enabled = false;
-        private int m_chatToIRCChannel = 0;
-        private Dictionary<UUID, Client> clients = new Dictionary<UUID,Client>();
-        private IConfig m_config;
+		public void Initialise (IConfigSource source)
+		{
+			IConfig ircConfig = source.Configs["IRCModule"];
+			if(ircConfig != null)
+			{
+				string moduleEnabled = ircConfig.GetString("Module", "");
+				m_spamDebug = ircConfig.GetBoolean("DebugMode", m_spamDebug);
+				m_network[UUID.Zero] = ircConfig.GetString("Network", "");
+				m_channel[UUID.Zero] = ircConfig.GetString("Channel", "");
+				m_chatToIRCChannel = ircConfig.GetInt("ChatToIRCChannel", m_chatToIRCChannel);
 
-        public void Initialise (IConfigSource source)
-        {
-            IConfig ircConfig = source.Configs["IRCModule"];
-            if(ircConfig != null)
-            {
-                string moduleEnabled = ircConfig.GetString("Module", "");
-                m_spamDebug = ircConfig.GetBoolean("DebugMode", m_spamDebug);
-                m_network[UUID.Zero] = ircConfig.GetString("Network", "");
-                m_channel[UUID.Zero] = ircConfig.GetString("Channel", "");
-                m_chatToIRCChannel = ircConfig.GetInt("ChatToIRCChannel", m_chatToIRCChannel);
+				m_enabled = moduleEnabled == "Parcel";
+				m_config = ircConfig;
+			}
+		}
 
-                m_enabled = moduleEnabled == "Parcel";
-                m_config = ircConfig;
-            }
-        }
+		public void PostInitialise ()
+		{
+		}
 
-        public void PostInitialise ()
-        {
-        }
+		public void AddRegion (IScene scene)
+		{
+			if(!m_enabled)
+				return;
 
-        public void AddRegion (IScene scene)
-        {
-            if(!m_enabled)
-                return;
+			m_scene = scene;
+			scene.EventManager.OnMakeRootAgent += EventManager_OnMakeRootAgent;
+			scene.EventManager.OnMakeChildAgent += EventManager_OnMakeChildAgent;
+			scene.EventManager.OnRemovePresence += EventManager_OnRemovePresence;
+			scene.EventManager.OnChatFromClient += EventManager_OnChatFromClient;
+			scene.EventManager.OnAvatarEnteringNewParcel += EventManager_OnAvatarEnteringNewParcel;
+		}
 
-            m_scene = scene;
-            scene.EventManager.OnMakeRootAgent += EventManager_OnMakeRootAgent;
-            scene.EventManager.OnMakeChildAgent += EventManager_OnMakeChildAgent;
-            scene.EventManager.OnRemovePresence += EventManager_OnRemovePresence;
-            scene.EventManager.OnChatFromClient += EventManager_OnChatFromClient;
-            scene.EventManager.OnAvatarEnteringNewParcel += EventManager_OnAvatarEnteringNewParcel;
-        }
+		public void RegionLoaded (IScene scene)
+		{
+		}
 
-        public void RegionLoaded (IScene scene)
-        {
-        }
+		public void RemoveRegion (IScene scene)
+		{
+			if(!m_enabled)
+				return;
 
-        public void RemoveRegion (IScene scene)
-        {
-            if(!m_enabled)
-                return;
+			scene.EventManager.OnMakeRootAgent -= EventManager_OnMakeRootAgent;
+			scene.EventManager.OnMakeChildAgent -= EventManager_OnMakeChildAgent;
+			scene.EventManager.OnRemovePresence -= EventManager_OnRemovePresence;
+			scene.EventManager.OnChatFromClient -= EventManager_OnChatFromClient;
+			scene.EventManager.OnAvatarEnteringNewParcel -= EventManager_OnAvatarEnteringNewParcel;
+		}
 
-            scene.EventManager.OnMakeRootAgent -= EventManager_OnMakeRootAgent;
-            scene.EventManager.OnMakeChildAgent -= EventManager_OnMakeChildAgent;
-            scene.EventManager.OnRemovePresence -= EventManager_OnRemovePresence;
-            scene.EventManager.OnChatFromClient -= EventManager_OnChatFromClient;
-            scene.EventManager.OnAvatarEnteringNewParcel -= EventManager_OnAvatarEnteringNewParcel;
-        }
+		public void Close ()
+		{
+		}
 
-        public void Close ()
-        {
-        }
+		public string Name
+		{
+			get { return "IRCParcelService"; }
+		}
 
-        public string Name
-        {
-            get { return "IRCParcelService"; }
-        }
+		public Type ReplaceableInterface
+		{
+			get { return null; }
+		}
 
-        public Type ReplaceableInterface
-        {
-            get { return null; }
-        }
+		bool TryGetNetwork(IScenePresence avatar, out string network)
+		{
+			network = "";
+			if(avatar.CurrentParcel == null)
+				return false;
+			if (m_network.TryGetValue(avatar.CurrentParcel.LandData.GlobalID, out network))
+			{
+				string channel = "";
+				if (m_channel.TryGetValue(avatar.CurrentParcel.LandData.GlobalID, out channel))
+					return true;
+				channel = m_config.GetString(avatar.CurrentParcel.LandData.Name.Replace(' ', '_') + "_Channel", "");
+				if (channel == "")
+				{
+					if (m_channel.TryGetValue(UUID.Zero, out channel) && channel != "")
+					{
+					}
+					else
+						return false;
+				}
+				m_channel[avatar.CurrentParcel.LandData.GlobalID] = channel;
+				return true;
+			}
+			else
+			{
+				network = m_config.GetString(avatar.CurrentParcel.LandData.Name.Replace(' ', '_') + "_Network", "");
+				if (network == "")
+				{
+					if (m_network.TryGetValue(UUID.Zero, out network) && network != "")
+					{
+					}
+					else
+						return false;
+				}
+				m_network[avatar.CurrentParcel.LandData.GlobalID] = network;
+				string channel = m_config.GetString(avatar.CurrentParcel.LandData.Name.Replace(' ', '_') + "_Channel", "");
+				if (channel == "")
+				{
+					if (m_channel.TryGetValue(UUID.Zero, out channel) && channel != "")
+					{ 
+					}
+					else
+						return false;
+				}
+				m_channel[avatar.CurrentParcel.LandData.GlobalID] = channel;
+				return true;
+			}
+		}
 
-        private bool TryGetNetwork(IScenePresence avatar, out string network)
-        {
-            network = "";
-            if(avatar.CurrentParcel == null)
-                return false;
-            if (m_network.TryGetValue(avatar.CurrentParcel.LandData.GlobalID, out network))
-            {
-                string channel = "";
-                if (m_channel.TryGetValue(avatar.CurrentParcel.LandData.GlobalID, out channel))
-                    return true;
-                channel = m_config.GetString(avatar.CurrentParcel.LandData.Name.Replace(' ', '_') + "_Channel", "");
-                if (channel == "")
-                {
-                    if (m_channel.TryGetValue(UUID.Zero, out channel) && channel != "")
-                    {
-                    }
-                    else
-                        return false;
-                }
-                m_channel[avatar.CurrentParcel.LandData.GlobalID] = channel;
-                return true;
-            }
-            else
-            {
-                network = m_config.GetString(avatar.CurrentParcel.LandData.Name.Replace(' ', '_') + "_Network", "");
-                if (network == "")
-                {
-                    if (m_network.TryGetValue(UUID.Zero, out network) && network != "")
-                    {
-                    }
-                    else
-                        return false;
-                }
-                m_network[avatar.CurrentParcel.LandData.GlobalID] = network;
-                string channel = m_config.GetString(avatar.CurrentParcel.LandData.Name.Replace(' ', '_') + "_Channel", "");
-                if (channel == "")
-                {
-                    if (m_channel.TryGetValue(UUID.Zero, out channel) && channel != "")
-                    { 
-                    }
-                    else
-                        return false;
-                }
-                m_channel[avatar.CurrentParcel.LandData.GlobalID] = channel;
-                return true;
-            }
-        }
+		void EventManager_OnAvatarEnteringNewParcel (IScenePresence presence, ILandObject oldParcel)
+		{
+			string network;
+			if(TryGetNetwork(presence, out network))
+			{
+				if(clients.ContainsKey(presence.UUID))
+				{
+					Client client = clients[presence.UUID];
+					if(client.Connection.Address == network)
+						SwitchChannels(presence, oldParcel, client);
+				}
+				else
+				{
+					CloseClient(presence);
+					CreateIRCConnection(presence, network);
+				}
+			}
+			else
+				CloseClient(presence);
+		}
 
-        void EventManager_OnAvatarEnteringNewParcel (IScenePresence presence, ILandObject oldParcel)
-        {
-            string network;
-            if(TryGetNetwork(presence, out network))
-            {
-                if(clients.ContainsKey(presence.UUID))
-                {
-                    Client client = clients[presence.UUID];
-                    if(client.Connection.Address == network)
-                        SwitchChannels(presence, oldParcel, client);
-                }
-                else
-                {
-                    CloseClient(presence);
-                    CreateIRCConnection(presence, network);
-                }
-            }
-            else
-                CloseClient(presence);
-        }
+		void SwitchChannels (IScenePresence presence, ILandObject oldParcel, Client client)
+		{
+			string channel;
+			string oldchannel;
+			m_channel.TryGetValue(presence.CurrentParcel.LandData.GlobalID, out channel);
+			m_channel.TryGetValue(oldParcel.LandData.GlobalID, out oldchannel);
+			JoinChannel(client, channel, presence);
+			client.SendPart(oldchannel);
+		}
 
-        private void SwitchChannels (IScenePresence presence, ILandObject oldParcel, Client client)
-        {
-            string channel;
-            string oldchannel;
-            m_channel.TryGetValue(presence.CurrentParcel.LandData.GlobalID, out channel);
-            m_channel.TryGetValue(oldParcel.LandData.GlobalID, out oldchannel);
-            JoinChannel(client, channel, presence);
-            client.SendPart(oldchannel);
-        }
+		void EventManager_OnMakeRootAgent (IScenePresence presence)
+		{
+			presence.ControllingClient.OnPreSendInstantMessage += ControllingClient_OnInstantMessage;
+		}
 
-        void EventManager_OnMakeRootAgent (IScenePresence presence)
-        {
-            presence.ControllingClient.OnPreSendInstantMessage += ControllingClient_OnInstantMessage;
-        }
+		void EventManager_OnRemovePresence (IScenePresence presence)
+		{
+			CloseClient(presence);
+			presence.ControllingClient.OnPreSendInstantMessage -= ControllingClient_OnInstantMessage;
+		}
 
-        void EventManager_OnRemovePresence (IScenePresence presence)
-        {
-            CloseClient(presence);
-            presence.ControllingClient.OnPreSendInstantMessage -= ControllingClient_OnInstantMessage;
-        }
+		void EventManager_OnMakeChildAgent (IScenePresence presence, GridRegion destination)
+		{
+			CloseClient(presence);
+			presence.ControllingClient.OnPreSendInstantMessage -= ControllingClient_OnInstantMessage;
+		}
 
-        void EventManager_OnMakeChildAgent (IScenePresence presence, GridRegion destination)
-        {
-            CloseClient(presence);
-            presence.ControllingClient.OnPreSendInstantMessage -= ControllingClient_OnInstantMessage;
-        }
+		Dictionary<string, UUID> m_ircUsersToFakeUUIDs = new Dictionary<string, UUID>();
+		bool ControllingClient_OnInstantMessage (IClientAPI remoteclient, GridInstantMessage im)
+		{
+			foreach(KeyValuePair<string, UUID> fakeID in m_ircUsersToFakeUUIDs)
+			{
+				if(im.ToAgentID == fakeID.Value)
+				{
+					Client client;
+					if(TryGetClient(remoteclient.AgentId, out client))
+					{
+						User user = client.Peers.Find(delegate(User u)
+							{
+								if(u.UserName == fakeID.Key)
+									return true;
+								return false;
+							});
+						if (im.Message != "" && im.Dialog == (byte)InstantMessageDialog.MessageFromAgent)
+							client.SendChat(im.Message, user.Nick);
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 
-        private Dictionary<string, UUID> m_ircUsersToFakeUUIDs = new Dictionary<string, UUID>();
-        bool ControllingClient_OnInstantMessage (IClientAPI remoteclient, GridInstantMessage im)
-        {
-            foreach(KeyValuePair<string, UUID> fakeID in m_ircUsersToFakeUUIDs)
-            {
-                if(im.toAgentID == fakeID.Value)
-                {
-                    Client client;
-                    if(TryGetClient(remoteclient.AgentId, out client))
-                    {
-                        User user = client.Peers.Find(delegate(User u)
-                        {
-                            if(u.UserName == fakeID.Key)
-                                return true;
-                            return false;
-                        });
-                        if(im.message != "" && im.dialog == (byte)InstantMessageDialog.MessageFromAgent)
-                            client.SendChat(im.message, user.Nick);
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
+		void chatting (Object sender, IrcMessageEventArgs<TextMessage> e, IScenePresence presence)
+		{
+			IChatModule chatModule = m_scene.RequestModuleInterface<IChatModule>();
+			if(chatModule != null)
+			{
+				if(e.Message.Targets.Count > 0 && e.Message.Targets[0] == clients[presence.UUID].User.Nick)
+				{
+					UUID fakeUUID;
+					if(!m_ircUsersToFakeUUIDs.TryGetValue(e.Message.Sender.UserName, out fakeUUID))
+					{
+						fakeUUID = UUID.Random();
+						m_ircUsersToFakeUUIDs[e.Message.Sender.UserName] = fakeUUID;
+					}
+					presence.ControllingClient.SendInstantMessage(new GridInstantMessage()
+						{
+							FromAgentID = fakeUUID,
+							FromAgentName = e.Message.Sender.Nick,
+							ToAgentID = presence.UUID,
+							Dialog = (byte)InstantMessageDialog.MessageFromAgent,
+							Message = e.Message.Text,
+							FromGroup = false,
+							SessionID = UUID.Zero,
+							Offline = 0,
+							BinaryBucket = new byte[0],
+							Timestamp = (uint)Util.UnixTimeSinceEpoch()
+						});
+				}
+				else
+					chatModule.TrySendChatMessage(presence, presence.AbsolutePosition, UUID.Zero,
+						e.Message.Targets[0] + " - " + e.Message.Sender.Nick, ChatTypeEnum.Say, e.Message.Text, ChatSourceType.Agent, 20);
+			}
+		}
 
-        private void chatting (Object sender, IrcMessageEventArgs<TextMessage> e, IScenePresence presence)
-        {
-			WhiteCore.Framework.IChatModule chatModule = m_scene.RequestModuleInterface<WhiteCore.Framework.IChatModule>();
-            if(chatModule != null)
-            {
-                if(e.Message.Targets.Count > 0 && e.Message.Targets[0] == clients[presence.UUID].User.Nick)
-                {
-                    UUID fakeUUID;
-                    if(!m_ircUsersToFakeUUIDs.TryGetValue(e.Message.Sender.UserName, out fakeUUID))
-                    {
-                        fakeUUID = UUID.Random();
-                        m_ircUsersToFakeUUIDs[e.Message.Sender.UserName] = fakeUUID;
-                    }
-                    presence.ControllingClient.SendInstantMessage(new GridInstantMessage(null,
-                        fakeUUID, e.Message.Sender.Nick, presence.UUID, (byte)InstantMessageDialog.MessageFromAgent,
-                        e.Message.Text, false, Vector3.Zero));
-                }
-                else
-                    chatModule.TrySendChatMessage(presence, presence.AbsolutePosition, presence.AbsolutePosition, UUID.Zero,
-                        e.Message.Targets[0] + " - " + e.Message.Sender.Nick, ChatTypeEnum.Say, e.Message.Text, ChatSourceType.Agent, 20);
-            }
-        }
+		void EventManager_OnChatFromClient (IClientAPI sender, OSChatMessage chat)
+		{
+			if (chat.Message == "" || sender == null || chat.Channel != m_chatToIRCChannel)
+				return;
+			Client client;
+			if(TryGetClient(sender.AgentId, out client))
+			{
+				Util.FireAndForget(delegate(object o)
+					{
+						IScenePresence sp = sender.Scene.GetScenePresence(sender.AgentId);
+						if (sp != null)
+						{
+							string channel;
+							if (m_channel.TryGetValue(sp.CurrentParcel.LandData.GlobalID, out channel))
+							{
+								client.SendChat("(grid: " +
+									MainServer.Instance.ServerURI.Remove(0, 7) + ") - " +
+									chat.Message, channel);
+							}
+						}
+					});
+			}
+		}
 
-        void EventManager_OnChatFromClient (IClientAPI sender, OSChatMessage chat)
-        {
-            if (chat.Message == "" || sender == null || chat.Channel != m_chatToIRCChannel)
-                return;
-            Client client;
-            if(TryGetClient(sender.AgentId, out client))
-            {
-                Util.FireAndForget(delegate(object o)
-                {
-                    IScenePresence sp = sender.Scene.GetScenePresence(sender.AgentId);
-                    if (sp != null)
-                    {
-                        string channel;
-                        if (m_channel.TryGetValue(sp.CurrentParcel.LandData.GlobalID, out channel))
-                        {
-                            client.SendChat("(grid: " +
-                                MainServer.Instance.ServerURI.Remove(0, 7) + ") - " +
-                                chat.Message, channel);
-                        }
-                    }
-                });
-            }
-        }
+		bool TryGetClient (UUID uUID, out Client client)
+		{
+			return clients.TryGetValue(uUID, out client);
+		}
 
-        private bool TryGetClient (UUID uUID, out Client client)
-        {
-            return clients.TryGetValue(uUID, out client);
-        }
+		void CreateIRCConnection (IScenePresence presence, string network)
+		{
+			// Create a new client to the given address with the given nick
+			Client client = new Client(network, presence.Name.Replace(' ', '_'));
+			Ident.Service.User = client.User;
+			HookUpClientEvents(presence, client);
+			client.EnableAutoIdent = false;
+			client.Connection.Connect();
+			clients[presence.UUID] = client;
+		}
 
-        private void CreateIRCConnection (IScenePresence presence, string network)
-        {
-            // Create a new client to the given address with the given nick
-            Client client = new Client(network, presence.Name.Replace(' ', '_'));
-            Ident.Service.User = client.User;
-            HookUpClientEvents(presence, client);
-            client.EnableAutoIdent = false;
-            client.Connection.Connect();
-            clients[presence.UUID] = client;
-        }
+		void HookUpClientEvents (IScenePresence sp, Client client)
+		{
+			// Once I'm welcomed, I can start joining channels
+			client.Messages.Welcome += delegate(Object sender, IrcMessageEventArgs<WelcomeMessage> e)
+			{
+				welcomed(sender, e, client, sp);
+			};
+			// People are chatting, pay attention so I can be a lame echobot :)
+			client.Messages.Chat += delegate(Object sender, IrcMessageEventArgs<TextMessage> e)
+			{
+				chatting(sender, e, sp);
+			};
 
-        private void HookUpClientEvents (IScenePresence sp, Client client)
-        {
-            // Once I'm welcomed, I can start joining channels
-            client.Messages.Welcome += delegate(Object sender, IrcMessageEventArgs<WelcomeMessage> e)
-            {
-                welcomed(sender, e, client, sp);
-            };
-            // People are chatting, pay attention so I can be a lame echobot :)
-            client.Messages.Chat += delegate(Object sender, IrcMessageEventArgs<TextMessage> e)
-            {
-                chatting(sender, e, sp);
-            };
+			client.Messages.TimeRequest += delegate(Object sender, IrcMessageEventArgs<TimeRequestMessage> e)
+			{
+				timeRequested(sender, e, client);
+			};
 
-            client.Messages.TimeRequest += delegate(Object sender, IrcMessageEventArgs<TimeRequestMessage> e)
-            {
-                timeRequested(sender, e, client);
-            };
+			client.DataReceived += dataGot;
+			client.DataSent += dataSent;
 
-            client.DataReceived += new EventHandler<ConnectionDataEventArgs>(dataGot);
-            client.DataSent += new EventHandler<ConnectionDataEventArgs>(dataSent);
+			client.Connection.Disconnected += logDisconnected;
+		}
 
-            client.Connection.Disconnected += new EventHandler<ConnectionDataEventArgs>(logDisconnected);
-        }
+		void CloseClient (IScenePresence sp)
+		{
+			if(clients.ContainsKey(sp.UUID))
+			{
+				Client client = clients[sp.UUID];
+				clients.Remove(sp.UUID);
+				Util.FireAndForget(delegate(object o)
+					{
+						client.SendQuit("Left the region");
+					});
+			}
+		}
 
-        private void CloseClient (IScenePresence sp)
-        {
-            if(clients.ContainsKey(sp.UUID))
-            {
-                Client client = clients[sp.UUID];
-                clients.Remove(sp.UUID);
-                Util.FireAndForget(delegate(object o)
-                {
-                    client.SendQuit("Left the region");
-                });
-            }
-        }
+		void logDisconnected (Object sender, ConnectionDataEventArgs e)
+		{
+			if(m_spamDebug)
+			{
+				String data = "*** Disconnected: " + e.Data;
+				MainConsole.Instance.Warn("[RegionIRC]: " + data);
+			}
+		}
 
-        private void logDisconnected (Object sender, ConnectionDataEventArgs e)
-        {
-            if(m_spamDebug)
-            {
-                String data = "*** Disconnected: " + e.Data;
-                m_log.Warn("[RegionIRC]: " + data);
-            }
-        }
+		void dataGot (Object sender, ConnectionDataEventArgs e)
+		{
+			if(m_spamDebug)
+			{
+				String data = "*** Got: " + e.Data;
+				MainConsole.Instance.Warn("[RegionIRC]: " + data);
+			}
+		}
 
-        private void dataGot (Object sender, ConnectionDataEventArgs e)
-        {
-            if(m_spamDebug)
-            {
-                String data = "*** Got: " + e.Data;
-                m_log.Warn("[RegionIRC]: " + data);
-            }
-        }
+		void dataSent (Object sender, ConnectionDataEventArgs e)
+		{
+			if(m_spamDebug)
+			{
+				String data = "*** Sent: " + e.Data;
+				MainConsole.Instance.Warn("[RegionIRC]: " + data);
+			}
+		}
 
-        private void dataSent (Object sender, ConnectionDataEventArgs e)
-        {
-            if(m_spamDebug)
-            {
-                String data = "*** Sent: " + e.Data;
-                m_log.Warn("[RegionIRC]: " + data);
-            }
-        }
+		void timeRequested (Object sender, IrcMessageEventArgs<TimeRequestMessage> e, Client client)
+		{
+			TimeReplyMessage reply = new TimeReplyMessage();
+			reply.CurrentTime = DateTime.Now.ToLongTimeString();
+			reply.Target = e.Message.Sender.Nick;
+			client.Send(reply);
+		}
 
-        private void timeRequested (Object sender, IrcMessageEventArgs<TimeRequestMessage> e, Client client)
-        {
-            MetaBuilders.Irc.Messages.TimeReplyMessage reply = new MetaBuilders.Irc.Messages.TimeReplyMessage();
-            reply.CurrentTime = DateTime.Now.ToLongTimeString();
-            reply.Target = e.Message.Sender.Nick;
-            client.Send(reply);
-        }
+		void welcomed(Object sender, IrcMessageEventArgs<WelcomeMessage> e, Client client, IScenePresence sp)
+		{
+			string channel;
+			if(m_channel.TryGetValue(sp.CurrentParcel.LandData.GlobalID, out channel))
+				JoinChannel(client, channel, sp);
+		}
 
-        private void welcomed(Object sender, IrcMessageEventArgs<WelcomeMessage> e, Client client, IScenePresence sp)
-        {
-            string channel;
-            if(m_channel.TryGetValue(sp.CurrentParcel.LandData.GlobalID, out channel))
-                JoinChannel(client, channel, sp);
-        }
-
-        private static void JoinChannel (Client client, string channel, IScenePresence presence)
-        {
-            client.SendJoin(channel);
-			WhiteCore.Framework.IChatModule chatModule = presence.Scene.RequestModuleInterface<WhiteCore.Framework.IChatModule>();
-            if(chatModule != null)
-            {
-                chatModule.TrySendChatMessage(presence, presence.AbsolutePosition, presence.AbsolutePosition, UUID.Zero,
-                        "System", ChatTypeEnum.Say, "You joined " + channel, ChatSourceType.Agent, 20);
-            }
-        }
-    }
+		static void JoinChannel (Client client, string channel, IScenePresence presence)
+		{
+			client.SendJoin(channel);
+			IChatModule chatModule = presence.Scene.RequestModuleInterface<IChatModule>();
+			if(chatModule != null)
+			{
+				chatModule.TrySendChatMessage(presence, presence.AbsolutePosition, UUID.Zero,
+					"System", ChatTypeEnum.Say, "You joined " + channel, ChatSourceType.Agent, 20);
+			}
+		}
+	}
 }
