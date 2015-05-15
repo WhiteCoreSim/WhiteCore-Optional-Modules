@@ -25,23 +25,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 using OpenMetaverse;
-using WhiteCore.Framework;
 using WhiteCore.Framework.Services.ClassHelpers.Inventory;
 using WhiteCore.Framework.Services;
 
-namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
+namespace IARModifierGUI.Inventory.Archiver
 {
     /// <summary>
     /// Utility methods for inventory archiving
     /// </summary>
     public static class InventoryArchiveUtils
     {
-//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // Character used for escaping the path delimter ("\/") and itself ("\\") in human escaped strings
         public static readonly char ESCAPE_CHARACTER = '\\';

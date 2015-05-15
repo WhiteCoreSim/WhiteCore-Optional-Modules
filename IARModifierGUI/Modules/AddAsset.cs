@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using System.IO;    
-using System.Text;
 using System.Windows.Forms;
 using OpenMetaverse;
 
@@ -12,7 +8,7 @@ namespace IARModifierGUI
 {
     public partial class AddAsset : Form
     {
-        private IAREditor m_editor = null;
+        IAREditor m_editor = null;
         public AddAsset (IAREditor editor)
         {
             m_editor = editor;
@@ -20,7 +16,7 @@ namespace IARModifierGUI
             textBox1.Text = UUID.Random ().ToString ();
         }
 
-        private void button1_Click (object sender, EventArgs e)
+        void button1_Click (object sender, EventArgs e)
         {
             OpenFileDialog o = new OpenFileDialog ();
             o.AddExtension = true;

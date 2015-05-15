@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://aurora-sim.org/
+ * Copyright (c) Contributors, http://aurora-sim.org/; http://www.whitecore-sim.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,14 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Xml;
 using IARModifierGUI;
 using Microsoft.Win32;
-using Nini.Config;
-using OpenMetaverse;
-using WhiteCore.Framework;
+using WhiteCore.Framework.Utilities;
 
-[assembly: AssemblyVersion("2014.9.25")]
-[assembly: AssemblyFileVersion("2014.9.25")]
+[assembly: AssemblyVersion("2014.12.29")]
+[assembly: AssemblyFileVersion("2014.12.29")]
 
 namespace WhiteCore.Addon.IARModifierGUI
 {
@@ -51,16 +45,18 @@ namespace WhiteCore.Addon.IARModifierGUI
         [STAThread]
         static void Main (string[] cmd)
         {
-            //Register the extension
-            string ext = ".iar";
-            RegistryKey key = Registry.ClassesRoot.CreateSubKey (ext);
-            key.SetValue ("", "iar file");
-            key.Close ();
+            if (Util.IsWindows()) // Register the extension on windows
+            {
+                string ext = ".iar";
+                RegistryKey key = Registry.ClassesRoot.CreateSubKey (ext);
+                key.SetValue ("", "iar file");
+                key.Close ();
 
             key = Registry.ClassesRoot.CreateSubKey (ext + "\\Shell\\Open\\command");
 
-            key.SetValue ("", "\"" + Application.ExecutablePath + "\" \"%L\"");
-            key.Close ();
+                key.SetValue ("", "\"" + Application.ExecutablePath + "\" \"%L\"");
+                key.Close ();
+            }
 
             Application.EnableVisualStyles ();
             Application.SetCompatibleTextRenderingDefault (false);

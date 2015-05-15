@@ -31,13 +31,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Windows.Forms;
 using System.Xml;
-
 using WhiteCore.Framework.Serialization;
 using WhiteCore.Framework.Serialization.External;
-
 using OpenMetaverse;
-
-using OpenSim.Region.CoreModules.Avatar.Inventory.Archiver;
+using IARModifierGUI.Inventory.Archiver;
 using WhiteCore.Framework.Services.ClassHelpers.Inventory;
 using WhiteCore.Framework.Services.ClassHelpers.Assets;
 using WhiteCore.Framework.Utilities;
@@ -48,15 +45,15 @@ namespace IARModifierGUI
     {
         #region Declares/Constructors
 
-        private string m_iarName;
-        private Dictionary<string, AssetBase> m_loadedAssets = new Dictionary<string, AssetBase> ();
-        private List<InventoryFolderBase> m_rootFolders = new List<InventoryFolderBase>();
-        private Dictionary<UUID, List<InventoryItemBase>> m_items = new Dictionary<UUID, List<InventoryItemBase>> ();
-        private List<InventoryFolderBase> m_folders = new List<InventoryFolderBase> ();
-        private Dictionary<UUID, List<InventoryFolderBase>> m_childFolders = new Dictionary<UUID, List<InventoryFolderBase>> ();
+        string m_iarName;
+        Dictionary<string, AssetBase> m_loadedAssets = new Dictionary<string, AssetBase> ();
+        List<InventoryFolderBase> m_rootFolders = new List<InventoryFolderBase>();
+        Dictionary<UUID, List<InventoryItemBase>> m_items = new Dictionary<UUID, List<InventoryItemBase>> ();
+        List<InventoryFolderBase> m_folders = new List<InventoryFolderBase> ();
+        Dictionary<UUID, List<InventoryFolderBase>> m_childFolders = new Dictionary<UUID, List<InventoryFolderBase>> ();
 
-        private Dictionary<UUID, InventoryItemBase> m_itemList = new Dictionary<UUID, InventoryItemBase> ();
-        private Dictionary<UUID, InventoryFolderBase> m_folderList = new Dictionary<UUID, InventoryFolderBase> ();
+        Dictionary<UUID, InventoryItemBase> m_itemList = new Dictionary<UUID, InventoryItemBase> ();
+        Dictionary<UUID, InventoryFolderBase> m_folderList = new Dictionary<UUID, InventoryFolderBase> ();
 
         public IAREditor (string IARName)
         {
@@ -76,12 +73,12 @@ namespace IARModifierGUI
 
         #region Startup/Rebuild
 
-        private void IAREditor_Load (object sender, EventArgs e)
+        void IAREditor_Load (object sender, EventArgs e)
         {
             LoadIAR (m_iarName);
         }
 
-        private void RebuildTreeView ()
+        void RebuildTreeView ()
         {
             m_rootFolders.Clear ();
             UUID previouslySelectedID = treeView1.SelectedNode != null ? UUID.Parse (treeView1.SelectedNode.Name) : UUID.Zero;
@@ -157,7 +154,7 @@ namespace IARModifierGUI
 
         #region IAR Loading
 
-        private void LoadIAR (string fileName)
+        void LoadIAR (string fileName)
         {
             //Load the iar into memory
             TarArchiveReader archive = new TarArchiveReader (new GZipStream (ArchiveHelpers.GetStream (fileName), CompressionMode.Decompress));
@@ -387,7 +384,7 @@ namespace IARModifierGUI
         /// <param name="assetFilename"></param>
         /// <param name="data"></param>
         /// <returns>true if asset was successfully loaded, false otherwise</returns>
-        private bool LoadAsset (string assetPath, byte[] data)
+        bool LoadAsset (string assetPath, byte[] data)
         {
             //IRegionSerialiser serialiser = scene.RequestModuleInterface<IRegionSerialiser>();
             // Right now we're nastily obtaining the UUID from the filename
@@ -416,17 +413,15 @@ namespace IARModifierGUI
 
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         #endregion
 
         #region Click actions
 
-        private void delete_Click (object sender, EventArgs e)
+        void delete_Click (object sender, EventArgs e)
         {
             //First see if it is a folder to delete
             UUID id = UUID.Parse(treeView1.SelectedNode.Name);
@@ -446,7 +441,7 @@ namespace IARModifierGUI
             RebuildTreeView ();
         }
 
-        private void RemoveFolder (UUID id)
+        void RemoveFolder (UUID id)
         {
             InventoryFolderBase folder = m_folderList[id];
             //Remove all the items of the folder
@@ -473,7 +468,7 @@ namespace IARModifierGUI
             m_childFolders[folder.ParentID].Remove (folder);
         }
 
-        private void rename_Click (object sender, EventArgs e)
+        void rename_Click (object sender, EventArgs e)
         {
             string value = "";
             Utilities.InputBox ("Rename", "What should we rename this object to?", ref value);
@@ -493,13 +488,13 @@ namespace IARModifierGUI
             RebuildTreeView ();
         }
 
-        private bool m_nameChanged = false;
-        private void textBox1_TextChanged (object sender, EventArgs e)
+        bool m_nameChanged = false;
+        void textBox1_TextChanged (object sender, EventArgs e)
         {
             m_nameChanged = true;
         }
 
-        private void textBox1_Leave (object sender, EventArgs e)
+        void textBox1_Leave (object sender, EventArgs e)
         {
             if (!m_nameChanged)
                 return;
@@ -521,13 +516,13 @@ namespace IARModifierGUI
             RebuildTreeView ();
         }
 
-        private bool m_typeChanged = false;
-        private void textBox2_TextChanged (object sender, EventArgs e)
+        bool m_typeChanged = false;
+        void textBox2_TextChanged (object sender, EventArgs e)
         {
             m_typeChanged = true;
         }
 
-        private void textBox2_Leave (object sender, EventArgs e)
+        void textBox2_Leave (object sender, EventArgs e)
         {
             if (!m_typeChanged)
                 return;
@@ -573,7 +568,8 @@ namespace IARModifierGUI
         Gesture
         Mesh");
                 else
-                    MessageBox.Show (@"Valid types are:
+                    MessageBox.Show (
+                        @"Valid types are:
         Unknown
         Texture
         Sound
@@ -602,7 +598,7 @@ namespace IARModifierGUI
             }
         }
 
-        private void treeView1_NodeMouseDoubleClick (object sender, TreeNodeMouseClickEventArgs e)
+        void treeView1_NodeMouseDoubleClick (object sender, TreeNodeMouseClickEventArgs e)
         {
             try
             {
@@ -629,15 +625,15 @@ namespace IARModifierGUI
             }
         }
 
-        private void treeView1_NodeMouseClick_1 (object sender, TreeNodeMouseClickEventArgs e)
+        void treeView1_NodeMouseClick_1 (object sender, TreeNodeMouseClickEventArgs e)
         {
             treeView1_NodeMouseDoubleClick (sender, e);
         }
 
-        private UUID m_movingObject = UUID.Zero;
-        private bool m_moveContents = false;
+        UUID m_movingObject = UUID.Zero;
+        bool m_moveContents = false;
 
-        private void move_Click (object sender, EventArgs e)
+        void move_Click (object sender, EventArgs e)
         {
             m_movingObject = UUID.Parse (treeView1.SelectedNode.Name);
             m_moveContents = false;
@@ -646,7 +642,7 @@ namespace IARModifierGUI
             treeView1.NodeMouseClick += new TreeNodeMouseClickEventHandler (treeView1_NodeMouseClick);
         }
 
-        private void move_contents_Click (object sender, EventArgs e)
+        void move_contents_Click (object sender, EventArgs e)
         {
             m_movingObject = UUID.Parse (treeView1.SelectedNode.Name);
             if (!m_folderList.ContainsKey (m_movingObject))
@@ -660,7 +656,7 @@ namespace IARModifierGUI
             treeView1.NodeMouseClick += new TreeNodeMouseClickEventHandler (treeView1_NodeMouseClick);
         }
 
-        private void cancelMove_Click (object sender, EventArgs e)
+        void cancelMove_Click (object sender, EventArgs e)
         {
             treeView1.NodeMouseClick -= new TreeNodeMouseClickEventHandler (treeView1_NodeMouseClick);
             MessageBox.Show ("Move canceled.");
@@ -717,7 +713,7 @@ namespace IARModifierGUI
             }
         }
 
-        private void MoveFolder (UUID id, UUID newID)
+        void MoveFolder (UUID id, UUID newID)
         {
             if (m_items.ContainsKey (id))
             {
@@ -749,14 +745,14 @@ namespace IARModifierGUI
             }
         }
 
-        private void merge_Click (object sender, EventArgs e)
+        void merge_Click (object sender, EventArgs e)
         {
             string fileName = SelectTextFile (Environment.CurrentDirectory);
             if (fileName != null)
                 LoadIAR (fileName);
         }
 
-        private string SelectTextFile (string initialDirectory)
+        string SelectTextFile (string initialDirectory)
         {
             OpenFileDialog dialog = new OpenFileDialog ();
             dialog.Filter =
@@ -767,7 +763,7 @@ namespace IARModifierGUI
                    ? dialog.FileName : null;
         }
 
-        private string SaveTextFile (string initialDirectory)
+        string SaveTextFile (string initialDirectory)
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog ();
             saveFileDialog1.Filter = "iar files (*.iar)|*.iar|All files (*.*)|*.*";
@@ -777,14 +773,14 @@ namespace IARModifierGUI
                    ? saveFileDialog1.FileName : null;
         }
 
-        private void save_Click (object sender, EventArgs e)
+        void save_Click (object sender, EventArgs e)
         {
             string fileName = SaveTextFile (Environment.CurrentDirectory);
             if (fileName != null)
                 Execute (fileName);
         }
 
-        private void button2_Click (object sender, EventArgs e)
+        void button2_Click (object sender, EventArgs e)
         {
             AddAsset assetFinder = new AddAsset (this);
             assetFinder.ShowDialog ();
@@ -842,7 +838,7 @@ namespace IARModifierGUI
             }
         }
 
-        private InventoryCollection FindInventoryCollection (UUID userID, UUID folderID)
+        InventoryCollection FindInventoryCollection (UUID userID, UUID folderID)
         {
             InventoryCollection collection = new InventoryCollection();
             collection.UserID = userID;

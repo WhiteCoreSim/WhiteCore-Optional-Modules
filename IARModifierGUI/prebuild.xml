@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<Project frameworkVersion="v4.0" name="WhiteCore.Addon.IARModifierGUI" path="addon-modules/IARModifierGUI/Modules" type="Library">
+<Project frameworkVersion="v4_0" name="WhiteCore.Addon.IARModifierGUI" path="addon-modules/IARModifierGUI/Modules" type="Library">
   <Configuration name="Debug" platform="x86">
     <Options>
       <OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
@@ -47,6 +47,8 @@
   <Reference name="XMLRPC" path="../../../WhiteCoreSim/bin/"/>
 
   <Files>
-    <Match pattern="*.cs" recurse="true"/>
+    <Match pattern="*.cs" recurse="true">
+		<Exclude name="obj" pattern="obj"/>
+	</Match>
   </Files>
 </Project>
