@@ -28,11 +28,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Xml;
 using Nini.Config;
 using OpenMetaverse;
-using WhiteCore.Framework;
 using WhiteCore.Framework.Services;
 using WhiteCore.Framework.Services.ClassHelpers.Assets;
 using WhiteCore.Framework.Modules;
@@ -41,11 +39,15 @@ using WhiteCore.Framework.ConsoleFramework;
 /// <summary>
 /// Loads assets from the file system location.  Not yet a plug-in, though it should be.
 /// </summary>
+using WhiteCore.Framework.Utilities;
+
+
 namespace WhiteCore.DefaultLibraryLoaders
 {
     public class DefaultAssetXMLLoader : IDefaultLibraryLoader
     {
-        protected static readonly UUID LIBRARY_OWNER_ID = new UUID("11111111-1111-0000-0000-000100bba000");
+//        protected static readonly UUID LIBRARY_OWNER_ID = new UUID("11111111-1111-0000-0000-000100bba000");
+        protected static readonly UUID LIBRARY_OWNER_ID = new UUID(Constants.LibraryOwner);
         protected ILibraryService m_service;
 
         protected AssetBase CreateAsset(string assetIdStr, string name, string path, AssetType type)
@@ -59,9 +61,7 @@ namespace WhiteCore.DefaultLibraryLoaders
                 LoadAsset(asset, path);
             }
             else
-            {
                 MainConsole.Instance.InfoFormat("[AssetsXMLLoader]: Instantiated: [{0}]", name);
-            }
 
             return asset;
         }
@@ -74,7 +74,7 @@ namespace WhiteCore.DefaultLibraryLoaders
             //                info.Type == (sbyte)AssetType.ImageJPEG ||
             //                info.Type == (sbyte)AssetType.ImageTGA);
 
-            FileInfo fInfo = new FileInfo(path);
+            var fInfo = new FileInfo(path);
             long numBytes = fInfo.Length;
             if (fInfo.Exists)
             {
@@ -88,14 +88,12 @@ namespace WhiteCore.DefaultLibraryLoaders
                 //info.loaded=true;
             }
             else
-            {
                 MainConsole.Instance.ErrorFormat("[AssetsXMLLoader]: file: [{0}] not found !", path);
-            }
         }
 
         protected void ForEachDefaultXmlAsset(string assetSetFilename, Action<AssetBase> action)
         {
-            List<AssetBase> assets = new List<AssetBase>();
+            var assets = new List<AssetBase>();
             if (File.Exists(assetSetFilename))
             {
                 string assetSetPath = "ERROR";
@@ -121,9 +119,7 @@ namespace WhiteCore.DefaultLibraryLoaders
                 }
             }
             else
-            {
                 MainConsole.Instance.ErrorFormat("[AssetsXMLLoader]: Asset set control file {0} does not exist!  No assets loaded.", assetSetFilename);
-            }
 
             DateTime start2 = DateTime.Now;
             assets.ForEach(action);
@@ -165,9 +161,7 @@ namespace WhiteCore.DefaultLibraryLoaders
                 }
             }
             else
-            {
                 MainConsole.Instance.ErrorFormat("[AssetsXMLLoader]: Asset set file {0} does not exist!", assetSetPath);
-            }
         }
 
         #region IDefaultLibraryLoader Members
@@ -177,9 +171,9 @@ namespace WhiteCore.DefaultLibraryLoaders
             m_service = service;
 
             IConfig assetConfig = source.Configs["AssetsXMLLoader"];
-            if (assetConfig == null){
+            if (assetConfig == null)
                 return;
-            }
+
             string loaderArgs = assetConfig.GetString("AssetLoaderArgs",
                         String.Empty);
             bool assetLoaderEnabled = !assetConfig.GetBoolean("PreviouslyLoaded", false);

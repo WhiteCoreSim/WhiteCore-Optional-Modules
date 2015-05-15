@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<Project frameworkVersion="v3_5" name="WhiteCore.Addon.DefaultXMLInventoryAssetLoader" path="addon-modules/DefaultXMLInventoryAssetLoader/Modules" type="Library">
+<Project frameworkVersion="v4_5" name="WhiteCore.Addon.DefaultXMLInventoryAssetLoader" path="addon-modules/DefaultXMLInventoryAssetLoader/Modules" type="Library">
   <Configuration name="Debug" platform="x86">
     <Options>
 			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>
@@ -48,6 +48,8 @@
 	<Reference name="XMLRPC" path="../../../WhiteCoreSim/bin/"/>
 
   <Files>
-    <Match pattern="*.cs" recurse="true"/>
+    <Match pattern="*.cs" recurse="true">
+		<Exclude name="obj" pattern="obj"/>
+	</Match>
   </Files>
 </Project>

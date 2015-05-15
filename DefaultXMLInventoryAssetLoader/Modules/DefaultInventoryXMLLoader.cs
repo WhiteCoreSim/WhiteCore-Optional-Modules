@@ -26,18 +26,10 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
-using System.Reflection;
 using System.Xml;
-
-using WhiteCore.Framework;
-
 using Nini.Config;
 using OpenMetaverse;
-
-using WhiteCore.Modules;
 using WhiteCore.Framework.Services;
 using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.Services.ClassHelpers.Inventory;
@@ -69,7 +61,8 @@ namespace WhiteCore.DefaultLibraryLoaders
         private InventoryItemBase CreateItem(UUID inventoryID, UUID assetID, string name, string description,
                                             int assetType, int invType, UUID parentFolderID)
         {
-            InventoryItemBase item = new InventoryItemBase();
+            var item = new InventoryItemBase();
+
             item.Owner = m_service.LibraryOwner;
             item.CreatorId = m_service.LibraryOwner.ToString();
             item.ID = inventoryID;
@@ -104,15 +97,11 @@ namespace WhiteCore.DefaultLibraryLoaders
         protected void ReadLibraryFromConfig(IConfig config, string path)
         {
             string basePath = Path.GetDirectoryName(path);
-            string foldersPath
-                = Path.Combine(
-                    basePath, config.GetString("foldersFile", String.Empty));
+            string foldersPath = Path.Combine(basePath, config.GetString("foldersFile", String.Empty));
 
             LoadFromFile(foldersPath, "Library folders", ReadFolderFromConfig);
 
-            string itemsPath
-                = Path.Combine(
-                    basePath, config.GetString("itemsFile", String.Empty));
+            string itemsPath = Path.Combine(basePath, config.GetString("itemsFile", String.Empty));
 
             LoadFromFile(itemsPath, "Library items", ReadItemFromConfig);
         }
@@ -121,9 +110,9 @@ namespace WhiteCore.DefaultLibraryLoaders
         /// Read a library inventory folder from a loaded configuration
         /// </summary>
         /// <param name="source"></param>
-        private void ReadFolderFromConfig(IConfig config, string path)
+        void ReadFolderFromConfig(IConfig config, string path)
         {
-            InventoryFolderImpl folderInfo = new InventoryFolderImpl();
+            var folderInfo = new InventoryFolderImpl();
 
             folderInfo.ID = new UUID(config.GetString("folderID", UUID.Random().ToString()));
             folderInfo.Name = config.GetString("name", "unknown");
@@ -140,9 +129,10 @@ namespace WhiteCore.DefaultLibraryLoaders
         /// Read a library inventory item metadata from a loaded configuration
         /// </summary>
         /// <param name="source"></param>
-        private void ReadItemFromConfig(IConfig config, string path)
+        void ReadItemFromConfig(IConfig config, string path)
         {
-            InventoryItemBase item = new InventoryItemBase();
+            var item = new InventoryItemBase();
+
             item.Owner = m_service.LibraryOwner;
             item.CreatorId = m_service.LibraryOwner.ToString();
             item.ID = new UUID (config.GetString ("inventoryID", UUID.Random().ToString()));
@@ -169,28 +159,23 @@ namespace WhiteCore.DefaultLibraryLoaders
         /// <param name="path"></param>
         /// <param name="fileDescription"></param>
         /// <param name="action"></param>
-        private void LoadFromFile(string path, string fileDescription, ConfigAction action)
+        void LoadFromFile(string path, string fileDescription, ConfigAction action)
         {
             if (File.Exists(path))
             {
                 try
                 {
-                    XmlConfigSource source = new XmlConfigSource(path);
+                    var source = new XmlConfigSource(path);
 
                     for (int i = 0; i < source.Configs.Count; i++)
-                    {
                         action(source.Configs[i], path);
-                    }
                 }
                 catch (XmlException e)
                 {
                     MainConsole.Instance.ErrorFormat("[InventoryXMLLoader]: Error loading {0} : {1}", path, e);
                 }
-            }
-            else
-            {
+            } else
                 MainConsole.Instance.ErrorFormat("[InventoryXMLLoader]: {0} file {1} does not exist!", fileDescription, path);
-            }
         }
     }
 }
