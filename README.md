@@ -29,7 +29,7 @@ Latest update of May 15th, 2015
 
 All modules available compile correctly.
 ##FlexibleWind: 
-  Needs the AForge.Nath.dll copied to the WhiteCoreSim/bin folder
+  Needs the AForge.Math.dll copied to the WhiteCoreSim/bin folder
 ##FreeswitchVoice:
   Has not been tested fully so there may be issues
 ##IARModifierGUI:
