@@ -1,0 +1,19 @@
+AForge.NET Framework
+http://www.aforgenet.com/framework
+==================================
+
+Copyright � AForge.NET, 2006-2013
+contacts@aforgenet.com
+
+AForge.NET is a C# framework designed for developers and researchers
+in the fields of Computer Vision and Artificial Intelligence - image
+processing, neural networks, genetic algorithms, machine learning,
+robotics, etc.
+
+Please, contact project owners for any offers, remarks, ideas, etc.
+
+
+WhiteCore Flexible Wind module
+February 2016 - grey thane -
+=============================
+Complex.cs, FourierTransform.cs and Tools.cs have been copied from the original Forge.Math library to include the specific functions required for the Flexible Wind module. Some minor clean up has been done but base functionality has not been altered .
