@@ -35,15 +35,15 @@ using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.Services;
 using WhiteCore.Framework.Utilities;
 
-[assembly: AssemblyVersion("2015.5.15")]
-[assembly: AssemblyFileVersion("2015.5.15")]
+[assembly: AssemblyVersion("2017.6.10")]
+[assembly: AssemblyFileVersion("2017.6.10")]
 
 namespace WhiteCore.Addon.Updater
 {
     public class UpdaterPlugin :IService
     {
-        const string m_urlToCheckForReleaseUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/release-updates.xml";
-        const string m_urlToCheckForSnapShotUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/snapshot-updates.xml";
+        const string m_urlToCheckForReleaseUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/Updates/release-updates.xml";
+        const string m_urlToCheckForSnapShotUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/Updates/snapshot-updates.xml";
 
         #region Private Functions
 
