@@ -1,132 +1,143 @@
 using System;
-using Laan.Risk.Terrain.Generator;
 using System.Drawing;
+using Laan.Risk.Terrain.Generator;
 
 namespace LandscapeGenCore
 {
-	public class LaanInterfaceRegister
-	{
-		public static IGenerator[] RegisterGenerator() {
+    public static class LaanInterfaceRegister
+    {
+        public static IGenerator [] RegisterGenerator ()
+        {
 
-			int seed = new Random().Next();
-			int size = 129;
+            int seed = new Random ().Next ();
+            int size = 129;
 
-			return new IGenerator[] {
-						new PerlinGenerator(seed, size),
-						new KochSurfaceGenerator(seed, size)
-			};
-		}
-	}
+            return new IGenerator [] {
+                        new PerlinGenerator(seed, size),
+                        new KochSurfaceGenerator(seed, size)
+            };
+        }
+    }
 
 
-	public class PerlinGenerator : IGenerator {
-		INoiseSettings _settings;
+    public class PerlinGenerator : IGenerator
+    {
+        readonly INoiseSettings _settings;
 
-		public PerlinGenerator(int seed, int size) {
-			PerlinNoiseSettings objSettings = new PerlinNoiseSettings();
+        public PerlinGenerator (int seed, int size)
+        {
+            PerlinNoiseSettings objSettings = new PerlinNoiseSettings ();
 
-			objSettings.RandomSeed = seed;
-			objSettings.ResultX = size;
-			objSettings.ResultY = size;
+            objSettings.RandomSeed = seed;
+            objSettings.ResultX = size;
+            objSettings.ResultY = size;
 
-			_settings = objSettings;
-		}
+            _settings = objSettings;
+        }
 
-		#region IGenerator Members
-		public Bitmap Execute() {
-			float[,] result;
-			Bitmap img;
-			
-			// Create
-			INoiseGenerator objGen = new PerlinNoise();
-			objGen.Settings = _settings;
+        #region IGenerator Members
+        public Bitmap Execute ()
+        {
+            float [,] result;
+            Bitmap img;
 
-			result = objGen.Generate();
+            // Create
+            INoiseGenerator objGen = new PerlinNoise ();
+            objGen.Settings = _settings;
 
-			objGen.Free();
+            result = objGen.Generate ();
 
-			//Normalise and convert to ushort
-			IPostProcessor objPostProc = new Normalize();
+            objGen.Free ();
 
-			result = objPostProc.Process(result);
+            //Normalise and convert to ushort
+            IPostProcessor objPostProc = new Normalize ();
 
-			objPostProc.Free();
-			
+            result = objPostProc.Process (result);
 
-			// Render
-			Render2D objRender = new Render2D();
+            objPostProc.Free ();
 
-			img = objRender.RenderGreyscale(result);
 
-			objRender.Free();
+            // Render
+            Render2D objRender = new Render2D ();
 
-			return img;
-		}
+            img = objRender.RenderGreyscale (result);
 
-		public string DisplayName() {
-			return "Bevan - Perlin";
-		}
+            objRender.Free ();
 
-		public object Properties() {
-			return _settings;
-		}
-		#endregion
+            return img;
+        }
 
-	}
+        public string DisplayName ()
+        {
+            return "Bevan - Perlin";
+        }
 
-	
-	public class KochSurfaceGenerator : IGenerator {
-		INoiseSettings _settings;
+        public object Properties ()
+        {
+            return _settings;
+        }
+        #endregion
 
-		public KochSurfaceGenerator(int seed, int size) {
-			KochLikeNoiseSettings objSettings = new KochLikeNoiseSettings();
+    }
 
-			objSettings.RandomSeed = seed;
-			objSettings.ResultX = size;
-			objSettings.ResultY = size;
 
-			_settings = objSettings;
-		}
+    public class KochSurfaceGenerator : IGenerator
+    {
+        readonly INoiseSettings _settings;
 
-		#region IGenerator Members
-		public System.Drawing.Bitmap Execute() {
-			float[,] result;
-			Bitmap img;
-			
-			// Create
-			INoiseGenerator objGen = new KochLikeNoise();
-			objGen.Settings = _settings;
+        public KochSurfaceGenerator (int seed, int size)
+        {
+            KochLikeNoiseSettings objSettings = new KochLikeNoiseSettings ();
 
-			result = objGen.Generate();
+            objSettings.RandomSeed = seed;
+            objSettings.ResultX = size;
+            objSettings.ResultY = size;
 
-			objGen.Free();
+            _settings = objSettings;
+        }
 
-			//Normalise and convert to ushort
-			IPostProcessor objPostProc = new Normalize();
+        #region IGenerator Members
+        public Bitmap Execute ()
+        {
+            float [,] result;
+            Bitmap img;
 
-			result = objPostProc.Process(result);
+            // Create
+            INoiseGenerator objGen = new KochLikeNoise ();
+            objGen.Settings = _settings;
 
-			objPostProc.Free();
-			
+            result = objGen.Generate ();
 
-			// Render
-			Render2D objRender = new Render2D();
+            objGen.Free ();
 
-			img = objRender.RenderGreyscale(result);
+            //Normalise and convert to ushort
+            IPostProcessor objPostProc = new Normalize ();
 
-			objRender.Free();
+            result = objPostProc.Process (result);
 
-			return img;
-		}
+            objPostProc.Free ();
 
-		public string DisplayName() {
-			return "Bevan - Koch Surface";
-		}
 
-		public object Properties() {
-			return _settings;
-		}
-		#endregion
+            // Render
+            Render2D objRender = new Render2D ();
 
-	}
+            img = objRender.RenderGreyscale (result);
+
+            objRender.Free ();
+
+            return img;
+        }
+
+        public string DisplayName ()
+        {
+            return "Bevan - Koch Surface";
+        }
+
+        public object Properties ()
+        {
+            return _settings;
+        }
+        #endregion
+
+    }
 }

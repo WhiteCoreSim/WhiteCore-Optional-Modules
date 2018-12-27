@@ -10,7 +10,7 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("WhiteCore.FractualTerrain")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCopyright("Copyright ©  2015-2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
@@ -25,7 +25,8 @@ using System.Reflection;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.9.3.*")]
+[assembly: AssemblyVersion("2018.12.27")]
+[assembly: AssemblyFileVersion ("2018.12.27")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

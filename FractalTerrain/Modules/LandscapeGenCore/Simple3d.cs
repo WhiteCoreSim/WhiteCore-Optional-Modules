@@ -7,16 +7,16 @@ namespace LandscapeGenCore
     {
         #region IRender Members
 
-        public void Free()
+        public void Free ()
         {
 
         }
 
-        public Bitmap Render(float[,] ResultGrid)
+        public Bitmap Render (float [,] ResultGrid)
         {
-            Bitmap result = new Bitmap(ResultGrid.GetLength(0), ResultGrid.GetLength(1));
+            Bitmap result = new Bitmap (ResultGrid.GetLength (0), ResultGrid.GetLength (1));
 
-            result.SetPixel(3, 3, Color.Green);
+            result.SetPixel (3, 3, Color.Green);
 
 
             return result;
