@@ -41,6 +41,7 @@ namespace WhiteCore.Addon.FlexibleWind
 {
     public class FlexibleWind : IWindModelPlugin
     {
+        const float EPSILON = 0.0000001f;   // for floating point zero comparisons
         const int m_mesh = 16;
        
         int m_wind_direction = 0;           // The desirecd wind direction (external force)
@@ -178,7 +179,7 @@ namespace WhiteCore.Addon.FlexibleWind
                     energy += m_windSpeeds_u [i] * m_windSpeeds_u [i] + m_windSpeeds_v [i] * m_windSpeeds_v [i];
                 }
                 //
-                if (energy != 0.0f)
+                if (Math.Abs (energy) > EPSILON)
                 {
                     float st_rate = (m_energy - energy) / energy;
                     //
@@ -339,7 +340,7 @@ namespace WhiteCore.Addon.FlexibleWind
             switch (param)
             {
             case "direction":
-                return (float)m_wind_direction;
+                return m_wind_direction;
 
             case "strength":
                 return m_strength;
@@ -348,7 +349,7 @@ namespace WhiteCore.Addon.FlexibleWind
                 return m_damping_rate;
 
             case "period":
-                return (float)m_period;
+                return m_period;
 
             case "wind_visc":
                 return m_viscosity;
@@ -466,7 +467,7 @@ namespace WhiteCore.Addon.FlexibleWind
                     }
                     break;
                 case 5:     // Rotational
-                    float radius = ((float)m_mesh) / 6.0f;
+                    float radius = (m_mesh) / 6.0f;
                     for (float f = 0.0f; f < (float)Math.PI; f += 0.01f)
                     {
                         float angle = 2.0f * f;
@@ -543,14 +544,14 @@ namespace WhiteCore.Addon.FlexibleWind
             visc *= dt;
             for (int j = 0; j < n; j++)
             {
-                float y = (float)(j <= n / 2 ? j : j - n);
+                float y = (j <= n / 2 ? j : j - n);
                 float yy = y * y;
                 //
                 for (int i = 0; i < n / 2 + 1; i++)
                 {
                     float xx = i * i;
                     float r_sq = xx + yy;
-                    if (r_sq != 0.0f)
+                    if (Math.Abs (r_sq) > EPSILON)
                     {
                         float fac = (float)Math.Exp (-r_sq * visc);
                         float xy = i * y;
