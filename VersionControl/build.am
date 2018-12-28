@@ -1,0 +1,1 @@
+{"PrebuildFile":"prebuild.xml","TmpFile":"prebuild.tmp.xml","Configs":["VersionControl.ini"],"ConfigDirectory":"../Config/Sim/Modules/","CompileFinished":"Compile Is Finished!","ConfigurationFinished":" Configuration is finished. Please set up the 'VersionControl.ini' details, found in Config/Sim/Modules/, to finish the installation.","CopyFinished":"Copy Is Finished!"}

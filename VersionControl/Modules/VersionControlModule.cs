@@ -39,9 +39,9 @@ namespace WhiteCore.AddOn.VersionControl
     {
         bool m_Enabled;
 
-        //Auto OAR configs
+        // Auto OAR configs
         bool m_autoOAREnabled;
-        float m_autoOARTime = 1; //In days
+        float m_autoOARTime = 1;    // Time in days
         Timer m_autoOARTimer;
         IScene m_Scene;
 
@@ -49,95 +49,91 @@ namespace WhiteCore.AddOn.VersionControl
 
         #region INonSharedRegionModule Members
 
-        public string Name
-        {
+        public string Name {
             get { return "VersionControlModule"; }
         }
 
-        public Type ReplaceableInterface
-        {
+        public Type ReplaceableInterface {
             get { return null; }
         }
 
-        public void Initialise(IConfigSource source)
+        public void Initialise (IConfigSource source)
         {
-            if (source.Configs["VersionControl"] == null)
+            if (source.Configs ["VersionControl"] == null)
                 return;
-            IConfig config = source.Configs["VersionControl"];
-            m_Enabled = config.GetBoolean("Enabled", false);
+            IConfig config = source.Configs ["VersionControl"];
+            m_Enabled = config.GetBoolean ("Enabled", false);
 
-            //Auto OAR config
-            m_autoOAREnabled = config.GetBoolean("AutoVersionEnabled", false);
-            m_autoOARTime = config.GetFloat("AutoVersionTime", 1);
+            // Auto OAR config
+            m_autoOAREnabled = config.GetBoolean ("AutoVersionEnabled", false);
+            m_autoOARTime = config.GetFloat ("AutoVersionTime", 1);
         }
 
-        public void Close()
+        public void Close ()
         {
         }
 
-        public void AddRegion(IScene scene)
+        public void AddRegion (IScene scene)
         {
         }
 
-        public void RemoveRegion(IScene scene)
+        public void RemoveRegion (IScene scene)
         {
             m_Scene = null;
         }
 
-        public void RegionLoaded(IScene scene)
+        public void RegionLoaded (IScene scene)
         {
             if (!m_Enabled)
                 return;
 
-            if (m_autoOAREnabled)
-            {
-                m_autoOARTimer = new Timer(m_autoOARTime*1000*60*60*24); //Time in days
+            if (m_autoOAREnabled) {
+                m_autoOARTimer = new Timer (m_autoOARTime * 1000 * 60 * 60 * 24); // Time in days
                 m_autoOARTimer.Elapsed += SaveOAR;
                 m_autoOARTimer.Enabled = true;
                 m_Scene = scene;
             }
 
-            MainConsole.Instance.Commands.AddCommand(
+            MainConsole.Instance.Commands.AddCommand (
                 "save version",
                 "save version <description>",
-                "Saves a region OAR with incremented version details.", 
+                "Saves a region OAR with incremented version details.",
                 SaveVersionCmd, true, false);
         }
 
         #endregion
 
-        void SaveOAR(object sender, ElapsedEventArgs e)
+        void SaveOAR (object sender, ElapsedEventArgs e)
         {
-            SaveVersion("AutomaticBackup");
+            SaveVersion ("AutomaticBackup");
         }
 
-        protected void SaveVersionCmd(IScene scene, string[] cmdparams)
+        protected void SaveVersionCmd (IScene scene, string [] cmdparams)
         {
             string description = "";
 
-            if (cmdparams.Length < 3)
-            {
+            if (cmdparams.Length < 3) {
                 description = MainConsole.Instance.Prompt ("Enter a description for this version", description);
                 if (description == "")
                     return;
             } else
-                description = Util.CombineParams(cmdparams, 2); // in case of spaces 
+                description = Util.CombineParams (cmdparams, 2); // in case of spaces 
 
-            cmdparams[0] = "";
-            cmdparams[1] = "";
+            cmdparams [0] = "";
+            cmdparams [1] = "";
             SaveVersion (description);
         }
 
-        public void SaveVersion(string Description)
+        public void SaveVersion (string Description)
         {
             string tag = "";
             tag += "Region." + m_Scene.RegionInfo.RegionName;
             tag += ".Desc." + Description;
             tag += ".Version." + nextVersion;
             tag += ".Date." + DateTime.Now.Year + "." + DateTime.Now.Month + "." + DateTime.Now.Day + "." +
-                   DateTime.Now.Hour;
+            DateTime.Now.Hour;
             nextVersion++;
-            MainConsole.Instance.RunCommand("save oar " + tag + ".vc.oar");
+            MainConsole.Instance.RunCommand ("save oar " + tag + ".vc.oar");
         }
     }
 }
