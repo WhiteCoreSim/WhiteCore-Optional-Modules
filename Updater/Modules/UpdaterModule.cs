@@ -26,7 +26,6 @@
  */
 
 using System;
-using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
 using Nini.Config;
@@ -35,77 +34,70 @@ using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.Services;
 using WhiteCore.Framework.Utilities;
 
-[assembly: AssemblyVersion("2017.6.10")]
-[assembly: AssemblyFileVersion("2017.6.10")]
-
 namespace WhiteCore.Addon.Updater
 {
-    public class UpdaterPlugin :IService
+    public class UpdaterPlugin : IService
     {
         const string m_urlToCheckForReleaseUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/Updates/release-updates.xml";
         const string m_urlToCheckForSnapShotUpdates = "https://raw.githubusercontent.com/WhiteCoreSim/WhiteCore-Dev/master/Updates/snapshot-updates.xml";
 
         #region Private Functions
 
-        bool Compare(string givenVersion, string CurrentVersion)
+        static bool Compare (string givenVersion, string currentVersion)
         {
-            string[] given = givenVersion.Split('.');
-            string[] current = CurrentVersion.Split('.');
-            for (int i = 0; i < Math.Max(given.Length, current.Length); i++)
-            {
+            string [] given = givenVersion.Split ('.');
+            string [] current = currentVersion.Split ('.');
+            for (int i = 0; i < Math.Max (given.Length, current.Length); i++) {
                 if (i == given.Length || i == current.Length)
                     break;
-                if (int.Parse(given[i]) > int.Parse(current[i]))
+                if (int.Parse (given [i]) > int.Parse (current [i]))
                     return true;
             }
             return false;
         }
         #endregion
 
-        public void Start(IConfigSource config, IRegistryCore registry)
+        public void Start (IConfigSource config, IRegistryCore registry)
         {
-            try
-            {
-                //Check whether this is enabled
-                IConfig updateConfig = config.Configs["Updater"];
-                if (updateConfig.GetString("Plugin", "") != Name)
-                {
-                    MainConsole.Instance.Info("[WhiteCore Updater]: WhiteCore Updater Plugin not set");
+            try {
+                // Check whether this is enabled
+                IConfig updateConfig = config.Configs ["Updater"];
+                if (updateConfig.GetString ("Plugin", "") != Name) {
+                    MainConsole.Instance.Info ("[WhiteCore Updater]: WhiteCore Updater Plugin not set");
                     return;
                 }
-                if (!updateConfig.GetBoolean("Enabled", false))
-                {
-                    MainConsole.Instance.Info("[WhiteCore Updater]: WhiteCore Updater Plugin not enabled");
+
+                if (!updateConfig.GetBoolean ("Enabled", false)) {
+                    MainConsole.Instance.Info ("[WhiteCore Updater]: WhiteCore Updater Plugin not enabled");
                     return;
                 }
+
                 // Everything is working, let's start checking for an update
-                MainConsole.Instance.Info("[WhiteCore Updater]: Checking for updates...");
+                MainConsole.Instance.Info ("[WhiteCore Updater]: WhiteCore Updater Plugin enabled");
+                MainConsole.Instance.Info ("[WhiteCore Updater]: Checking for updates...");
                 const string CurrentVersion = VersionInfo.VERSION_NUMBER;
-                string LastestVersionToBlock = updateConfig.GetString("LatestRelease", VersionInfo.VERSION_NUMBER);
+                string LastestVersionToBlock = updateConfig.GetString ("LatestRelease", VersionInfo.VERSION_NUMBER);
                 string site = "";
 
                 // Check what type of update is set
-                if (updateConfig.GetInt("Updates", 0) != 0)
-                {
-                    site = updateConfig.GetString("URLToCheckForSnapShotUpdates", m_urlToCheckForSnapShotUpdates);
-                }
+                if (updateConfig.GetInt ("Updates", 0) != 0)
+                    site = updateConfig.GetString ("URLToCheckForSnapShotUpdates", m_urlToCheckForSnapShotUpdates);
                 else
-                {
-                    site = updateConfig.GetString("URLToCheckForReleaseUpdates", m_urlToCheckForReleaseUpdates);
-                }
-                string WebSite = updateConfig.GetString("URLToCheckForUpdates", site);
-                //Pull the xml from the website
-                string XmlData = Utilities.ReadExternalWebsite(WebSite);
-                if (string.IsNullOrEmpty(XmlData))
-                {
-                    MainConsole.Instance.ErrorFormat("[WhiteCore Updater]: Unable to reach {0} due to network error", site);
+                    site = updateConfig.GetString ("URLToCheckForReleaseUpdates", m_urlToCheckForReleaseUpdates);
+
+                string WebSite = updateConfig.GetString ("URLToCheckForUpdates", site);
+                // Pull the xml from the website
+                string XmlData = Utilities.ReadExternalWebsite (WebSite);
+                if (string.IsNullOrEmpty (XmlData)) {
+                    MainConsole.Instance.ErrorFormat ("[WhiteCore Updater]: Unable to reach {0} due to network error", site);
                     return;
                 }
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(XmlData);
 
-                XmlNodeList parts = doc.GetElementsByTagName("Updater");
-                XmlNode UpdaterNode = parts[0];
+                XmlDocument doc = new XmlDocument ();
+                doc.LoadXml (XmlData);
+
+                XmlNodeList parts = doc.GetElementsByTagName ("Updater");
+                XmlNode UpdaterNode = parts [0];
 
                 //[0] - Minimum supported release #
                 //[1] - Minimum supported release date
@@ -116,83 +108,71 @@ namespace WhiteCore.Addon.Updater
                 //[6] - Download link for Mono 32 Bit
                 //[7] - Download link for Mono 64 Bit
 
-                //Read the newest version [2] and see if it is higher than the current version and less than the version the user last told us to block
-                if (Compare(UpdaterNode.ChildNodes[2].InnerText, CurrentVersion) && Compare(UpdaterNode.ChildNodes[2].InnerText, LastestVersionToBlock))
-                {
+                // Read the newest version [2] and see if it is higher than the current version and less than the version the user last told us to block
+                if (Compare (UpdaterNode.ChildNodes [2].InnerText, CurrentVersion) && Compare (UpdaterNode.ChildNodes [2].InnerText, LastestVersionToBlock)) {
                     //Ask if they would like to update
-                    DialogResult result = MessageBox.Show("A new version of WhiteCore has been released, version " +
-                        UpdaterNode.ChildNodes[2].InnerText +
-                        " released " + UpdaterNode.ChildNodes[3].InnerText +
-                        ". Release notes: " + UpdaterNode.ChildNodes[4].InnerText +
+                    DialogResult result = MessageBox.Show ("A new version of WhiteCore has been released, version " +
+                        UpdaterNode.ChildNodes [2].InnerText +
+                        " released " + UpdaterNode.ChildNodes [3].InnerText +
+                        ". Release notes: " + UpdaterNode.ChildNodes [4].InnerText +
                         ", do you want to download the update?", "WhiteCore Updater",
                         MessageBoxButtons.YesNo);
 
-                    //If so, download the new version
-                    if (result == DialogResult.Yes)
-                    {
+                    // If so, download the new version
+                    if (result == DialogResult.Yes) {
                         string updateLink = "";
                         // Do a check if they are running on Windows .Net or Mono x86/x64
-                        if (!Utilities.IsLinuxOs)
-                        {
-                            updateLink = UpdaterNode.ChildNodes[5].InnerText;
-                        }
-                        else
-                        {
-                            if (!Utilities.Is64BitOs)
-                            {
-                                updateLink = UpdaterNode.ChildNodes[6].InnerText;
-                            }
-                            else
-                            {
-                                updateLink = UpdaterNode.ChildNodes[7].InnerText;
+                        if (!Utilities.IsLinuxOs) {
+                            updateLink = UpdaterNode.ChildNodes [5].InnerText;
+                        } else {
+                            if (!Utilities.Is64BitOs) {
+                                updateLink = UpdaterNode.ChildNodes [6].InnerText;
+                            } else {
+                                updateLink = UpdaterNode.ChildNodes [7].InnerText;
                             }
                         }
                         // UpdaterNode.ChildNodes[5].InnerText = Windows (x86/x64)
                         // UpdaterNode.ChildNodes[6].InnerText = Mono x86
                         // UpdaterNode.ChildNodes[7].InnerText = Mono x64
 
-                        Utilities.DownloadFile(updateLink,
-                            "WhiteCore" + UpdaterNode.ChildNodes[2].InnerText + ".zip");
-                        MessageBox.Show(string.Format("Downloaded to {0}, exiting for user to upgrade.", "WhiteCore" + UpdaterNode.ChildNodes[2].InnerText + ".zip"), "WhiteCore Updater");
-                        Environment.Exit(0);
+                        Utilities.DownloadFile (updateLink,
+                            "WhiteCore" + UpdaterNode.ChildNodes [2].InnerText + ".zip");
+                        MessageBox.Show (string.Format ("Downloaded to {0}, exiting for user to upgrade.", "WhiteCore" + UpdaterNode.ChildNodes [2].InnerText + ".zip"), "WhiteCore Updater");
+                        Environment.Exit (0);
                     }
-                    //Update the config so that we do not ask again
-                    updateConfig.Set("LatestRelease", UpdaterNode.ChildNodes[2].InnerText);
-                    updateConfig.ConfigSource.Save();
+
+                    // Update the config so that we do not ask again
+                    updateConfig.Set ("LatestRelease", UpdaterNode.ChildNodes [2].InnerText);
+                    updateConfig.ConfigSource.Save ();
+                } else if (Compare (UpdaterNode.ChildNodes [0].InnerText, CurrentVersion) && Compare (UpdaterNode.ChildNodes [2].InnerText, LastestVersionToBlock)) {
+                    // This version is not supported anymore
+                    MainConsole.Instance.FatalFormat ("[WhiteCore Updater]: Your version of WhiteCore ({0}, Released {1}) is not supported anymore.",
+                                                      CurrentVersion, UpdaterNode.ChildNodes [1].InnerText);
+                } else {
+                    MainConsole.Instance.Info ("[WhiteCore Updater]: You are currently running the latest released version");
                 }
-                else if (Compare(UpdaterNode.ChildNodes[0].InnerText, CurrentVersion) && Compare(UpdaterNode.ChildNodes[2].InnerText, LastestVersionToBlock))
-                {
-                    //This version is not supported anymore
-                    MainConsole.Instance.FatalFormat("[WhiteCore Updater]: Your version of WhiteCore ({0}, Released {1}) is not supported anymore.", CurrentVersion, UpdaterNode.ChildNodes[1].InnerText);
-                }
-                else
-                {
-                    MainConsole.Instance.Info("[WhiteCore Updater]: You are currently running the latest released version");
-                }
-            }
-            catch
-            {
+            } catch (Exception ex) {
+                MainConsole.Instance.TraceFormat ("[WhiteCore Updater]: Exception in updater module ({0})", ex);
             }
         }
 
-        public void FinishedStartup()
-        {
-        }
-        
-        public void Initialize(IConfigSource config, IRegistryCore registry)
+        public void FinishedStartup ()
         {
         }
 
-        public string Name
+        public void Initialize (IConfigSource config, IRegistryCore registry)
         {
+        }
+
+        public string Name {
             get { return "WhiteCoreUpdater"; }
         }
 
-        public void Dispose()
+        public void Dispose ()
         {
         }
 
-        public void Close()
+        public void Close ()
         {
         }
     }
