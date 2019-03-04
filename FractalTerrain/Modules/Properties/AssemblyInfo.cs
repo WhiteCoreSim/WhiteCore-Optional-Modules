@@ -6,9 +6,9 @@ using System.Reflection;
 // associated with an assembly.
 //
 [assembly: AssemblyTitle("WhiteCore.FractualTerrain")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Fractal terrain generator")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Whitecore-sim.org")]
 [assembly: AssemblyProduct("WhiteCore.FractualTerrain")]
 [assembly: AssemblyCopyright("Copyright ©  2015-2018")]
 [assembly: AssemblyTrademark("")]
