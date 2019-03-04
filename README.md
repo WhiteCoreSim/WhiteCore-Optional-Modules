@@ -22,15 +22,14 @@ The module source code will be included in the main WhiteCore solution when the 
 
 
 ##Notes
-- Latest update of May 5th, 2016
+- Latest update of March 4th, 2019
 - All modules available compile correctly.
 
 ###FreeswitchVoice:
   Has not been tested fully so there may be issues
 ###IARModifierGUI:
   Is a standalone program, still largely untested.  Have a good backup if you are modifying the DefaultInventory.iar
-###IrCChat:
-  The 'group' chat is still under development and may work in unexpected ways.  The Region chat is fine.
+###IrcChat:
+  The 'group' chat is still under development and may work in unexpected ways.  The Region chat has been tested without issue.
 
-- *As of Version 0.9.2, the WhiteCore repository format has changed so ensure that you are using the correct format for your repo.
-This should not be a problem if you use the latest commits of the WhiteCore-Dev or a release version >= 0.9.2*
+
