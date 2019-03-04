@@ -25,7 +25,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Collections;
 using System.Text;
 using Nini.Config;
@@ -54,119 +53,111 @@ namespace FreeswitchVoice
 
         protected bool m_Enabled = false;
 
-        public string Name
-        {
-            get { return GetType().Name; }
+        public string Name {
+            get { return GetType ().Name; }
         }
 
-        public void Initialize(IConfigSource config, IRegistryCore registry)
+        public void Initialize (IConfigSource config, IRegistryCore registry)
         {
-            IConfig voiceconfig = config.Configs["Voice"];
+            IConfig voiceconfig = config.Configs ["Voice"];
             if (voiceconfig == null)
                 return;
             string voiceModule = "FreeSwitchVoice";
-            if (voiceconfig.GetString("Module", voiceModule) != voiceModule)
+            if (voiceconfig.GetString ("Module", voiceModule) != voiceModule)
                 return;
 
-            IConfig freeswitchConfig = config.Configs["FreeswitchService"];
-            if (freeswitchConfig != null)
-            {
-                m_freeSwitchDefaultWellKnownIP = freeswitchConfig.GetString("ServerAddress", String.Empty);
-                if (m_freeSwitchDefaultWellKnownIP == String.Empty)
-                {
-                    MainConsole.Instance.Debug("[FREESWITCH]: No FreeswitchServerAddress given, can't continue");
+            IConfig freeswitchConfig = config.Configs ["FreeswitchService"];
+            if (freeswitchConfig != null) {
+                m_freeSwitchDefaultWellKnownIP = freeswitchConfig.GetString ("ServerAddress", string.Empty);
+                if (m_freeSwitchDefaultWellKnownIP == string.Empty) {
+                    MainConsole.Instance.Debug ("[FreeSwitchVoice]: No FreeswitchServerAddress given, can't continue");
                     return;
                 }
 
-                m_freeSwitchRealm = freeswitchConfig.GetString("Realm", m_freeSwitchDefaultWellKnownIP);
-                m_freeSwitchSIPProxy = freeswitchConfig.GetString("SIPProxy", m_freeSwitchDefaultWellKnownIP + ":5060");
-                m_freeSwitchEchoServer = freeswitchConfig.GetString("EchoServer", m_freeSwitchDefaultWellKnownIP);
-                m_freeSwitchEchoPort = freeswitchConfig.GetInt("EchoPort", m_freeSwitchEchoPort);
-                m_freeSwitchAttemptUseSTUN = freeswitchConfig.GetBoolean("AttemptSTUN", false); // This may not work
-                m_freeSwitchDefaultTimeout = freeswitchConfig.GetInt("DefaultTimeout", m_freeSwitchDefaultTimeout);
-                m_freeSwitchContext = freeswitchConfig.GetString("Context", m_freeSwitchContext);
-                m_freeSwitchServerUser = freeswitchConfig.GetString("UserName", m_freeSwitchServerUser);
-                m_freeSwitchServerPass = freeswitchConfig.GetString("Password", m_freeSwitchServerPass);
+                m_freeSwitchRealm = freeswitchConfig.GetString ("Realm", m_freeSwitchDefaultWellKnownIP);
+                m_freeSwitchSIPProxy = freeswitchConfig.GetString ("SIPProxy", m_freeSwitchDefaultWellKnownIP + ":5060");
+                m_freeSwitchEchoServer = freeswitchConfig.GetString ("EchoServer", m_freeSwitchDefaultWellKnownIP);
+                m_freeSwitchEchoPort = freeswitchConfig.GetInt ("EchoPort", m_freeSwitchEchoPort);
+                m_freeSwitchAttemptUseSTUN = freeswitchConfig.GetBoolean ("AttemptSTUN", false); // This may not work
+                m_freeSwitchDefaultTimeout = freeswitchConfig.GetInt ("DefaultTimeout", m_freeSwitchDefaultTimeout);
+                m_freeSwitchContext = freeswitchConfig.GetString ("Context", m_freeSwitchContext);
+                m_freeSwitchServerUser = freeswitchConfig.GetString ("UserName", m_freeSwitchServerUser);
+                m_freeSwitchServerPass = freeswitchConfig.GetString ("Password", m_freeSwitchServerPass);
 
                 m_Enabled = true;
-                registry.RegisterModuleInterface<IFreeswitchService>(this);
+                registry.RegisterModuleInterface<IFreeswitchService> (this);
             }
         }
 
-        public void Start(IConfigSource config, IRegistryCore registry)
+        public void Start (IConfigSource config, IRegistryCore registry)
         {
         }
 
-        public void FinishedStartup()
+        public void FinishedStartup ()
         {
         }
 
-        public byte[] HandleDialplanRequest(Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        public byte [] HandleDialplanRequest (Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
-            MainConsole.Instance.DebugFormat("[FreeSwitchVoice] HandleDialplanRequest called with {0}", request.ToString());
+            MainConsole.Instance.DebugFormat ("[FreeSwitchVoice] HandleDialplanRequest called with {0}", request);
 
-            string requestcontext = (string)request["Hunt-Context"];
+            string requestcontext = (string)request ["Hunt-Context"];
             httpResponse.ContentType = "text/xml";
             httpResponse.StatusCode = 200;
 
-            if (m_freeSwitchContext != String.Empty && m_freeSwitchContext != requestcontext)
-            {
-                MainConsole.Instance.Debug("[FreeSwitchDirectory] returning empty as it's for another context");
+            if (m_freeSwitchContext != string.Empty && m_freeSwitchContext != requestcontext) {
+                MainConsole.Instance.Debug ("[FreeSwitchVoice] Dialplan request returning empty as it's for another context");
                 return MainServer.BadRequest;
             }
-            else
-            {
-                return Encoding.UTF8.GetBytes(String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
+
+            return Encoding.UTF8.GetBytes (string.Format (
+                @"<?xml version=""1.0"" encoding=""utf-8""?>
                    <document type=""freeswitch/xml"">
                      <section name=""dialplan"">
                      <context name=""{0}"">" +
 
-/*                           <!-- dial via SIP uri -->
-                            <extension name=""sip_uri"">
-                                   <condition field=""destination_number"" expression=""^sip:(.*)$"">
-                                   <action application=""bridge"" data=""sofia/${use_profile}/$1""/>
-                                   <!--<action application=""bridge"" data=""$1""/>-->
-                                   </condition>
-                           </extension>*/
+                 /*                           <!-- dial via SIP uri -->
+                                             <extension name=""sip_uri"">
+                                                    <condition field=""destination_number"" expression=""^sip:(.*)$"">
+                                                    <action application=""bridge"" data=""sofia/${use_profile}/$1""/>
+                                                    <!--<action application=""bridge"" data=""$1""/>-->
+                                                    </condition>
+                                            </extension>*/
 
-                           @"<extension name=""opensim_conferences"">
-                                   <condition field=""destination_number"" expression=""^confctl-(.*)$"">
-                                           <action application=""answer""/>
-                                           <action application=""conference"" data=""$1-{1}@{0}""/>
-                                   </condition>
-                           </extension>
+                 @"<extension name=""opensim_conferences"">
+                     <condition field=""destination_number"" expression=""^confctl-(.*)$"">
+                       <action application=""answer""/>
+                       <action application=""conference"" data=""$1-{1}@{0}""/>
+                     </condition>
+                   </extension>
 
-                           <extension name=""opensim_conf"">
-                                   <condition field=""destination_number"" expression=""^conf-(.*)$"">
-                                           <action application=""answer""/>
-                                           <action application=""conference"" data=""$1-{1}@{0}""/>
-                                   </condition>
-                           </extension>
+                   <extension name=""opensim_conf"">
+                     <condition field=""destination_number"" expression=""^conf-(.*)$"">
+                       <action application=""answer""/>
+                       <action application=""conference"" data=""$1-{1}@{0}""/>
+                     </condition>
+                   </extension>
 
-                           <extension name=""avatar"">
-                                   <condition field=""destination_number"" expression=""^(x.*)$"">
-                                           <action application=""bridge"" data=""user/$1""/>
-                                   </condition>
-                           </extension>
+                   <extension name=""avatar"">
+                     <condition field=""destination_number"" expression=""^(x.*)$"">
+                       <action application=""bridge"" data=""user/$1""/>
+                     </condition>
+                   </extension>
 
-                     </context>
+                   </context>
                    </section>
                    </document>", m_freeSwitchContext, m_freeSwitchRealm));
-            }
         }
 
-        public byte[] HandleDirectoryRequest(Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        public byte [] HandleDirectoryRequest (Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
-            string domain = (string)request["domain"];
-            if (domain != m_freeSwitchRealm)
-            {
+            string domain = (string)request ["domain"];
+            if (domain != m_freeSwitchRealm) {
                 httpResponse.ContentType = "text/xml";
                 httpResponse.StatusCode = 200;
                 return MainServer.BadRequest;
-            }
-            else
-            {
-                MainConsole.Instance.DebugFormat("[FreeSwitchDirectory] HandleDirectoryRequest called with {0}", request.ToString());
+            } else {
+                MainConsole.Instance.DebugFormat ("[FreeSwitchVoice] HandleDirectoryRequest called with {0}", request);
 
                 // information in the request we might be interested in
 
@@ -187,87 +178,69 @@ namespace FreeswitchVoice
                 //domain=9.20.151.43
                 //ip=9.167.220.137    // this is the correct IP rather than sip_contact_host above when through a vpn or NAT setup
 
-                foreach (DictionaryEntry item in request)
-                {
-                    MainConsole.Instance.InfoFormat("[FreeSwitchDirectory] requestBody item {0} {1}", item.Key, item.Value);
+                foreach (DictionaryEntry item in request) {
+                    MainConsole.Instance.InfoFormat ("[FreeSwitchVoice] requestBody item {0} {1}", item.Key, item.Value);
                 }
 
-                string eventCallingFunction = (string)request["Event-Calling-Function"];
+                string eventCallingFunction = (string)request ["Event-Calling-Function"];
                 if (eventCallingFunction == null)
-                {
                     eventCallingFunction = "sofia_reg_parse_auth";
-                }
 
                 if (eventCallingFunction.Length == 0)
-                {
                     eventCallingFunction = "sofia_reg_parse_auth";
-                }
 
-                if (eventCallingFunction == "sofia_reg_parse_auth")
-                {
-                    string sipAuthMethod = (string)request["sip_auth_method"];
+                if (eventCallingFunction == "sofia_reg_parse_auth") {
+                    string sipAuthMethod = (string)request ["sip_auth_method"];
 
                     if (sipAuthMethod == "REGISTER")
-                    {
-                        return HandleRegister(m_freeSwitchContext, m_freeSwitchRealm, request, httpRequest, httpResponse);
-                    }
-                    else if (sipAuthMethod == "INVITE")
-                    {
-                        return HandleInvite(m_freeSwitchContext, m_freeSwitchRealm, request, httpRequest, httpResponse);
-                    }
-                    else
-                    {
-                        MainConsole.Instance.ErrorFormat("[FreeSwitchVoice] HandleDirectoryRequest unknown sip_auth_method {0}", sipAuthMethod);
-                        httpResponse.ContentType = "text/xml";
-                        httpResponse.StatusCode = 404;
-                        return MainServer.BadRequest;
-                    }
+                        return HandleRegister (m_freeSwitchContext, m_freeSwitchRealm, request, httpRequest, httpResponse);
+
+                    if (sipAuthMethod == "INVITE")
+                        return HandleInvite (m_freeSwitchContext, m_freeSwitchRealm, request, httpRequest, httpResponse);
+
+                    MainConsole.Instance.ErrorFormat ("[FreeSwitchVoice] HandleDirectoryRequest unknown sip_auth_method {0}", sipAuthMethod);
+                    httpResponse.ContentType = "text/xml";
+                    httpResponse.StatusCode = 404;
+                    return MainServer.BadRequest;
                 }
-                else if (eventCallingFunction == "switch_xml_locate_user")
-                {
-                    return HandleLocateUser(m_freeSwitchRealm, request, httpRequest, httpResponse);
-                }
-                else if (eventCallingFunction == "user_data_function") // gets called when an avatar to avatar call is made
-                {
-                    return HandleLocateUser(m_freeSwitchRealm, request, httpRequest, httpResponse);
-                }
-                else if (eventCallingFunction == "user_outgoing_channel")
-                {
-                    return HandleRegister(m_freeSwitchContext, m_freeSwitchRealm, request, httpRequest, httpResponse);
-                }
-                else if (eventCallingFunction == "config_sofia") // happens once on freeswitch startup
-                {
-                    return HandleConfigSofia(m_freeSwitchContext, m_freeSwitchRealm, request, httpRequest, httpResponse);
-                }
-                else if (eventCallingFunction == "switch_load_network_lists")
-                {
+                if (eventCallingFunction == "switch_xml_locate_user")
+                    return HandleLocateUser (m_freeSwitchRealm, request, httpRequest, httpResponse);
+
+                if (eventCallingFunction == "user_data_function") // gets called when an avatar to avatar call is made
+                    return HandleLocateUser (m_freeSwitchRealm, request, httpRequest, httpResponse);
+
+                if (eventCallingFunction == "user_outgoing_channel")
+                    return HandleRegister (m_freeSwitchContext, m_freeSwitchRealm, request, httpRequest, httpResponse);
+
+                if (eventCallingFunction == "config_sofia") // happens once on freeswitch startup
+                    return HandleConfigSofia (m_freeSwitchContext, m_freeSwitchRealm, request, httpRequest, httpResponse);
+
+                if (eventCallingFunction == "switch_load_network_lists") {
                     //response = HandleLoadNetworkLists(request);
                     httpResponse.ContentType = "text/xml";
                     httpResponse.StatusCode = 404;
                     return MainServer.BadRequest;
                 }
-                else
-                {
-                    MainConsole.Instance.ErrorFormat("[FreeSwitchVoice] HandleDirectoryRequest unknown Event-Calling-Function {0}", eventCallingFunction);
-                    httpResponse.ContentType = "text/xml";
-                    httpResponse.StatusCode = 404;
-                    return MainServer.BadRequest;
-                }
+
+                MainConsole.Instance.ErrorFormat ("[FreeSwitchVoice] HandleDirectoryRequest unknown Event-Calling-Function {0}", eventCallingFunction);
+                httpResponse.ContentType = "text/xml";
+                httpResponse.StatusCode = 404;
+                return MainServer.BadRequest;
             }
         }
 
-        byte[] HandleRegister(string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        byte [] HandleRegister (string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
-            MainConsole.Instance.Info("[FreeSwitchDirectory] HandleRegister called");
+            MainConsole.Instance.Info ("[FreeSwitchVoice] HandleRegister called");
 
             // TODO the password we return needs to match that sent in the request, this is hard coded for now
             string password = "1234";
-            string domain = (string)request["domain"];
-            string user = (string)request["user"];
+            string domain = (string)request ["domain"];
+            string user = (string)request ["user"];
             httpResponse.ContentType = "text/xml";
             httpResponse.StatusCode = 200;
 
-            return Encoding.UTF8.GetBytes(String.Format(
+            return Encoding.UTF8.GetBytes (string.Format (
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
                 "<document type=\"freeswitch/xml\">\r\n" +
                     "<section name=\"directory\" description=\"User Directory\">\r\n" +
@@ -288,20 +261,20 @@ namespace FreeswitchVoice
                 domain, user, password, Context));
         }
 
-        byte[] HandleInvite(string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        byte [] HandleInvite (string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
-            MainConsole.Instance.Info("[FreeSwitchDirectory] HandleInvite called");
+            MainConsole.Instance.Info ("[FreeSwitchVoice] HandleInvite called");
 
             // TODO the password we return needs to match that sent in the request, this is hard coded for now
             string password = "1234";
-            string domain = (string)request["domain"];
-            string user = (string)request["user"];
-            string sipRequestUser = (string)request["sip_request_user"];
+            string domain = (string)request ["domain"];
+            string user = (string)request ["user"];
+            string sipRequestUser = (string)request ["sip_request_user"];
 
             httpResponse.ContentType = "text/xml";
-            httpResponse.StatusCode = 200; 
+            httpResponse.StatusCode = 200;
 
-            return Encoding.UTF8.GetBytes(String.Format(
+            return Encoding.UTF8.GetBytes (string.Format (
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
                 "<document type=\"freeswitch/xml\">\r\n" +
                     "<section name=\"directory\" description=\"User Directory\">\r\n" +
@@ -332,17 +305,17 @@ namespace FreeswitchVoice
                 domain, user, password, sipRequestUser, Context));
         }
 
-        byte[] HandleLocateUser(String Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        byte [] HandleLocateUser (string realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
-            MainConsole.Instance.Info("[FreeSwitchDirectory] HandleLocateUser called");
+            MainConsole.Instance.Info ("[FreeSwitchVoice] HandleLocateUser called");
 
             // TODO the password we return needs to match that sent in the request, this is hard coded for now
-            string domain = (string)request["domain"];
-            string user = (string)request["user"];
+            string domain = (string)request ["domain"];
+            string user = (string)request ["user"];
 
             httpResponse.ContentType = "text/xml";
-            httpResponse.StatusCode = 200; 
-            return Encoding.UTF8.GetBytes(String.Format(
+            httpResponse.StatusCode = 200;
+            return Encoding.UTF8.GetBytes (string.Format (
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
                 "<document type=\"freeswitch/xml\">\r\n" +
                     "<section name=\"directory\" description=\"User Directory\">\r\n" +
@@ -362,17 +335,17 @@ namespace FreeswitchVoice
                 domain, user));
         }
 
-        byte[] HandleConfigSofia(string Context, string Realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
+        byte [] HandleConfigSofia (string Context, string realm, Hashtable request, OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
-            MainConsole.Instance.Info("[FreeSwitchDirectory] HandleConfigSofia called");
+            MainConsole.Instance.Info ("[FreeSwitchVoice] HandleConfigSofia called");
 
             // TODO the password we return needs to match that sent in the request, this is hard coded for now
-            string domain = (string)request["domain"];
+            string domain = (string)request ["domain"];
 
 
             httpResponse.ContentType = "text/xml";
-            httpResponse.StatusCode = 200; 
-            return Encoding.UTF8.GetBytes(String.Format(
+            httpResponse.StatusCode = 200;
+            return Encoding.UTF8.GetBytes (string.Format (
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
                 "<document type=\"freeswitch/xml\">\r\n" +
                     "<section name=\"directory\" description=\"User Directory\">\r\n" +
@@ -412,21 +385,21 @@ namespace FreeswitchVoice
                 domain, Context));
         }
 
-        public string GetJsonConfig()
+        public string GetJsonConfig ()
         {
-            OSDMap map = new OSDMap(9);
+            OSDMap map = new OSDMap (9);
 
-            map.Add("Realm", m_freeSwitchRealm);
-            map.Add("SIPProxy", m_freeSwitchSIPProxy);
-            map.Add("AttemptUseSTUN", m_freeSwitchAttemptUseSTUN);
-            map.Add("EchoServer", m_freeSwitchEchoServer);
-            map.Add("EchoPort", m_freeSwitchEchoPort);
-            map.Add("DefaultWellKnownIP", m_freeSwitchDefaultWellKnownIP);
-            map.Add("DefaultTimeout", m_freeSwitchDefaultTimeout);
-            map.Add("Context", m_freeSwitchContext);
-            map.Add("APIPrefix", m_freeSwitchAPIPrefix);
+            map.Add ("Realm", m_freeSwitchRealm);
+            map.Add ("SIPProxy", m_freeSwitchSIPProxy);
+            map.Add ("AttemptUseSTUN", m_freeSwitchAttemptUseSTUN);
+            map.Add ("EchoServer", m_freeSwitchEchoServer);
+            map.Add ("EchoPort", m_freeSwitchEchoPort);
+            map.Add ("DefaultWellKnownIP", m_freeSwitchDefaultWellKnownIP);
+            map.Add ("DefaultTimeout", m_freeSwitchDefaultTimeout);
+            map.Add ("Context", m_freeSwitchContext);
+            map.Add ("APIPrefix", m_freeSwitchAPIPrefix);
 
-            return OSDParser.SerializeJsonString(map);
+            return OSDParser.SerializeJsonString (map);
         }
     }
 }
