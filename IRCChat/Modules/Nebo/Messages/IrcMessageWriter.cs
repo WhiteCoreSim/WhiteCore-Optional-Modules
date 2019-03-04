@@ -3,264 +3,242 @@ using System.IO;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Globalization;
-using System.Collections.Generic;
 
 namespace MetaBuilders.Irc.Messages
 {
 
-	/// <summary>
-	/// Writes <see cref="MetaBuilders.Irc.Messages.IrcMessage"/> data to a <see cref="TextWriter"/> in irc protocol format.
-	/// </summary>
-	public class IrcMessageWriter : IDisposable
-	{
+    /// <summary>
+    /// Writes <see cref="IrcMessage"/> data to a <see cref="TextWriter"/> in irc protocol format.
+    /// </summary>
+    public class IrcMessageWriter : IDisposable
+    {
 
-		#region Constructors
+        #region Constructors
 
-		/// <summary>
-		/// Creates a new instance of the IrcMessageWriter class without an <see cref="InnerWriter"/> to write to.
-		/// </summary>
-		public IrcMessageWriter()
-		{
-			this.resetDefaults();
-		}
+        /// <summary>
+        /// Creates a new instance of the IrcMessageWriter class without an <see cref="InnerWriter"/> to write to.
+        /// </summary>
+        public IrcMessageWriter ()
+        {
+            resetDefaults ();
+        }
 
-		/// <summary>
-		/// Creates a new instance of the IrcMessageWriter class with the given <see cref="InnerWriter"/> to write to.
-		/// </summary>
-		public IrcMessageWriter( TextWriter writer )
-		{
-			this.writer = writer;
-			this.resetDefaults();
-		}
+        /// <summary>
+        /// Creates a new instance of the IrcMessageWriter class with the given <see cref="InnerWriter"/> to write to.
+        /// </summary>
+        public IrcMessageWriter (TextWriter writer)
+        {
+            _writer = writer;
+            resetDefaults ();
+        }
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets or sets the <see cref="TextWriter"/> which will written to.
-		/// </summary>
-		public TextWriter InnerWriter
-		{
-			get
-			{
-				return this.writer;
-			}
-			set
-			{
-				this.writer = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the <see cref="TextWriter"/> which will written to.
+        /// </summary>
+        public TextWriter InnerWriter {
+            get {
+                return _writer;
+            }
+            set {
+                _writer = value;
+            }
+        }
 
-		private TextWriter writer;
+        TextWriter _writer;
 
-		/// <summary>
-		/// Gets or sets the ID of the sender of the message.
-		/// </summary>
-		public String Sender
-		{
-			get
-			{
-				return sender;
-			}
-			set
-			{
-				sender = value;
-			}
-		}
-		private String sender;
+        /// <summary>
+        /// Gets or sets the ID of the sender of the message.
+        /// </summary>
+        public string Sender {
+            get {
+                return _sender;
+            }
+            set {
+                _sender = value;
+            }
+        }
+        string _sender;
 
-		/// <summary>
-		/// Gets or sets if a new line is appended to the end of messages when they are written.
-		/// </summary>
-		public Boolean AppendNewLine
-		{
-			get
-			{
-				return this.addNewLine;
-			}
-			set
-			{
-				this.addNewLine = value;
-			}
-		}
-		private Boolean addNewLine;
+        /// <summary>
+        /// Gets or sets if a new line is appended to the end of messages when they are written.
+        /// </summary>
+        public bool AppendNewLine {
+            get {
+                return addNewLine;
+            }
+            set {
+                addNewLine = value;
+            }
+        }
+        bool addNewLine;
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// Adds the given possibly-splittable parameter to the writer.
-		/// </summary>
-		/// <param name="value">The parameter to add to the writer</param>
-		/// <param name="splittable">Indicates if the parameter can be split across messages written.</param>
-		public void AddParameter( String value, Boolean splittable )
-		{
-			this.parameters.Add( value );
-			if ( splittable )
-			{
-				this.AddSplittableParameter();
-			}
-		}
+        /// <summary>
+        /// Adds the given possibly-splittable parameter to the writer.
+        /// </summary>
+        /// <param name="value">The parameter to add to the writer</param>
+        /// <param name="splittable">Indicates if the parameter can be split across messages written.</param>
+        public void AddParameter (string value, bool splittable)
+        {
+            parameters.Add (value);
+            if (splittable) {
+                AddSplittableParameter ();
+            }
+        }
 
-		/// <summary>
-		/// Adds the given non-splittable parameter to the writer.
-		/// </summary>
-		/// <param name="value">The parameter to add to the writer</param>
-		public void AddParameter( String value )
-		{
-			this.AddParameter( value, false );
-		}
+        /// <summary>
+        /// Adds the given non-splittable parameter to the writer.
+        /// </summary>
+        /// <param name="value">The parameter to add to the writer</param>
+        public void AddParameter (string value)
+        {
+            AddParameter (value, false);
+        }
 
-		/// <summary>
-		/// Adds a possibly-splittable list of parameters to the writer.
-		/// </summary>
-		/// <param name="value">The list of parameters to add</param>
-		/// <param name="separator">The seperator to write between values in the list</param>
-		/// <param name="splittable">Indicates if the parameters can be split across messages written.</param>
-		public void AddList( IList value, String separator, Boolean splittable )
-		{
-			this.parameters.Add( value );
-			this.listParams[ ( this.parameters.Count - 1 ).ToString( CultureInfo.InvariantCulture ) ] = separator;
-			if ( splittable )
-			{
-				this.AddSplittableParameter();
-			}
-		}
+        /// <summary>
+        /// Adds a possibly-splittable list of parameters to the writer.
+        /// </summary>
+        /// <param name="value">The list of parameters to add</param>
+        /// <param name="separator">The seperator to write between values in the list</param>
+        /// <param name="splittable">Indicates if the parameters can be split across messages written.</param>
+        public void AddList (IList value, string separator, bool splittable)
+        {
+            parameters.Add (value);
+            listParams [(parameters.Count - 1).ToString (CultureInfo.InvariantCulture)] = separator;
+            if (splittable) {
+                AddSplittableParameter ();
+            }
+        }
 
-		/// <summary>
-		/// Adds a splittable list of parameters to the writer.
-		/// </summary>
-		/// <param name="value">The list of parameters to add</param>
-		/// <param name="separator">The seperator to write between values in the list</param>
-		public void AddList( IList value, String separator )
-		{
-			this.AddList( value, separator, true );
-		}
+        /// <summary>
+        /// Adds a splittable list of parameters to the writer.
+        /// </summary>
+        /// <param name="value">The list of parameters to add</param>
+        /// <param name="separator">The seperator to write between values in the list</param>
+        public void AddList (IList value, string separator)
+        {
+            AddList (value, separator, true);
+        }
 
-		/// <summary>
-		/// Writes the current message data to the inner writer in irc protocol format.
-		/// </summary>
-		public void Write()
-		{
-			//TODO Implement message splitting on IrcMessageWriter.Write
-			if ( this.writer == null )
-			{
-				this.writer = new StringWriter( CultureInfo.InvariantCulture );
-			}
+        /// <summary>
+        /// Writes the current message data to the inner writer in irc protocol format.
+        /// </summary>
+        public void Write ()
+        {
+            //TODO Implement message splitting on IrcMessageWriter.Write
+            if (_writer == null) {
+                _writer = new StringWriter (CultureInfo.InvariantCulture);
+            }
 
-			if ( sender != null && sender.Length != 0 )
-			{
-				this.writer.Write( ":" );
-				this.writer.Write( this.sender );
-				this.writer.Write( " " );
-			}
+            if (!string.IsNullOrEmpty (_sender)) {
+                _writer.Write (":");
+                _writer.Write (_sender);
+                _writer.Write (" ");
+            }
 
 
-			Int32 paramCount = this.parameters.Count;
-			if ( paramCount > 0 )
-			{
-				for ( Int32 i = 0; i < paramCount - 1; i++ )
-				{
-					writer.Write( this.GetParamValue( i ) );
-					writer.Write( " " );
-				}
-				String lastParam = GetParamValue( paramCount - 1 );
-				if ( lastParam.IndexOf( " ", StringComparison.Ordinal ) > 0 )
-				{
-					this.writer.Write( ":" );
-				}
-				this.writer.Write( lastParam );
-			}
-			if ( this.addNewLine )
-			{
-				this.writer.Write( System.Environment.NewLine );
-			}
+            int paramCount = parameters.Count;
+            if (paramCount > 0) {
+                for (int i = 0; i < paramCount - 1; i++) {
+                    _writer.Write (GetParamValue (i));
+                    _writer.Write (" ");
+                }
+                string lastParam = GetParamValue (paramCount - 1);
+                if (lastParam.IndexOf (" ", StringComparison.Ordinal) > 0) {
+                    _writer.Write (":");
+                }
+                _writer.Write (lastParam);
+            }
+            if (addNewLine) {
+                _writer.Write (Environment.NewLine);
+            }
 
-			this.resetDefaults();
-		}
+            resetDefaults ();
+        }
 
 
-		#endregion
+        #endregion
 
-		#region Helpers
+        #region Helpers
 
-		private void resetDefaults()
-		{
-			this.addNewLine = true;
-			this.sender = null;
-			this.parameters.Clear();
-			this.listParams.Clear();
-		}
+        void resetDefaults ()
+        {
+            addNewLine = true;
+            _sender = null;
+            parameters.Clear ();
+            listParams.Clear ();
+        }
 
-		private ArrayList parameters = new ArrayList();
-		private NameValueCollection listParams = new NameValueCollection();
-		private NameValueCollection splitParams = new NameValueCollection();
+        ArrayList parameters = new ArrayList ();
+        NameValueCollection listParams = new NameValueCollection ();
+        NameValueCollection splitParams = new NameValueCollection ();
 
-		private void AddSplittableParameter()
-		{
-			splitParams[ parameters.Count.ToString( CultureInfo.InvariantCulture ) ] = String.Empty;
-		}
+        void AddSplittableParameter ()
+        {
+            splitParams [parameters.Count.ToString (CultureInfo.InvariantCulture)] = string.Empty;
+        }
 
-		private String GetParamValue( Int32 index )
-		{
-			Object thisParam = this.parameters[ index ];
+        string GetParamValue (int index)
+        {
+            object thisParam = parameters [index];
 
-			StringCollection thisParamAsCollection = thisParam as StringCollection;
-			if ( thisParamAsCollection != null )
-			{
-				String seperator = this.listParams[ index.ToString( CultureInfo.InvariantCulture ) ];
-				return MetaBuilders.Irc.Messages.MessageUtil.CreateList( thisParamAsCollection, seperator );
-			}
+            StringCollection thisParamAsCollection = thisParam as StringCollection;
+            if (thisParamAsCollection != null) {
+                string seperator = listParams [index.ToString (CultureInfo.InvariantCulture)];
+                return MessageUtil.CreateList (thisParamAsCollection, seperator);
+            }
 
-			IList thisParamAsList = thisParam as IList;
-			if ( thisParamAsList != null )
-			{
-				String seperator = this.listParams[ index.ToString( CultureInfo.InvariantCulture ) ];
-				return MetaBuilders.Irc.Messages.MessageUtil.CreateList( thisParamAsList, seperator );
-			}
+            IList thisParamAsList = thisParam as IList;
+            if (thisParamAsList != null) {
+                string seperator = listParams [index.ToString (CultureInfo.InvariantCulture)];
+                return MessageUtil.CreateList (thisParamAsList, seperator);
+            }
 
-			return thisParam.ToString();
-		}
+            return thisParam.ToString ();
+        }
 
-		#endregion
+        #endregion
 
-		#region IDisposable Members
+        #region IDisposable Members
 
-		private Boolean disposed = false;
+        bool disposed = false;
 
-		/// <summary>
-		/// Implements IDisposable.Dispose
-		/// </summary>
-		public void Dispose()
-		{
-			this.Dispose( true );
-			GC.SuppressFinalize( this );
-		}
+        /// <summary>
+        /// Implements IDisposable.Dispose
+        /// </summary>
+        public void Dispose ()
+        {
+            Dispose (true);
+            GC.SuppressFinalize (this);
+        }
 
-		private void Dispose( Boolean disposing) {
-			if ( !this.disposed )
-			{
-				if ( disposing )
-				{
-					if ( this.writer != null )
-					{
-						this.writer.Dispose();
-					}
-				}
-				disposed = true;
-			}
-		}
+        void Dispose (bool disposing)
+        {
+            if (!disposed) {
+                if (disposing) {
+                    if (_writer != null) {
+                        _writer.Dispose ();
+                    }
+                }
+                disposed = true;
+            }
+        }
 
-		/// <summary>
-		/// The IrcMessageWriter destructor
-		/// </summary>
-		~IrcMessageWriter()
-		{
-			Dispose( false );
-		}
+        /// <summary>
+        /// The IrcMessageWriter destructor
+        /// </summary>
+        ~IrcMessageWriter ()
+        {
+            Dispose (false);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

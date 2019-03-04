@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using MetaBuilders.Irc.Messages;
 
 namespace MetaBuilders.Irc

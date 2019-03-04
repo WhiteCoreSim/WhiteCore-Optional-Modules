@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Runtime.Serialization;
 using System.Globalization;
 using System.Security.Permissions;
@@ -10,257 +9,243 @@ using System.Collections.ObjectModel;
 namespace MetaBuilders.Irc.Messages
 {
 
-	/// <summary>
-	/// Possible actions for each mode change in a <see cref="MetaBuilders.Irc.Messages.ChannelModeMessage"/> or <see cref="MetaBuilders.Irc.Messages.UserModeMessage"/> message.
-	/// </summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Usage", "CA2229:ImplementSerializationConstructors", Justification = "Using IObjectReference instead" ), Serializable]
-	public sealed class ModeAction : MarshalByRefObject, IComparable, ISerializable
-	{
+    /// <summary>
+    /// Possible actions for each mode change in a <see cref="ChannelModeMessage"/> or <see cref="UserModeMessage"/> message.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Usage", "CA2229:ImplementSerializationConstructors", Justification = "Using IObjectReference instead"), Serializable]
+    public sealed class ModeAction : MarshalByRefObject, IComparable, ISerializable
+    {
 
-		#region Static Instances
+        #region Static Instances
 
-		/// <summary>
-		/// Gets the <see cref="ModeAction"/> representing the addition of a mode to a user or channel.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes" )]
-		public static readonly ModeAction Add = new ModeAction( "+" );
-		/// <summary>
-		/// Gets the <see cref="ModeAction"/> representing the removal of a mode from a user or channel.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes" )]
-		public static readonly ModeAction Remove = new ModeAction( "-" );
+        /// <summary>
+        /// Gets the <see cref="ModeAction"/> representing the addition of a mode to a user or channel.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly ModeAction Add = new ModeAction ("+");
+        /// <summary>
+        /// Gets the <see cref="ModeAction"/> representing the removal of a mode from a user or channel.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly ModeAction Remove = new ModeAction ("-");
 
-		#endregion
+        #endregion
 
-		#region Static Properties
+        #region Static Properties
 
-		/// <summary>
-		/// Gets an array of <see cref="ModeAction"/> instances representing all the possible actions.
-		/// </summary>
-		public static IList<ModeAction> Values
-		{
-			get
-			{
-				if ( values == null )
-				{
-					values = new ReadOnlyCollection<ModeAction>( new List<ModeAction> { ModeAction.Add, ModeAction.Remove } );
-				}
-				return values;
-			}
-		}
+        /// <summary>
+        /// Gets an array of <see cref="ModeAction"/> instances representing all the possible actions.
+        /// </summary>
+        public static IList<ModeAction> Values {
+            get {
+                if (values == null) {
+                    values = new ReadOnlyCollection<ModeAction> (new List<ModeAction> { Add, Remove });
+                }
+                return values;
+            }
+        }
 
-		/// <summary>
-		/// Determines if the given string value is representative of any defined ModeActions.
-		/// </summary>
-		public static Boolean IsDefined( String value )
-		{
-			foreach ( ModeAction modeAction in ModeAction.Values )
-			{
-				if ( modeAction.ircName == value )
-				{
-					return true;
-				}
-			}
-			return false;
-		}
+        /// <summary>
+        /// Determines if the given string value is representative of any defined ModeActions.
+        /// </summary>
+        public static bool IsDefined (string value)
+        {
+            foreach (ModeAction modeAction in Values) {
+                if (modeAction._ircName == value) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
-		#endregion
+        #endregion
 
-		#region Static Methods
+        #region Static Methods
 
-		/// <summary>
-		/// Returns the correct <see cref="ModeAction"/> for the given string value.
-		/// </summary>
-		/// <param name="value">The String to parse.</param>
-		public static ModeAction Parse( String value )
-		{
-			return Parse( value, false );
-		}
+        /// <summary>
+        /// Returns the correct <see cref="ModeAction"/> for the given string value.
+        /// </summary>
+        /// <param name="value">The String to parse.</param>
+        public static ModeAction Parse (string value)
+        {
+            return Parse (value, false);
+        }
 
-		/// <summary>
-		/// Returns the correct <see cref="ModeAction"/> for the given string value.
-		/// </summary>
-		/// <param name="value">The String to parse.</param>
-		/// <param name="ignoreCase">Decides whether the parsing is case-specific.</param>
-		public static ModeAction Parse( String value, Boolean ignoreCase )
-		{
-			if ( value == null )
-			{
-				throw new ArgumentNullException( "value" );
-			}
-			foreach ( ModeAction modeAction in ModeAction.Values )
-			{
-				StringComparison compareMode = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-				if ( String.Compare( modeAction.ircName, value, compareMode ) == 0 )
-				{
-					return modeAction;
-				}
-			}
-			throw new ArgumentException( String.Format( CultureInfo.InvariantCulture, NeboResources.ModeActionDoesNotExist, value ), "value" );
-		}
+        /// <summary>
+        /// Returns the correct <see cref="ModeAction"/> for the given string value.
+        /// </summary>
+        /// <param name="value">The String to parse.</param>
+        /// <param name="ignoreCase">Decides whether the parsing is case-specific.</param>
+        public static ModeAction Parse (string value, bool ignoreCase)
+        {
+            if (value == null) {
+                throw new ArgumentNullException ("value");
+            }
+            foreach (ModeAction modeAction in Values) {
+                StringComparison compareMode = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                if (string.Compare (modeAction._ircName, value, compareMode) == 0) {
+                    return modeAction;
+                }
+            }
+            throw new ArgumentException (string.Format (CultureInfo.InvariantCulture, NeboResources.ModeActionDoesNotExist, value), "value");
+        }
 
-		#endregion
+        #endregion
 
-		#region CTor
+        #region CTor
 
-		/// <summary>
-		/// Creates a new instance of the <see cref="ModeAction"/> class.
-		/// </summary>
-		/// <remarks>
-		/// This is private so that only the Enum-like static references can ever be used.
-		/// </remarks>
-		private ModeAction( String ircName )
-		{
-			this.ircName = ircName;
-		}
+        /// <summary>
+        /// Creates a new instance of the <see cref="ModeAction"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This is private so that only the Enum-like static references can ever be used.
+        /// </remarks>
+        ModeAction (string ircName)
+        {
+            _ircName = ircName;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// Gets a string representing the <see cref="ModeAction"/> in irc format.
-		/// </summary>
-		public override String ToString()
-		{
-			return this.ircName;
-		}
+        /// <summary>
+        /// Gets a string representing the <see cref="ModeAction"/> in irc format.
+        /// </summary>
+        public override string ToString ()
+        {
+            return _ircName;
+        }
 
-		#endregion
+        #endregion
 
-		#region Equality/Operators
+        #region Equality/Operators
 
-		/// <summary>
-		/// Implements Equals based on a string value.
-		/// </summary>
-		public override bool Equals( object obj )
-		{
-			ModeAction other = obj as ModeAction;
-			if ( other == null )
-			{
-				return base.Equals( obj );
-			}
-			return this.ircName.Equals( other.ircName );
-		}
+        /// <summary>
+        /// Implements Equals based on a string value.
+        /// </summary>
+        public override bool Equals (object obj)
+        {
+            ModeAction other = obj as ModeAction;
+            if (other == null) {
+                return base.Equals (obj);
+            }
+            return _ircName.Equals (other._ircName);
+        }
 
-		/// <summary>
-		/// Implements Equals based on a string value.
-		/// </summary>
-		/// <returns></returns>
-		public override int GetHashCode()
-		{
-			return this.ircName.GetHashCode();
-		}
+        /// <summary>
+        /// Implements Equals based on a string value.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode ()
+        {
+            return _ircName.GetHashCode ();
+        }
 
-		/// <summary>
-		/// Implements the operator based on a string value.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y" ), System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x" )]
-		public static Boolean operator ==( ModeAction x, ModeAction y )
-		{
-			// If both are null, or both are same instance, return true.
-			if ( System.Object.ReferenceEquals( x, y ) )
-			{
-				return true;
-			}
+        /// <summary>
+        /// Implements the operator based on a string value.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
+        public static bool operator == (ModeAction x, ModeAction y)
+        {
+            // If both are null, or both are same instance, return true.
+            if (ReferenceEquals (x, y)) {
+                return true;
+            }
 
-			// If one is null, but not both, return false.
-			if ( ( (object)x == null ) || ( (object)y == null ) )
-			{
-				return false;
-			}
+            // If one is null, but not both, return false.
+            if (((object)x == null) || ((object)y == null)) {
+                return false;
+            }
 
-			return x.ircName == y.ircName;
-		}
+            return x._ircName == y._ircName;
+        }
 
-		/// <summary>
-		/// Implements the operator based on a string value.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y" ), System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x" )]
-		public static Boolean operator !=( ModeAction x, ModeAction y )
-		{
-			return !( x == y );
-		}
+        /// <summary>
+        /// Implements the operator based on a string value.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
+        public static bool operator != (ModeAction x, ModeAction y)
+        {
+            return !(x == y);
+        }
 
-		/// <summary>
-		/// Implements the operator based on a string value.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y" ), System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x" )]
-		public static Boolean operator <( ModeAction x, ModeAction y )
-		{
-			return String.CompareOrdinal( x.ircName, y.ircName ) < 0;
-		}
+        /// <summary>
+        /// Implements the operator based on a string value.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
+        public static bool operator < (ModeAction x, ModeAction y)
+        {
+            return string.CompareOrdinal (x._ircName, y._ircName) < 0;
+        }
 
-		/// <summary>
-		/// Implements the operator based on a string value.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y" ), System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x" )]
-		public static Boolean operator >( ModeAction x, ModeAction y )
-		{
-			return String.CompareOrdinal( x.ircName, y.ircName ) > 0;
-		}
+        /// <summary>
+        /// Implements the operator based on a string value.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
+        public static bool operator > (ModeAction x, ModeAction y)
+        {
+            return string.CompareOrdinal (x._ircName, y._ircName) > 0;
+        }
 
-		#endregion
+        #endregion
 
-		#region IComparable
+        #region IComparable
 
-		/// <summary>
-		/// Implements <see cref="IComparable.CompareTo"/>
-		/// </summary>
-		public Int32 CompareTo( Object obj )
-		{
-			if ( obj == null )
-			{
-				return 1;
-			}
-			ModeAction ma = obj as ModeAction;
-			if ( ma == null )
-			{
-				throw new ArgumentException( String.Format( CultureInfo.InvariantCulture, NeboResources.ObjectMustBeOfType, "ModeAction" ), "obj" );
-			}
-			return String.Compare( this.ircName, ma.ircName, StringComparison.Ordinal );
-		}
+        /// <summary>
+        /// Implements <see cref="IComparable.CompareTo"/>
+        /// </summary>
+        public int CompareTo (object obj)
+        {
+            if (obj == null) {
+                return 1;
+            }
+            ModeAction ma = obj as ModeAction;
+            if (ma == null) {
+                throw new ArgumentException (string.Format (CultureInfo.InvariantCulture, NeboResources.ObjectMustBeOfType, "ModeAction"), "obj");
+            }
+            return string.Compare (_ircName, ma._ircName, StringComparison.Ordinal);
+        }
 
-		#endregion
+        #endregion
 
-		#region ISerializable
+        #region ISerializable
 
-		/// <summary>
-		/// Implements ISerializable.GetObjectData
-		/// </summary>
-		[SecurityPermission( SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter )]
-		[SecurityPermission( SecurityAction.Demand, SerializationFormatter = true )]
-		public void GetObjectData( SerializationInfo info, StreamingContext context )
-		{
-			if ( info != null )
-			{
-				info.SetType( typeof( ModeActionProxy ) );
-				info.AddValue( "IrcName", this.ircName );
-			}
-		}
+        /// <summary>
+        /// Implements ISerializable.GetObjectData
+        /// </summary>
+        [SecurityPermission (SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        [SecurityPermission (SecurityAction.Demand, SerializationFormatter = true)]
+        public void GetObjectData (SerializationInfo info, StreamingContext context)
+        {
+            if (info != null) {
+                info.SetType (typeof (ModeActionProxy));
+                info.AddValue ("IrcName", _ircName);
+            }
+        }
 
-		[Serializable]
-		private sealed class ModeActionProxy : IObjectReference, ISerializable
-		{
-			private ModeActionProxy( SerializationInfo info, StreamingContext context )
-			{
-				this.ircName = info.GetString( "IrcName" );
-			}
-			private String ircName = "";
-			public object GetRealObject( StreamingContext context )
-			{
-				return ModeAction.Parse( this.ircName );
-			}
-			[SecurityPermission( SecurityAction.Demand, SerializationFormatter = true )]
-			public void GetObjectData( SerializationInfo info, StreamingContext context )
-			{
-				throw new NotImplementedException();
-			}
-		}
+        [Serializable]
+        sealed class ModeActionProxy : IObjectReference, ISerializable
+        {
+            ModeActionProxy (SerializationInfo info, StreamingContext context)
+            {
+                ircName = info.GetString ("IrcName");
+            }
+            string ircName = "";
+            public object GetRealObject (StreamingContext context)
+            {
+                return Parse (ircName);
+            }
+            [SecurityPermission (SecurityAction.Demand, SerializationFormatter = true)]
+            public void GetObjectData (SerializationInfo info, StreamingContext context)
+            {
+                throw new NotImplementedException ();
+            }
+        }
 
-		#endregion
+        #endregion
 
-		private String ircName;
-		private static ReadOnlyCollection<ModeAction> values;
-	}
+        string _ircName;
+        static ReadOnlyCollection<ModeAction> values;
+    }
 }
