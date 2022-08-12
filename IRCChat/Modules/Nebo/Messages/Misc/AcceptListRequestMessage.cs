@@ -22,11 +22,11 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Validates this message against the given server support
         /// </summary>
-        public override void Validate (ServerSupport serverSupport)
+        public override void Validate(ServerSupport serverSupport)
         {
-            base.Validate (serverSupport);
+            base.Validate(serverSupport);
             if (serverSupport != null && !serverSupport.CallerId) {
-                throw new InvalidMessageException (NeboResources.ServerDoesNotSupportAccept);
+                throw new InvalidMessageException(NeboResources.ServerDoesNotSupportAccept);
             }
 
         }
@@ -34,30 +34,30 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!base.CanParse (unparsedMessage)) {
+            if (!base.CanParse(unparsedMessage)) {
                 return false;
             }
-            string firstParam = MessageUtil.GetParameter (unparsedMessage, 0);
+            string firstParam = MessageUtil.GetParameter(unparsedMessage, 0);
             return (firstParam == "*");
         }
 
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter ("*");
+            base.AddParametersToFormat(writer);
+            writer.AddParameter("*");
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnAcceptListRequest (new IrcMessageEventArgs<AcceptListRequestMessage> (this));
+            conduit.OnAcceptListRequest(new IrcMessageEventArgs<AcceptListRequestMessage>(this));
         }
 
     }

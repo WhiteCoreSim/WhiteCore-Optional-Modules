@@ -15,7 +15,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="KnockRequestMessage"/>.
         /// </summary>
-        public KnockRequestMessage ()
+        public KnockRequestMessage()
         {
             InternalNumeric = 710;
         }
@@ -44,43 +44,43 @@ namespace MetaBuilders.Irc.Messages
                 knocker = value;
             }
         }
-        User knocker = new User ();
+        User knocker = new User();
 
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (Channel);
-            writer.AddParameter (Knocker.ToString ());
-            writer.AddParameter ("has asked for an invite.");
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(Channel);
+            writer.AddParameter(Knocker.ToString());
+            writer.AddParameter("has asked for an invite.");
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count > 1) {
-                Channel = parameters [1];
+                Channel = parameters[1];
             } else {
                 Channel = "";
             }
             if (parameters.Count > 2) {
-                Knocker = new User (parameters [2]);
+                Knocker = new User(parameters[2]);
             } else {
-                Knocker = new User ();
+                Knocker = new User();
             }
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnKnockRequest (new IrcMessageEventArgs<KnockRequestMessage> (this));
+            conduit.OnKnockRequest(new IrcMessageEventArgs<KnockRequestMessage>(this));
         }
 
     }

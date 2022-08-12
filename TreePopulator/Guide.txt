@@ -1,4 +1,4 @@
-WHiteCore Active trees module
+WhiteCore Active trees module
 =============================
 
 Tree Commands used in the WhiteCore console

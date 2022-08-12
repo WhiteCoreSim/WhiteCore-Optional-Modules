@@ -16,7 +16,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="ClientInfoRequestMessage"/> class
         /// </summary>
-        public ClientInfoRequestMessage ()
+        public ClientInfoRequestMessage()
         {
             InternalCommand = "CLIENTINFO";
         }
@@ -32,34 +32,34 @@ namespace MetaBuilders.Irc.Messages
                 return parameters;
             }
         }
-        StringCollection parameters = new StringCollection ();
+        StringCollection parameters = new StringCollection();
 
         /// <summary>
         /// Gets the data payload of the Ctcp request.
         /// </summary>
         protected override string ExtendedData {
             get {
-                return MessageUtil.CreateList (parameters, " ");
+                return MessageUtil.CreateList(parameters, " ");
             }
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnClientInfoRequest (new IrcMessageEventArgs<ClientInfoRequestMessage> (this));
+            conduit.OnClientInfoRequest(new IrcMessageEventArgs<ClientInfoRequestMessage>(this));
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            Parameters.Clear ();
-            string paramsList = CtcpUtil.GetExtendedData (unparsedMessage);
-            Parameters.AddRange (paramsList.Split (' '));
+            base.Parse(unparsedMessage);
+            Parameters.Clear();
+            string paramsList = CtcpUtil.GetExtendedData(unparsedMessage);
+            Parameters.AddRange(paramsList.Split(' '));
         }
     }
 

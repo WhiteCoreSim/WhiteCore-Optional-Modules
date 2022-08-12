@@ -18,14 +18,14 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the AwayMessage class.
         /// </summary>
-        public AwayMessage ()
+        public AwayMessage()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the AwayMessage class with the given reason.
         /// </summary>
-        public AwayMessage (string reason)
+        public AwayMessage(string reason)
         {
             this.reason = reason;
         }
@@ -55,32 +55,32 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
+            base.AddParametersToFormat(writer);
             if (Reason.Length != 0) {
-                writer.AddParameter (Reason);
+                writer.AddParameter(Reason);
             } else {
-                writer.AddParameter ("away");
+                writer.AddParameter("away");
             }
         }
 
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            return (base.CanParse (unparsedMessage) && MessageUtil.GetParameters (unparsedMessage).Count > 0);
+            return (base.CanParse(unparsedMessage) && MessageUtil.GetParameters(unparsedMessage).Count > 0);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count > 0) {
-                Reason = parameters [0];
+                Reason = parameters[0];
             } else {
                 Reason = "";
             }
@@ -89,9 +89,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnAway (new IrcMessageEventArgs<AwayMessage> (this));
+            conduit.OnAway(new IrcMessageEventArgs<AwayMessage>(this));
         }
 
     }

@@ -31,9 +31,9 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// A string representation of the mode.
         /// </summary>
-        public override string ToString ()
+        public override string ToString()
         {
-            return Action.ToString () + Symbol;
+            return Action.ToString() + Symbol;
         }
 
         /// <summary>
@@ -41,10 +41,10 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// </summary>
         /// <param name="msg">The message which will be modified to include this mode.</param>
         /// <param name="includeAction">Specifies if the action modifier should be applied.</param>
-        public virtual void ApplyTo (ChannelModeMessage msg, bool includeAction)
+        public virtual void ApplyTo(ChannelModeMessage msg, bool includeAction)
         {
-            AddChanges (msg, includeAction);
-            AddParameter (msg);
+            AddChanges(msg, includeAction);
+            AddParameter(msg);
         }
 
         /// <summary>
@@ -52,10 +52,10 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// </summary>
         /// <param name="msg">The message which will be modified to include this mode.</param>
         /// <param name="includeAction">Specifies if the action modifier should be applied.</param>
-        protected virtual void AddChanges (ChannelModeMessage msg, bool includeAction)
+        protected virtual void AddChanges(ChannelModeMessage msg, bool includeAction)
         {
             if (includeAction) {
-                msg.ModeChanges += Action.ToString ();
+                msg.ModeChanges += Action.ToString();
             }
             msg.ModeChanges += Symbol;
         }
@@ -64,7 +64,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Applies this mode to the ModeArguments property of the given <see cref="ChannelModeMessage" />.
         /// </summary>
         /// <param name="msg">The message which will be modified to include this mode.</param>
-        protected virtual void AddParameter (ChannelModeMessage msg)
+        protected virtual void AddParameter(ChannelModeMessage msg)
         {
 
         }

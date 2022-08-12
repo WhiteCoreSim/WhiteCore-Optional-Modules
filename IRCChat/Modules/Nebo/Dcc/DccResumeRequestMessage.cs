@@ -20,7 +20,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="DccResumeRequestMessage"/> class.
         /// </summary>
-        public DccResumeRequestMessage ()
+        public DccResumeRequestMessage()
         {
             InternalCommand = "DCC";
         }
@@ -30,12 +30,12 @@ namespace MetaBuilders.Irc.Messages
         /// </summary>
         protected override string ExtendedData {
             get {
-                return MessageUtil.ParametersToString (
+                return MessageUtil.ParametersToString(
                     false,
                     DccCommand,
                     FileName,
-                    Port.ToString (CultureInfo.InvariantCulture),
-                    Position.ToString (CultureInfo.InvariantCulture));
+                    Port.ToString(CultureInfo.InvariantCulture),
+                    Position.ToString(CultureInfo.InvariantCulture));
             }
         }
 
@@ -87,44 +87,44 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!base.CanParse (unparsedMessage)) {
+            if (!base.CanParse(unparsedMessage)) {
                 return false;
             }
 
-            return CanParseDccCommand (DccUtil.GetCommand (unparsedMessage));
+            return CanParseDccCommand(DccUtil.GetCommand(unparsedMessage));
         }
 
         /// <summary>
         /// Determines if the message's DCC command is compatible with this message.
         /// </summary>
-        public virtual bool CanParseDccCommand (string command)
+        public virtual bool CanParseDccCommand(string command)
         {
             if (command == null) {
                 return false;
             }
-            return DccCommand.EndsWith (command, StringComparison.OrdinalIgnoreCase);
+            return DccCommand.EndsWith(command, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            FileName = DccUtil.GetArgument (unparsedMessage);
-            StringCollection p = DccUtil.GetParameters (unparsedMessage);
-            Port = Convert.ToInt32 (p [2], CultureInfo.InvariantCulture);
-            Position = Convert.ToInt32 (p [3], CultureInfo.InvariantCulture);
+            base.Parse(unparsedMessage);
+            FileName = DccUtil.GetArgument(unparsedMessage);
+            StringCollection p = DccUtil.GetParameters(unparsedMessage);
+            Port = Convert.ToInt32(p[2], CultureInfo.InvariantCulture);
+            Position = Convert.ToInt32(p[3], CultureInfo.InvariantCulture);
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnDccResumeRequest (new IrcMessageEventArgs<DccResumeRequestMessage> (this));
+            conduit.OnDccResumeRequest(new IrcMessageEventArgs<DccResumeRequestMessage>(this));
         }
 
     }

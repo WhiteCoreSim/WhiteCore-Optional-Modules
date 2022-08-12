@@ -73,14 +73,14 @@ namespace MetaBuilders.Irc.Messages
         string real_Name = "";
 
         /// <exclude />
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!base.CanParse (unparsedMessage)) {
+            if (!base.CanParse(unparsedMessage)) {
                 return false;
             }
-            StringCollection p = MessageUtil.GetParameters (unparsedMessage);
+            StringCollection p = MessageUtil.GetParameters(unparsedMessage);
             int tempInt;
-            if (p.Count != 4 || !int.TryParse (p [1], out tempInt) || p [2] != "*") {
+            if (p.Count != 4 || !int.TryParse(p[1], out tempInt) || p[2] != "*") {
                 return false;
             }
             return true;
@@ -89,30 +89,30 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (UserName);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(UserName);
             int modeBitMask = 0;
             if (InitialInvisibility)
                 modeBitMask += 8;
             if (InitialWallops)
                 modeBitMask += 4;
-            writer.AddParameter (modeBitMask.ToString (CultureInfo.InvariantCulture));
-            writer.AddParameter ("*");
-            writer.AddParameter (RealName);
+            writer.AddParameter(modeBitMask.ToString(CultureInfo.InvariantCulture));
+            writer.AddParameter("*");
+            writer.AddParameter(RealName);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count >= 4) {
-                UserName = parameters [0];
-                RealName = parameters [3];
-                int modeBitMask = Convert.ToInt32 (parameters [1], CultureInfo.InvariantCulture);
+                UserName = parameters[0];
+                RealName = parameters[3];
+                int modeBitMask = Convert.ToInt32(parameters[1], CultureInfo.InvariantCulture);
                 InitialInvisibility = ((modeBitMask & 8) == 8);
                 InitialWallops = ((modeBitMask & 4) == 4);
             } else {
@@ -126,9 +126,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnUserNotification (new IrcMessageEventArgs<UserNotificationMessage> (this));
+            conduit.OnUserNotification(new IrcMessageEventArgs<UserNotificationMessage>(this));
         }
 
     }

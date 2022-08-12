@@ -23,11 +23,11 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Validates this message against the given server support
         /// </summary>
-        public override void Validate (ServerSupport serverSupport)
+        public override void Validate(ServerSupport serverSupport)
         {
-            base.Validate (serverSupport);
+            base.Validate(serverSupport);
             if (serverSupport != null && !serverSupport.CallerId) {
-                throw new InvalidMessageException (NeboResources.ServerDoesNotSupportAccept);
+                throw new InvalidMessageException(NeboResources.ServerDoesNotSupportAccept);
             }
 
         }
@@ -41,7 +41,7 @@ namespace MetaBuilders.Irc.Messages
         public StringCollection AddedNicks {
             get {
                 if (addedNicks == null) {
-                    addedNicks = new StringCollection ();
+                    addedNicks = new StringCollection();
                 }
                 return addedNicks;
             }
@@ -54,7 +54,7 @@ namespace MetaBuilders.Irc.Messages
         public StringCollection RemovedNicks {
             get {
                 if (removedNicks == null) {
-                    removedNicks = new StringCollection ();
+                    removedNicks = new StringCollection();
                 }
                 return removedNicks;
             }
@@ -68,27 +68,27 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!base.CanParse (unparsedMessage)) {
+            if (!base.CanParse(unparsedMessage)) {
                 return false;
             }
-            string firstParam = MessageUtil.GetParameter (unparsedMessage, 0);
+            string firstParam = MessageUtil.GetParameter(unparsedMessage, 0);
             return (firstParam != "*");
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
 
-            foreach (string nick in parameters [0].Split (',')) {
-                if (nick.StartsWith ("-", StringComparison.Ordinal)) {
-                    RemovedNicks.Add (nick.Substring (1));
+            foreach (string nick in parameters[0].Split(',')) {
+                if (nick.StartsWith("-", StringComparison.Ordinal)) {
+                    RemovedNicks.Add(nick.Substring(1));
                 } else {
-                    AddedNicks.Add (nick);
+                    AddedNicks.Add(nick);
                 }
             }
         }
@@ -100,18 +100,18 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            StringCollection allNicks = new StringCollection ();
+            base.AddParametersToFormat(writer);
+            StringCollection allNicks = new StringCollection();
             foreach (string rNick in RemovedNicks) {
-                allNicks.Add ("-" + rNick);
+                allNicks.Add("-" + rNick);
             }
             foreach (string aNick in AddedNicks) {
-                allNicks.Add (aNick);
+                allNicks.Add(aNick);
             }
 
-            writer.AddList (allNicks, ",", true);
+            writer.AddList(allNicks, ",", true);
         }
 
         #endregion
@@ -121,9 +121,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnAcceptListEditor (new IrcMessageEventArgs<AcceptListEditorMessage> (this));
+            conduit.OnAcceptListEditor(new IrcMessageEventArgs<AcceptListEditorMessage>(this));
         }
 
         #endregion

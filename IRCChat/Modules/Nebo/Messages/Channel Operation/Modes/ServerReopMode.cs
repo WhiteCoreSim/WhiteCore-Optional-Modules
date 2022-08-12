@@ -12,14 +12,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="ServerReopMode"/> class.
         /// </summary>
-        public ServerReopMode ()
+        public ServerReopMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="ServerReopMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public ServerReopMode (ModeAction action)
+        public ServerReopMode(ModeAction action)
         {
             Action = action;
         }

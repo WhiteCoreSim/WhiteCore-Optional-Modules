@@ -1,9 +1,9 @@
 using System;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
-using System.Globalization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace MetaBuilders.Irc
 {
@@ -11,12 +11,12 @@ namespace MetaBuilders.Irc
     /// <summary>
     /// The nick prefixes that represent user level status in a channel.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Usage", "CA2229:ImplementSerializationConstructors", Justification = "Using IObjectReference instead"), Serializable]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2229:ImplementSerializationConstructors", Justification = "Using IObjectReference instead"), Serializable]
     public sealed class ChannelStatus : MarshalByRefObject, IComparable, ISerializable
     {
 
-        static List<ChannelStatus> newItems = new List<ChannelStatus> ();
-        static List<ChannelStatus> definedItems = new List<ChannelStatus> ();
+        static List<ChannelStatus> newItems = new List<ChannelStatus>();
+        static List<ChannelStatus> definedItems = new List<ChannelStatus>();
         static ReadOnlyCollection<ChannelStatus> values;
 
 
@@ -25,23 +25,23 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Gets the <see cref="ChannelStatus"/> representing the operator status level.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly ChannelStatus Operator = new ChannelStatus ("@");
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly ChannelStatus Operator = new ChannelStatus("@");
         /// <summary>
         /// Gets the <see cref="ChannelStatus"/> representing the half-operator status level.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly ChannelStatus HalfOperator = new ChannelStatus ("%");
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly ChannelStatus HalfOperator = new ChannelStatus("%");
         /// <summary>
         /// Gets the <see cref="ChannelStatus"/> representing the voiced status level.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly ChannelStatus Voice = new ChannelStatus ("+");
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly ChannelStatus Voice = new ChannelStatus("+");
         /// <summary>
         /// Gets the <see cref="ChannelStatus"/> representing the no special status level.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly ChannelStatus None = new ChannelStatus ("");
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+        public static readonly ChannelStatus None = new ChannelStatus("");
 
         #endregion
 
@@ -54,7 +54,7 @@ namespace MetaBuilders.Irc
         /// If the given status is not defined already, a new status is created.
         /// This same new status is used for all future calls to GetInstance.
         /// </remarks>
-        public static ChannelStatus GetInstance (string symbol)
+        public static ChannelStatus GetInstance(string symbol)
         {
             foreach (ChannelStatus definedItem in definedItems) {
                 if (definedItem.symbol == symbol) {
@@ -67,18 +67,18 @@ namespace MetaBuilders.Irc
                     return newItem;
                 }
             }
-            ChannelStatus newRef = new ChannelStatus (symbol, false);
-            newItems.Add (newRef);
+            ChannelStatus newRef = new ChannelStatus(symbol, false);
+            newItems.Add(newRef);
             return newRef;
         }
 
         /// <summary>
         /// Determines if the given ChannelStatus is one of the defined ChannelStatuses.
         /// </summary>
-        public static bool IsDefined (ChannelStatus item)
+        public static bool IsDefined(ChannelStatus item)
         {
             foreach (ChannelStatus definedItem in definedItems) {
-                if (definedItem.Equals (item)) {
+                if (definedItem.Equals(item)) {
                     return true;
                 }
             }
@@ -88,7 +88,7 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Determines if the given symbol is any of the known channel statuses.
         /// </summary>
-        public static bool Exists (string symbol)
+        public static bool Exists(string symbol)
         {
             foreach (ChannelStatus definedItem in definedItems) {
                 if (definedItem.symbol == symbol) {
@@ -113,7 +113,7 @@ namespace MetaBuilders.Irc
         public static IList<ChannelStatus> Values {
             get {
                 if (values == null) {
-                    values = new ReadOnlyCollection<ChannelStatus> (new List<ChannelStatus>
+                    values = new ReadOnlyCollection<ChannelStatus>(new List<ChannelStatus>
                     {
                         ChannelStatus.None,
                         ChannelStatus.Operator,
@@ -132,20 +132,20 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Creates a new instance of the <see cref="ChannelStatus"/> class.
         /// </summary>
-        ChannelStatus (string symbol)
+        ChannelStatus(string symbol)
             :
-            this (symbol, true)
+            this(symbol, true)
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="ChannelStatus"/> class.
         /// </summary>
-        ChannelStatus (string symbol, bool isDefined)
+        ChannelStatus(string symbol, bool isDefined)
         {
             this.symbol = symbol;
             if (isDefined) {
-                definedItems.Add (this);
+                definedItems.Add(this);
             }
         }
 
@@ -170,7 +170,7 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Creates a representation of the message in irc format.
         /// </summary>
-        public override string ToString ()
+        public override string ToString()
         {
             return Symbol;
         }
@@ -183,32 +183,32 @@ namespace MetaBuilders.Irc
         /// Determines if the given ChannelStatus is equal to this one.
         /// </summary>
         /// <remarks>This equality is determined by equality of the Symbol property.</remarks>
-        public override bool Equals (object obj)
+        public override bool Equals(object obj)
         {
             ChannelStatus other = obj as ChannelStatus;
             if (other == null) {
-                return base.Equals (obj);
+                return base.Equals(obj);
             }
-            return symbol.Equals (other.symbol);
+            return symbol.Equals(other.symbol);
         }
 
         /// <summary>
         /// Implements GetHashCode using the Symbol property.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode ()
+        public override int GetHashCode()
         {
-            return symbol.GetHashCode ();
+            return symbol.GetHashCode();
         }
 
         /// <summary>
         /// Implements the operator based on the Symbol property.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
-        public static bool operator == (ChannelStatus x, ChannelStatus y)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
+        public static bool operator ==(ChannelStatus x, ChannelStatus y)
         {
             // If both are null, or both are same instance, return true.
-            if (ReferenceEquals (x, y)) {
+            if (ReferenceEquals(x, y)) {
                 return true;
             }
 
@@ -223,8 +223,8 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Implements the operator based on the Symbol property.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
-        public static bool operator != (ChannelStatus x, ChannelStatus y)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
+        public static bool operator !=(ChannelStatus x, ChannelStatus y)
         {
             return !(x == y);
         }
@@ -232,19 +232,19 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Implements the operator based on the Symbol property.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
-        public static bool operator < (ChannelStatus x, ChannelStatus y)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
+        public static bool operator <(ChannelStatus x, ChannelStatus y)
         {
-            return string.Compare (x.symbol, y.symbol, StringComparison.OrdinalIgnoreCase) < 0;
+            return string.Compare(x.symbol, y.symbol, StringComparison.OrdinalIgnoreCase) < 0;
         }
 
         /// <summary>
         /// Implements the operator based on the Symbol property.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
-        public static bool operator > (ChannelStatus x, ChannelStatus y)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "y"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "x")]
+        public static bool operator >(ChannelStatus x, ChannelStatus y)
         {
-            return string.Compare (x.symbol, y.symbol, StringComparison.OrdinalIgnoreCase) > 0;
+            return string.Compare(x.symbol, y.symbol, StringComparison.OrdinalIgnoreCase) > 0;
         }
 
         #endregion
@@ -254,16 +254,16 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Implements <see cref="IComparable.CompareTo"/>
         /// </summary>
-        public int CompareTo (object obj)
+        public int CompareTo(object obj)
         {
             if (obj == null) {
                 return 1;
             }
             ChannelStatus other = obj as ChannelStatus;
             if (other == null) {
-                throw new ArgumentException (string.Format (CultureInfo.InvariantCulture, NeboResources.ObjectMustBeOfType, "ChannelStatus"), "obj");
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, NeboResources.ObjectMustBeOfType, "ChannelStatus"), "obj");
             }
-            return string.Compare (this.symbol, other.symbol, StringComparison.OrdinalIgnoreCase);
+            return string.Compare(this.symbol, other.symbol, StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion
@@ -273,32 +273,32 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Implements ISerializable.GetObjectData
         /// </summary>
-        [SecurityPermission (SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        [SecurityPermission (SecurityAction.Demand, SerializationFormatter = true)]
-        public void GetObjectData (SerializationInfo info, StreamingContext context)
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info != null) {
-                info.SetType (typeof (ChannelStatusProxy));
-                info.AddValue ("Symbol", symbol);
+                info.SetType(typeof(ChannelStatusProxy));
+                info.AddValue("Symbol", symbol);
             }
         }
 
         [Serializable]
         sealed class ChannelStatusProxy : IObjectReference, ISerializable
         {
-            ChannelStatusProxy (SerializationInfo info, StreamingContext context)
+            ChannelStatusProxy(SerializationInfo info, StreamingContext context)
             {
-                symbol = info.GetString ("Symbol");
+                symbol = info.GetString("Symbol");
             }
             string symbol = "";
-            public object GetRealObject (StreamingContext context)
+            public object GetRealObject(StreamingContext context)
             {
-                return GetInstance (symbol);
+                return GetInstance(symbol);
             }
-            [SecurityPermission (SecurityAction.Demand, SerializationFormatter = true)]
-            public void GetObjectData (SerializationInfo info, StreamingContext context)
+            [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
             {
-                throw new NotImplementedException ();
+                throw new NotImplementedException();
             }
         }
 

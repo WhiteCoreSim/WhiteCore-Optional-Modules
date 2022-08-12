@@ -27,7 +27,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the ChannelModeMessage class.
         /// </summary>
-        public ChannelModeMessage ()
+        public ChannelModeMessage()
         {
         }
 
@@ -37,11 +37,11 @@ namespace MetaBuilders.Irc.Messages
         /// <param name="channel">The name of the channel being affected.</param>
         /// <param name="modeChanges">The mode changes being applied.</param>
         /// <param name="modeArguments">The arguments ( parameters ) for the <see cref="ModeChanges"/> property.</param>
-        public ChannelModeMessage (string channel, string modeChanges, params string [] modeArguments)
+        public ChannelModeMessage(string channel, string modeChanges, params string[] modeArguments)
         {
             this.channel = channel;
             this.modeChanges = modeChanges;
-            this.modeArguments.AddRange (modeArguments);
+            this.modeArguments.AddRange(modeArguments);
         }
 
         /// <summary>
@@ -85,19 +85,19 @@ namespace MetaBuilders.Irc.Messages
                 return modeArguments;
             }
         }
-        StringCollection modeArguments = new StringCollection ();
+        StringCollection modeArguments = new StringCollection();
 
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!base.CanParse (unparsedMessage)) {
+            if (!base.CanParse(unparsedMessage)) {
                 return false;
             }
-            StringCollection p = MessageUtil.GetParameters (unparsedMessage);
+            StringCollection p = MessageUtil.GetParameters(unparsedMessage);
             if (p.Count >= 1) {
-                return MessageUtil.HasValidChannelPrefix (p [0]);
+                return MessageUtil.HasValidChannelPrefix(p[0]);
             }
             return false;
         }
@@ -105,21 +105,21 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
-            Channel = parameters [0];
+            base.ParseParameters(parameters);
+            Channel = parameters[0];
 
             if (parameters.Count > 1) {
-                ModeChanges = parameters [1];
+                ModeChanges = parameters[1];
             } else {
                 ModeChanges = "";
             }
 
-            ModeArguments.Clear ();
+            ModeArguments.Clear();
             if (parameters.Count > 2) {
                 for (int i = 2; i < parameters.Count; i++) {
-                    ModeArguments.Add (parameters [i]);
+                    ModeArguments.Add(parameters[i]);
                 }
             }
         }
@@ -127,14 +127,14 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (Channel);
-            if (!string.IsNullOrEmpty (ModeChanges)) {
-                writer.AddParameter (ModeChanges);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(Channel);
+            if (!string.IsNullOrEmpty(ModeChanges)) {
+                writer.AddParameter(ModeChanges);
                 foreach (string modeArg in ModeArguments) {
-                    writer.AddParameter (modeArg);
+                    writer.AddParameter(modeArg);
                 }
             }
         }
@@ -142,25 +142,25 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnChannelMode (new IrcMessageEventArgs<ChannelModeMessage> (this));
+            conduit.OnChannelMode(new IrcMessageEventArgs<ChannelModeMessage>(this));
         }
 
 
         #region IChannelTargetedMessage Members
 
-        bool IChannelTargetedMessage.IsTargetedAtChannel (string channelName)
+        bool IChannelTargetedMessage.IsTargetedAtChannel(string channelName)
         {
-            return IsTargetedAtChannel (channelName);
+            return IsTargetedAtChannel(channelName);
         }
 
         /// <summary>
         /// Determines if the the current message is targeted at the given channel.
         /// </summary>
-        protected virtual bool IsTargetedAtChannel (string channelName)
+        protected virtual bool IsTargetedAtChannel(string channelName)
         {
-            return MessageUtil.IsIgnoreCaseMatch (Channel, channelName);
+            return MessageUtil.IsIgnoreCaseMatch(Channel, channelName);
         }
 
         #endregion

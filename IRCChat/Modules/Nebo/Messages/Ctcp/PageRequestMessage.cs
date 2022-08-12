@@ -14,7 +14,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="PageRequestMessage"/> class.
         /// </summary>
-        public PageRequestMessage ()
+        public PageRequestMessage()
         {
             InternalCommand = "PAGE";
         }
@@ -22,9 +22,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnPageRequest (new IrcMessageEventArgs<PageRequestMessage> (this));
+            conduit.OnPageRequest(new IrcMessageEventArgs<PageRequestMessage>(this));
         }
 
     }

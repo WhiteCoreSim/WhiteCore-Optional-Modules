@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("WhiteCore-Sim.org")]
 [assembly: AssemblyProduct("DefaultAssetXMLLoader Module")]
-[assembly: AssemblyCopyright("Copyright © WhiteCore 2015-2019")]
+[assembly: AssemblyCopyright("Copyright © WhiteCore 2015-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2019.03.04")]
-[assembly: AssemblyFileVersion("2019.03.04")]
+[assembly: AssemblyVersion("2022.08.01")]
+[assembly: AssemblyFileVersion("20229.08.01")]

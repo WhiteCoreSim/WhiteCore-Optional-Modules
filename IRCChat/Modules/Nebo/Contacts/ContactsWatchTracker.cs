@@ -4,54 +4,54 @@ namespace MetaBuilders.Irc.Contacts
 {
     class ContactsWatchTracker : ContactsTracker
     {
-        public ContactsWatchTracker (ContactList contacts)
-            : base (contacts)
+        public ContactsWatchTracker(ContactList contacts)
+            : base(contacts)
         {
         }
 
-        public override void Initialize ()
+        public override void Initialize()
         {
-            Contacts.Client.Messages.WatchedUserOffline += client_WatchedUserOffline;
-            Contacts.Client.Messages.WatchedUserOnline += client_WatchedUserOnline;
-            base.Initialize ();
+            Contacts.Client.Messages.WatchedUserOffline += Client_WatchedUserOffline;
+            Contacts.Client.Messages.WatchedUserOnline += Client_WatchedUserOnline;
+            base.Initialize();
         }
 
-        protected override void AddNicks (System.Collections.Specialized.StringCollection nicks)
+        protected override void AddNicks(System.Collections.Specialized.StringCollection nicks)
         {
-            WatchListEditorMessage addMsg = new WatchListEditorMessage ();
+            WatchListEditorMessage addMsg = new WatchListEditorMessage();
             foreach (string nick in nicks) {
-                addMsg.AddedNicks.Add (nick);
+                addMsg.AddedNicks.Add(nick);
             }
-            Contacts.Client.Send (addMsg);
+            Contacts.Client.Send(addMsg);
         }
 
-        protected override void AddNick (string nick)
+        protected override void AddNick(string nick)
         {
-            WatchListEditorMessage addMsg = new WatchListEditorMessage ();
-            addMsg.AddedNicks.Add (nick);
-            Contacts.Client.Send (addMsg);
+            WatchListEditorMessage addMsg = new WatchListEditorMessage();
+            addMsg.AddedNicks.Add(nick);
+            Contacts.Client.Send(addMsg);
         }
 
-        protected override void RemoveNick (string nick)
+        protected override void RemoveNick(string nick)
         {
-            WatchListEditorMessage remMsg = new WatchListEditorMessage ();
-            remMsg.RemovedNicks.Add (nick);
-            Contacts.Client.Send (remMsg);
+            WatchListEditorMessage remMsg = new WatchListEditorMessage();
+            remMsg.RemovedNicks.Add(nick);
+            Contacts.Client.Send(remMsg);
         }
 
         #region Reply Handlers
 
-        void client_WatchedUserOnline (object sender, IrcMessageEventArgs<WatchedUserOnlineMessage> e)
+        void Client_WatchedUserOnline(object sender, IrcMessageEventArgs<WatchedUserOnlineMessage> e)
         {
-            User knownUser = Contacts.Users.Find (e.Message.WatchedUser.Nick);
+            User knownUser = Contacts.Users.Find(e.Message.WatchedUser.Nick);
             if (knownUser != null && knownUser.OnlineStatus == UserOnlineStatus.Offline) {
                 knownUser.OnlineStatus = UserOnlineStatus.Online;
             }
         }
 
-        void client_WatchedUserOffline (object sender, IrcMessageEventArgs<WatchedUserOfflineMessage> e)
+        void Client_WatchedUserOffline(object sender, IrcMessageEventArgs<WatchedUserOfflineMessage> e)
         {
-            User knownUser = Contacts.Users.Find (e.Message.WatchedUser.Nick);
+            User knownUser = Contacts.Users.Find(e.Message.WatchedUser.Nick);
             if (knownUser != null) {
                 knownUser.OnlineStatus = UserOnlineStatus.Offline;
             }

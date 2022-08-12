@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<Project frameworkVersion="v4_0" name="WhiteCore.Addon.MarketPlaceAPI" path="addon-modules/MarketPlaceAPI/Modules" type="Library">
+<Project frameworkVersion="v4_8" name="WhiteCore.Addon.MarketPlaceAPI" path="addon-modules/MarketPlaceAPI/Modules" type="Library">
 	<Configuration name="Debug" platform="x86">
 		<Options>
 			<OutputPath>../../../WhiteCoreSim/bin/</OutputPath>

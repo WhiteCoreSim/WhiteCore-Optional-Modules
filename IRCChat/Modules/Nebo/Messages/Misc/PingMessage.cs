@@ -53,27 +53,27 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (Target);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(Target);
             if (ForwardServer.Length != 0) {
-                writer.AddParameter (ForwardServer);
+                writer.AddParameter(ForwardServer);
             }
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             ForwardServer = "";
             Target = "";
             if (parameters.Count >= 1) {
-                Target = parameters [0];
+                Target = parameters[0];
                 if (parameters.Count == 2) {
-                    ForwardServer = parameters [1];
+                    ForwardServer = parameters[1];
                 }
             }
         }
@@ -81,9 +81,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnPing (new IrcMessageEventArgs<PingMessage> (this));
+            conduit.OnPing(new IrcMessageEventArgs<PingMessage>(this));
         }
 
     }

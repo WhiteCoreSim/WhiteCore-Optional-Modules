@@ -19,7 +19,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="InviteMessage"/> class.
         /// </summary>
-        public InviteMessage ()
+        public InviteMessage()
         {
         }
 
@@ -28,7 +28,7 @@ namespace MetaBuilders.Irc.Messages
         /// </summary>
         /// <param name="channel">The channel the person is being invited into.</param>
         /// <param name="nick">The nick of the user invited</param>
-        public InviteMessage (string channel, string nick)
+        public InviteMessage(string channel, string nick)
         {
             this.channel = channel;
             this.nick = nick;
@@ -70,31 +70,31 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Validates this message against the given server support
         /// </summary>
-        public override void Validate (ServerSupport serverSupport)
+        public override void Validate(ServerSupport serverSupport)
         {
-            base.Validate (serverSupport);
-            Channel = MessageUtil.EnsureValidChannelName (Channel, serverSupport);
+            base.Validate(serverSupport);
+            Channel = MessageUtil.EnsureValidChannelName(Channel, serverSupport);
         }
 
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (Channel);
-            writer.AddParameter (Nick);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(Channel);
+            writer.AddParameter(Nick);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count >= 2) {
-                Channel = parameters [0];
-                Nick = parameters [1];
+                Channel = parameters[0];
+                Nick = parameters[1];
             } else {
                 Channel = "";
                 Nick = "";
@@ -105,25 +105,25 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnInvite (new IrcMessageEventArgs<InviteMessage> (this));
+            conduit.OnInvite(new IrcMessageEventArgs<InviteMessage>(this));
         }
 
 
         #region IChannelTargetedMessage Members
 
-        bool IChannelTargetedMessage.IsTargetedAtChannel (string channelName)
+        bool IChannelTargetedMessage.IsTargetedAtChannel(string channelName)
         {
-            return IsTargetedAtChannel (channelName);
+            return IsTargetedAtChannel(channelName);
         }
 
         /// <summary>
         /// Determines if the the current message is targeted at the given channel.
         /// </summary>
-        protected virtual bool IsTargetedAtChannel (string channelName)
+        protected virtual bool IsTargetedAtChannel(string channelName)
         {
-            return MessageUtil.IsIgnoreCaseMatch (Channel, channelName);
+            return MessageUtil.IsIgnoreCaseMatch(Channel, channelName);
         }
 
         #endregion

@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Net.Sockets;
 using System.Threading;
 using MetaBuilders.Irc.Network;
-using System.Globalization;
 
 
 namespace MetaBuilders.Irc.Dcc
@@ -218,7 +218,7 @@ namespace MetaBuilders.Irc.Dcc
             connectionWorker.Start ();
 
             if (TimeOut != TimeSpan.Zero) {
-                timeoutTimer = new Timer (new TimerCallback (checkTimeOut), null, TimeOut, TimeSpan.Zero);
+                timeoutTimer = new Timer (new TimerCallback (CheckTimeOut), null, TimeOut, TimeSpan.Zero);
             }
         }
 
@@ -270,7 +270,7 @@ namespace MetaBuilders.Irc.Dcc
 
         #region Helpers
 
-        void checkTimeOut (object state)
+        void CheckTimeOut (object state)
         {
             if (Status == ConnectionStatus.Connecting) {
                 DisconnectForce ();
@@ -311,7 +311,6 @@ namespace MetaBuilders.Irc.Dcc
         }
 
         #endregion
-
 
     }
 }

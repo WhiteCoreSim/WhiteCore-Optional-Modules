@@ -11,14 +11,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="BanMode"/> class.
         /// </summary>
-        public BanMode ()
+        public BanMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="BanMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public BanMode (ModeAction action)
+        public BanMode(ModeAction action)
         {
             Action = action;
         }
@@ -27,7 +27,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Creates a new instance of the <see cref="BanMode"/> class 
         /// with the given <see cref="ModeAction"/> and <see cref="User"/>.
         /// </summary>
-        public BanMode (ModeAction action, User mask)
+        public BanMode(ModeAction action, User mask)
         {
             Action = action;
             Mask = mask;

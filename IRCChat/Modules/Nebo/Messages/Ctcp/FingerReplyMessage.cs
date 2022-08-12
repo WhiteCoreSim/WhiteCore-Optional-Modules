@@ -16,7 +16,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="FingerReplyMessage"/> class.
         /// </summary>
-        public FingerReplyMessage ()
+        public FingerReplyMessage()
         {
             InternalCommand = "FINGER";
         }
@@ -37,7 +37,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Gets or sets the login name of the user.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login")]
         public virtual string LoginName {
             get {
                 return loginName;
@@ -65,24 +65,24 @@ namespace MetaBuilders.Irc.Messages
         /// </summary>
         protected override string ExtendedData {
             get {
-                StringBuilder result = new StringBuilder ();
-                result.Append (":");
-                result.Append (RealName);
-                result.Append (" (");
-                result.Append (LoginName);
-                result.Append (") - Idle ");
-                result.Append (IdleSeconds.ToString (CultureInfo.InvariantCulture));
-                result.Append (" seconds");
-                return result.ToString ();
+                StringBuilder result = new StringBuilder();
+                result.Append(":");
+                result.Append(RealName);
+                result.Append(" (");
+                result.Append(LoginName);
+                result.Append(") - Idle ");
+                result.Append(IdleSeconds.ToString(CultureInfo.InvariantCulture));
+                result.Append(" seconds");
+                return result.ToString();
             }
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnFingerReply (new IrcMessageEventArgs<FingerReplyMessage> (this));
+            conduit.OnFingerReply(new IrcMessageEventArgs<FingerReplyMessage>(this));
         }
 
         string realName = "";
@@ -92,27 +92,27 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            string payload = CtcpUtil.GetExtendedData (unparsedMessage);
-            if (payload.StartsWith (":", StringComparison.Ordinal)) {
-                payload = payload.Substring (1);
+            base.Parse(unparsedMessage);
+            string payload = CtcpUtil.GetExtendedData(unparsedMessage);
+            if (payload.StartsWith(":", StringComparison.Ordinal)) {
+                payload = payload.Substring(1);
             }
-            RealName = payload.Substring (0, payload.IndexOf (" ", StringComparison.Ordinal));
+            RealName = payload.Substring(0, payload.IndexOf(" ", StringComparison.Ordinal));
 
-            int startOfLoginName = payload.IndexOf (" (", StringComparison.Ordinal);
-            int endOfLoginName = payload.IndexOf (")", StringComparison.Ordinal);
+            int startOfLoginName = payload.IndexOf(" (", StringComparison.Ordinal);
+            int endOfLoginName = payload.IndexOf(")", StringComparison.Ordinal);
             if (startOfLoginName > 0) {
                 startOfLoginName += 2;
-                LoginName = payload.Substring (startOfLoginName, endOfLoginName - startOfLoginName);
+                LoginName = payload.Substring(startOfLoginName, endOfLoginName - startOfLoginName);
 
-                int startOfIdle = payload.IndexOf ("- Idle ", StringComparison.Ordinal);
+                int startOfIdle = payload.IndexOf("- Idle ", StringComparison.Ordinal);
                 if (startOfIdle > 0) {
                     startOfIdle += 6;
-                    string idleSecs = payload.Substring (startOfIdle, payload.Length - startOfIdle - 8);
+                    string idleSecs = payload.Substring(startOfIdle, payload.Length - startOfIdle - 8);
                     double foo;
-                    if (double.TryParse (idleSecs, NumberStyles.Any, null, out foo)) {
+                    if (double.TryParse(idleSecs, NumberStyles.Any, null, out foo)) {
                         IdleSeconds = foo;
                     } else {
                         IdleSeconds = -1;

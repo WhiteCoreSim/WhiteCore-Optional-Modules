@@ -46,20 +46,20 @@ namespace WhiteCore.Addon.DefaultAssetXMLLoader
     {
         protected ILibraryService m_service;
 
-        protected AssetBase CreateAsset (string assetIdStr, string name, string path, AssetType type)
+        protected AssetBase CreateAsset(string assetIdStr, string name, string path, AssetType type)
         {
-            var assetBase = new AssetBase (new UUID (assetIdStr), name, type, m_service.LibraryOwnerUUID);
+            var assetBase = new AssetBase(new UUID(assetIdStr), name, type, m_service.LibraryOwnerUUID);
 
-            if (!string.IsNullOrEmpty (path)) {
+            if (!string.IsNullOrEmpty(path)) {
                 //MainConsole.Instance.InfoFormat("[AssetsXMLLoader]: Loading: [{0}][{1}]", name, path);
-                LoadAsset (assetBase, path);
+                LoadAsset(assetBase, path);
             } else
-                MainConsole.Instance.InfoFormat ("[AssetsXMLLoader]: Instantiated: [{0}]", name);
+                MainConsole.Instance.InfoFormat("[AssetsXMLLoader]: Instantiated: [{0}]", name);
 
             return assetBase;
         }
 
-        protected static void LoadAsset (AssetBase info, string path)
+        protected static void LoadAsset(AssetBase info, string path)
         {
             //            bool image =
             //               (info.Type == (sbyte)AssetType.Texture ||
@@ -67,49 +67,49 @@ namespace WhiteCore.Addon.DefaultAssetXMLLoader
             //                info.Type == (sbyte)AssetType.ImageJPEG ||
             //                info.Type == (sbyte)AssetType.ImageTGA);
 
-            var fInfo = new FileInfo (path);
+            var fInfo = new FileInfo(path);
             long numBytes = fInfo.Length;
             if (fInfo.Exists) {
-                byte [] idata;
-                var fStream = new FileStream (path, FileMode.Open, FileAccess.Read);
-                var br = new BinaryReader (fStream);
+                byte[] idata;
+                var fStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                var br = new BinaryReader(fStream);
 
-                idata = br.ReadBytes ((int)numBytes);
-                br.Close ();
-                fStream.Close ();
+                idata = br.ReadBytes((int)numBytes);
+                br.Close();
+                fStream.Close();
                 info.Data = idata;
                 //info.loaded=true;
             } else
-                MainConsole.Instance.ErrorFormat ("[AssetsXMLLoader]: file: [{0}] not found !", path);
+                MainConsole.Instance.ErrorFormat("[AssetsXMLLoader]: file: [{0}] not found !", path);
         }
 
-        protected void ForEachDefaultXmlAsset (string assetSetFilename, Action<AssetBase> action)
+        protected void ForEachDefaultXmlAsset(string assetSetFilename, Action<AssetBase> action)
         {
-            var assets = new List<AssetBase> ();
-            if (File.Exists (assetSetFilename)) {
+            var assets = new List<AssetBase>();
+            if (File.Exists(assetSetFilename)) {
                 string assetSetPath = "ERROR";
                 string assetRootPath;
                 try {
                     DateTime start = DateTime.Now;
-                    var xmlSource = new XmlConfigSource (assetSetFilename);
-                    assetRootPath = Path.GetFullPath (xmlSource.SavePath);
-                    assetRootPath = Path.GetDirectoryName (assetRootPath);
+                    var xmlSource = new XmlConfigSource(assetSetFilename);
+                    assetRootPath = Path.GetFullPath(xmlSource.SavePath);
+                    assetRootPath = Path.GetDirectoryName(assetRootPath);
 
                     for (int i = 0; i < xmlSource.Configs.Count; i++) {
-                        assetSetPath = xmlSource.Configs [i].GetString ("file", string.Empty);
+                        assetSetPath = xmlSource.Configs[i].GetString("file", string.Empty);
 
-                        LoadXmlAssetSet (Path.Combine (assetRootPath, assetSetPath), assets);
+                        LoadXmlAssetSet(Path.Combine(assetRootPath, assetSetPath), assets);
                     }
-                    MainConsole.Instance.Warn ((DateTime.Now - start).Milliseconds);
+                    MainConsole.Instance.Warn((DateTime.Now - start).Milliseconds);
                 } catch (XmlException e) {
-                    MainConsole.Instance.ErrorFormat ("[AssetsXMLLoader]: Error loading {0} : {1}", assetSetPath, e);
+                    MainConsole.Instance.ErrorFormat("[AssetsXMLLoader]: Error loading {0} : {1}", assetSetPath, e);
                 }
             } else
-                MainConsole.Instance.ErrorFormat ("[AssetsXMLLoader]: Asset set control file {0} does not exist!  No assets loaded.", assetSetFilename);
+                MainConsole.Instance.ErrorFormat("[AssetsXMLLoader]: Asset set control file {0} does not exist!  No assets loaded.", assetSetFilename);
 
             DateTime start2 = DateTime.Now;
-            assets.ForEach (action);
-            MainConsole.Instance.Warn ((DateTime.Now - start2).Milliseconds);
+            assets.ForEach(action);
+            MainConsole.Instance.Warn((DateTime.Now - start2).Milliseconds);
         }
 
         /// <summary>
@@ -117,58 +117,58 @@ namespace WhiteCore.Addon.DefaultAssetXMLLoader
         /// </summary>
         /// <param name="assetSetPath"></param>
         /// <param name="assets"></param>
-        protected void LoadXmlAssetSet (string assetSetPath, List<AssetBase> assets)
+        protected void LoadXmlAssetSet(string assetSetPath, List<AssetBase> assets)
         {
             //MainConsole.Instance.InfoFormat("[AssetsXMLLoader]: Loading asset set {0}", assetSetPath);
 
-            if (File.Exists (assetSetPath)) {
+            if (File.Exists(assetSetPath)) {
                 try {
-                    var xmlSource = new XmlConfigSource (assetSetPath);
-                    string dir = Path.GetDirectoryName (assetSetPath);
+                    var xmlSource = new XmlConfigSource(assetSetPath);
+                    string dir = Path.GetDirectoryName(assetSetPath);
 
                     for (int i = 0; i < xmlSource.Configs.Count; i++) {
-                        string assetIdStr = xmlSource.Configs [i].GetString ("assetID", UUID.Random ().ToString ());
-                        string name = xmlSource.Configs [i].GetString ("name", string.Empty);
-                        var assetType = (AssetType)xmlSource.Configs [i].GetInt ("assetType", 0);
-                        string assetPath = Path.Combine (dir, xmlSource.Configs [i].GetString ("fileName", string.Empty));
+                        string assetIdStr = xmlSource.Configs[i].GetString("assetID", UUID.Random().ToString());
+                        string name = xmlSource.Configs[i].GetString("name", string.Empty);
+                        var assetType = (AssetType)xmlSource.Configs[i].GetInt("assetType", 0);
+                        string assetPath = Path.Combine(dir, xmlSource.Configs[i].GetString("fileName", string.Empty));
 
-                        AssetBase newAsset = CreateAsset (assetIdStr, name, assetPath, assetType);
+                        AssetBase newAsset = CreateAsset(assetIdStr, name, assetPath, assetType);
 
                         newAsset.Type = (int)assetType;
-                        assets.Add (newAsset);
+                        assets.Add(newAsset);
                     }
                 } catch (XmlException e) {
-                    MainConsole.Instance.ErrorFormat ("[AssetsXMLLoader]: Error loading {0} : {1}", assetSetPath, e);
+                    MainConsole.Instance.ErrorFormat("[AssetsXMLLoader]: Error loading {0} : {1}", assetSetPath, e);
                 }
             } else
-                MainConsole.Instance.ErrorFormat ("[AssetsXMLLoader]: Asset set file {0} does not exist!", assetSetPath);
+                MainConsole.Instance.ErrorFormat("[AssetsXMLLoader]: Asset set file {0} does not exist!", assetSetPath);
         }
 
         #region IDefaultLibraryLoader Members
 
-        public void LoadLibrary (ILibraryService service, IConfigSource source, IRegistryCore registry)
+        public void LoadLibrary(ILibraryService service, IConfigSource source, IRegistryCore registry)
         {
             m_service = service;
 
-            IConfig assetConfig = source.Configs ["AssetsXMLLoader"];
+            IConfig assetConfig = source.Configs["AssetsXMLLoader"];
             if (assetConfig == null)
                 return;
 
-            string loaderArgs = assetConfig.GetString ("AssetLoaderArgs", string.Empty);
-            bool assetLoaderEnabled = !assetConfig.GetBoolean ("PreviouslyLoaded", false);
+            string loaderArgs = assetConfig.GetString("AssetLoaderArgs", string.Empty);
+            bool assetLoaderEnabled = !assetConfig.GetBoolean("PreviouslyLoaded", false);
 
             if (!assetLoaderEnabled)
                 return;
 
-            registry.RegisterModuleInterface<DefaultAssetXMLLoader> (this);
+            registry.RegisterModuleInterface<DefaultAssetXMLLoader>(this);
 
-            MainConsole.Instance.InfoFormat ("[AssetsXMLLoader]: Loading default asset set from {0}", loaderArgs);
-            IAssetService assetService = registry.RequestModuleInterface<IAssetService> ();
-            ForEachDefaultXmlAsset (loaderArgs,
+            MainConsole.Instance.InfoFormat("[AssetsXMLLoader]: Loading default asset set from {0}", loaderArgs);
+            IAssetService assetService = registry.RequestModuleInterface<IAssetService>();
+            ForEachDefaultXmlAsset(loaderArgs,
                     delegate (AssetBase a) {
-                        if (!assetLoaderEnabled && assetService.GetExists (a.IDString))
+                        if (!assetLoaderEnabled && assetService.GetExists(a.IDString))
                             return;
-                        assetService.Store (a);
+                        assetService.Store(a);
                     });
         }
 

@@ -20,7 +20,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="DccAcceptRequestMessage"/> class.
         /// </summary>
-        public DccAcceptRequestMessage ()
+        public DccAcceptRequestMessage()
         {
             InternalCommand = "DCC";
         }
@@ -30,12 +30,12 @@ namespace MetaBuilders.Irc.Messages
         /// </summary>
         protected override string ExtendedData {
             get {
-                return MessageUtil.ParametersToString (
+                return MessageUtil.ParametersToString(
                     false,
                     DccCommand,
                     FileName,
-                    Port.ToString (CultureInfo.InvariantCulture),
-                    Position.ToString (CultureInfo.InvariantCulture));
+                    Port.ToString(CultureInfo.InvariantCulture),
+                    Position.ToString(CultureInfo.InvariantCulture));
             }
         }
 
@@ -87,13 +87,13 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!base.CanParse (unparsedMessage)) {
+            if (!base.CanParse(unparsedMessage)) {
                 return false;
             }
 
-            return CanParseDccCommand (DccUtil.GetCommand (unparsedMessage));
+            return CanParseDccCommand(DccUtil.GetCommand(unparsedMessage));
         }
 
         /// <summary>
@@ -102,32 +102,32 @@ namespace MetaBuilders.Irc.Messages
         /// <param name="command"></param>
         /// <returns></returns>
 
-        public virtual bool CanParseDccCommand (string command)
+        public virtual bool CanParseDccCommand(string command)
         {
-            if (string.IsNullOrEmpty (command)) {
+            if (string.IsNullOrEmpty(command)) {
                 return false;
             }
-            return (DccCommand.ToUpperInvariant ().EndsWith (command.ToUpperInvariant (), StringComparison.Ordinal));
+            return (DccCommand.ToUpperInvariant().EndsWith(command.ToUpperInvariant(), StringComparison.Ordinal));
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            FileName = DccUtil.GetArgument (unparsedMessage);
+            base.Parse(unparsedMessage);
+            FileName = DccUtil.GetArgument(unparsedMessage);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count >= 4) {
-                Port = Convert.ToInt32 (parameters [2], CultureInfo.InvariantCulture);
-                Position = Convert.ToInt32 (parameters [3], CultureInfo.InvariantCulture);
+                Port = Convert.ToInt32(parameters[2], CultureInfo.InvariantCulture);
+                Position = Convert.ToInt32(parameters[3], CultureInfo.InvariantCulture);
             } else {
                 Port = -1;
                 Position = -1;
@@ -137,9 +137,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnDccAcceptRequest (new IrcMessageEventArgs<DccAcceptRequestMessage> (this));
+            conduit.OnDccAcceptRequest(new IrcMessageEventArgs<DccAcceptRequestMessage>(this));
         }
 
 

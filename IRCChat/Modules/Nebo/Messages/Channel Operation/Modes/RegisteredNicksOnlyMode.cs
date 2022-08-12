@@ -12,14 +12,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="RegisteredNicksOnlyMode"/> class.
         /// </summary>
-        public RegisteredNicksOnlyMode ()
+        public RegisteredNicksOnlyMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="RegisteredNicksOnlyMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public RegisteredNicksOnlyMode (ModeAction action)
+        public RegisteredNicksOnlyMode(ModeAction action)
         {
             Action = action;
         }

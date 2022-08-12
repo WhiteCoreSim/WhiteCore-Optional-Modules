@@ -14,7 +14,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="SourceRequestMessage"/> class.
         /// </summary>
-        public SourceRequestMessage ()
+        public SourceRequestMessage()
         {
             InternalCommand = "SOURCE";
         }
@@ -22,9 +22,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnSourceRequest (new IrcMessageEventArgs<SourceRequestMessage> (this));
+            conduit.OnSourceRequest(new IrcMessageEventArgs<SourceRequestMessage>(this));
         }
 
     }

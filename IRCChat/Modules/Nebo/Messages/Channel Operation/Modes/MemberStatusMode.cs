@@ -25,9 +25,9 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Applies this mode to the ModeArguments property of the given <see cref="ChannelModeMessage" />.
         /// </summary>
         /// <param name="msg">The message which will be modified to include this mode.</param>
-        protected override void AddParameter (ChannelModeMessage msg)
+        protected override void AddParameter(ChannelModeMessage msg)
         {
-            msg.ModeArguments.Add (Nick);
+            msg.ModeArguments.Add(Nick);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="VersionReplyMessage"/> class.
         /// </summary>
-        public VersionReplyMessage ()
+        public VersionReplyMessage()
         {
             InternalCommand = "VERSION";
         }
@@ -44,18 +44,18 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnVersionReply (new IrcMessageEventArgs<VersionReplyMessage> (this));
+            conduit.OnVersionReply(new IrcMessageEventArgs<VersionReplyMessage>(this));
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            Response = CtcpUtil.GetExtendedData (unparsedMessage);
+            base.Parse(unparsedMessage);
+            Response = CtcpUtil.GetExtendedData(unparsedMessage);
         }
 
     }

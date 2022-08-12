@@ -11,14 +11,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="NoOutsideMessagesMode"/> class.
         /// </summary>
-        public NoOutsideMessagesMode ()
+        public NoOutsideMessagesMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="NoOutsideMessagesMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public NoOutsideMessagesMode (ModeAction action)
+        public NoOutsideMessagesMode(ModeAction action)
         {
             Action = action;
         }

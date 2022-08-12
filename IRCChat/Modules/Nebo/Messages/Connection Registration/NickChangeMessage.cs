@@ -14,7 +14,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="NickChangeMessage"/> class.
         /// </summary>
-        public NickChangeMessage ()
+        public NickChangeMessage()
         {
         }
 
@@ -22,7 +22,7 @@ namespace MetaBuilders.Irc.Messages
         /// Creates a new instance of the <see cref="NickChangeMessage"/> class with the given nick.
         /// </summary>
         /// <param name="newNick"></param>
-        public NickChangeMessage (string newNick)
+        public NickChangeMessage(string newNick)
         {
             _newNick = newNick;
         }
@@ -57,29 +57,29 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (NewNick);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(NewNick);
         }
 
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
+            base.Parse(unparsedMessage);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count >= 1) {
-                NewNick = parameters [0];
+                NewNick = parameters[0];
             } else {
                 NewNick = "";
             }
@@ -89,9 +89,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnNickChange (new IrcMessageEventArgs<NickChangeMessage> (this));
+            conduit.OnNickChange(new IrcMessageEventArgs<NickChangeMessage>(this));
         }
 
     }

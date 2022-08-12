@@ -72,13 +72,13 @@ namespace MetaBuilders.Irc.Messages
         string realName = "";
 
         /// <exclude />
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!base.CanParse (unparsedMessage)) {
+            if (!base.CanParse(unparsedMessage)) {
                 return false;
             }
-            StringCollection p = MessageUtil.GetParameters (unparsedMessage);
-            if (p.Count != 4 || p [2] == "*") {
+            StringCollection p = MessageUtil.GetParameters(unparsedMessage);
+            if (p.Count != 4 || p[2] == "*") {
                 return false;
             }
             return true;
@@ -87,26 +87,26 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (UserName);
-            writer.AddParameter (HostName);
-            writer.AddParameter (ServerName);
-            writer.AddParameter (RealName);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(UserName);
+            writer.AddParameter(HostName);
+            writer.AddParameter(ServerName);
+            writer.AddParameter(RealName);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count >= 4) {
-                UserName = parameters [0];
-                HostName = parameters [1];
-                ServerName = parameters [2];
-                RealName = parameters [3];
+                UserName = parameters[0];
+                HostName = parameters[1];
+                ServerName = parameters[2];
+                RealName = parameters[3];
             } else {
                 UserName = "";
                 HostName = "";
@@ -118,9 +118,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnUserNotificationServerSide (new IrcMessageEventArgs<UserNotificationServerSideMessage> (this));
+            conduit.OnUserNotificationServerSide(new IrcMessageEventArgs<UserNotificationServerSideMessage>(this));
         }
 
     }

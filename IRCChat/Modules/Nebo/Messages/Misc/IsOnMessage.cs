@@ -17,7 +17,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the IsOnMessage class.
         /// </summary>
-        public IsOnMessage ()
+        public IsOnMessage()
         {
         }
 
@@ -25,9 +25,9 @@ namespace MetaBuilders.Irc.Messages
         /// Creates a new instance of the IsOnMessage class with the given nicks.
         /// </summary>
         /// <param name="nicks"></param>
-        public IsOnMessage (params string [] nicks)
+        public IsOnMessage(params string[] nicks)
         {
-            this.nicks.AddRange (nicks);
+            this.nicks.AddRange(nicks);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace MetaBuilders.Irc.Messages
                 return nicks;
             }
         }
-        StringCollection nicks = new StringCollection ();
+        StringCollection nicks = new StringCollection();
 
         /// <summary>
         /// Gets the Irc command associated with this message.
@@ -52,32 +52,32 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddList (Nicks, " ", true);
+            base.AddParametersToFormat(writer);
+            writer.AddList(Nicks, " ", true);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count > 0) {
-                string nickParam = parameters [0];
-                Nicks.AddRange (nickParam.Split (' '));
+                string nickParam = parameters[0];
+                Nicks.AddRange(nickParam.Split(' '));
             } else {
-                Nicks.Clear ();
+                Nicks.Clear();
             }
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnIsOn (new IrcMessageEventArgs<IsOnMessage> (this));
+            conduit.OnIsOn(new IrcMessageEventArgs<IsOnMessage>(this));
         }
 
     }

@@ -14,7 +14,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="ErrorRequestMessage"/> class.
         /// </summary>
-        public ErrorRequestMessage ()
+        public ErrorRequestMessage()
         {
             InternalCommand = "ERRMSG";
         }
@@ -44,18 +44,18 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnErrorRequest (new IrcMessageEventArgs<ErrorRequestMessage> (this));
+            conduit.OnErrorRequest(new IrcMessageEventArgs<ErrorRequestMessage>(this));
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            Query = CtcpUtil.GetExtendedData (unparsedMessage);
+            base.Parse(unparsedMessage);
+            Query = CtcpUtil.GetExtendedData(unparsedMessage);
         }
 
     }

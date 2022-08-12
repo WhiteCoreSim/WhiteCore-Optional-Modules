@@ -17,7 +17,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="SourceReplyMessage"/> class.
         /// </summary>
-        public SourceReplyMessage ()
+        public SourceReplyMessage()
         {
             InternalCommand = "SOURCE";
         }
@@ -56,41 +56,41 @@ namespace MetaBuilders.Irc.Messages
                 return files;
             }
         }
-        StringCollection files = new StringCollection ();
+        StringCollection files = new StringCollection();
 
         /// <summary>
         /// Gets the data payload of the Ctcp request.
         /// </summary>
         protected override string ExtendedData {
             get {
-                StringBuilder result = new StringBuilder ();
-                result.Append (Server);
-                result.Append (":");
-                result.Append (Folder);
+                StringBuilder result = new StringBuilder();
+                result.Append(Server);
+                result.Append(":");
+                result.Append(Folder);
                 if (Files.Count > 0) {
-                    result.Append (":");
-                    result.Append (MessageUtil.CreateList (Files, " "));
+                    result.Append(":");
+                    result.Append(MessageUtil.CreateList(Files, " "));
                 }
-                return result.ToString ();
+                return result.ToString();
             }
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            string eData = CtcpUtil.GetExtendedData (unparsedMessage);
-            string [] p = eData.Split (':');
+            base.Parse(unparsedMessage);
+            string eData = CtcpUtil.GetExtendedData(unparsedMessage);
+            string[] p = eData.Split(':');
             if (p.Length > 0) {
-                Server = p [0];
+                Server = p[0];
                 if (p.Length > 1) {
-                    Folder = p [1];
+                    Folder = p[1];
                     if (p.Length == 3) {
-                        StringCollection fs = MessageUtil.GetParameters (p [2]);
+                        StringCollection fs = MessageUtil.GetParameters(p[2]);
                         foreach (string f in fs) {
-                            Files.Add (f);
+                            Files.Add(f);
                         }
                     }
                 }
@@ -101,9 +101,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnSourceReply (new IrcMessageEventArgs<SourceReplyMessage> (this));
+            conduit.OnSourceReply(new IrcMessageEventArgs<SourceReplyMessage>(this));
         }
 
     }

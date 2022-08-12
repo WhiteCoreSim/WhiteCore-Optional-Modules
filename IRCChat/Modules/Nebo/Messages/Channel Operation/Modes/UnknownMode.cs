@@ -11,7 +11,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="UnknownChannelMode"/> class with the given <see cref="ModeAction"/> and value.
         /// </summary>
-        public UnknownChannelMode (ModeAction action, string symbol)
+        public UnknownChannelMode(ModeAction action, string symbol)
         {
             Action = action;
             mode_symbol = symbol;
@@ -20,7 +20,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="UnknownChannelMode"/> class with the given <see cref="ModeAction"/>, value, and parameter.
         /// </summary>
-        public UnknownChannelMode (ModeAction action, string symbol, string parameter)
+        public UnknownChannelMode(ModeAction action, string symbol, string parameter)
         {
             Action = action;
             mode_symbol = symbol;
@@ -57,10 +57,10 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Applies this mode to the ModeArguments property of the given <see cref="ChannelModeMessage" />.
         /// </summary>
         /// <param name="msg">The message which will be modified to include this mode.</param>
-        protected override void AddParameter (ChannelModeMessage msg)
+        protected override void AddParameter(ChannelModeMessage msg)
         {
             if (Parameter.Length != 0) {
-                msg.ModeArguments.Add (Parameter);
+                msg.ModeArguments.Add(Parameter);
             }
         }
 

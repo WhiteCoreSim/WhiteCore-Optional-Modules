@@ -11,14 +11,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="KeyMode"/> class.
         /// </summary>
-        public KeyMode ()
+        public KeyMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="KeyMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public KeyMode (ModeAction action)
+        public KeyMode(ModeAction action)
         {
             Action = action;
         }
@@ -27,7 +27,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Creates a new instance of the <see cref="KeyMode"/> class 
         /// with the given <see cref="ModeAction"/> and password.
         /// </summary>
-        public KeyMode (ModeAction action, string password)
+        public KeyMode(ModeAction action, string password)
         {
             Action = action;
             key_password = password;
@@ -37,7 +37,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Creates a new instance of the <see cref="KeyMode"/> class 
         /// with the given password.
         /// </summary>
-        public KeyMode (string password)
+        public KeyMode(string password)
         {
             key_password = password;
         }
@@ -68,10 +68,10 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Applies this mode to the ModeArguments property of the given <see cref="ChannelModeMessage" />.
         /// </summary>
         /// <param name="msg">The message which will be modified to include this mode.</param>
-        protected override void AddParameter (ChannelModeMessage msg)
+        protected override void AddParameter(ChannelModeMessage msg)
         {
             if (Password.Length != 0) {
-                msg.ModeArguments.Add (Password);
+                msg.ModeArguments.Add(Password);
             }
         }
     }

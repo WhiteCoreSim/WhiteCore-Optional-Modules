@@ -13,14 +13,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="InvitationExceptionMode"/> class.
         /// </summary>
-        public InvitationExceptionMode ()
+        public InvitationExceptionMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="InvitationExceptionMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public InvitationExceptionMode (ModeAction action)
+        public InvitationExceptionMode(ModeAction action)
         {
             Action = action;
         }
@@ -29,7 +29,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Creates a new instance of the <see cref="InvitationExceptionMode"/> class 
         /// with the given <see cref="ModeAction"/> and <see cref="User"/>.
         /// </summary>
-        public InvitationExceptionMode (ModeAction action, User mask)
+        public InvitationExceptionMode(ModeAction action, User mask)
         {
             Action = action;
             Mask = mask;

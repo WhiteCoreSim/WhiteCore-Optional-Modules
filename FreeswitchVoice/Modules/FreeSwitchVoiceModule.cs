@@ -81,28 +81,28 @@ namespace FreeswitchVoice
         string m_openSimWellKnownHTTPAddress;
         //string m_freeSwitchContext;
 
-        readonly Dictionary<string, string> m_UUIDName = new Dictionary<string, string> ();
-        Dictionary<string, string> m_ParcelAddress = new Dictionary<string, string> ();
+        readonly Dictionary<string, string> m_UUIDName = new Dictionary<string, string>();
+        Dictionary<string, string> m_ParcelAddress = new Dictionary<string, string>();
 
         IFreeswitchService m_FreeswitchService;
 
-        public void Initialise (IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
-            IConfig voiceconfig = config.Configs ["Voice"];
+            IConfig voiceconfig = config.Configs["Voice"];
             if (voiceconfig == null)
                 return;
             string voiceModule = "FreeSwitchVoice";
-            if (voiceconfig.GetString ("Module", voiceModule) != voiceModule)
+            if (voiceconfig.GetString("Module", voiceModule) != voiceModule)
                 return;
 
             m_Enabled = true;
         }
 
-        public void PostInitialise ()
+        public void PostInitialise()
         {
         }
 
-        public void AddRegion (IScene scene)
+        public void AddRegion(IScene scene)
         {
             // We generate these like this: The region's external host name
             // as defined in Regions.ini is a good address to use. It's a
@@ -112,28 +112,28 @@ namespace FreeswitchVoice
             m_freeSwitchServicePort = MainServer.Instance.Port;
 
             if (m_Enabled) {
-                m_FreeswitchService = scene.RequestModuleInterface<IFreeswitchService> ();
+                m_FreeswitchService = scene.RequestModuleInterface<IFreeswitchService>();
 
                 try {
-                    string jsonConfig = m_FreeswitchService.GetJsonConfig ();
-                    MainConsole.Instance.Debug ("[FreeSwitchVoice]: Configuration string: " + jsonConfig);
-                    OSDMap map = (OSDMap)OSDParser.DeserializeJson (jsonConfig);
+                    string jsonConfig = m_FreeswitchService.GetJsonConfig();
+                    MainConsole.Instance.Debug("[FreeSwitchVoice]: Configuration string: " + jsonConfig);
+                    OSDMap map = (OSDMap)OSDParser.DeserializeJson(jsonConfig);
 
-                    m_freeSwitchAPIPrefix = map ["APIPrefix"].AsString ();
-                    m_freeSwitchRealm = map ["Realm"].AsString ();
-                    m_freeSwitchSIPProxy = map ["SIPProxy"].AsString ();
-                    m_freeSwitchAttemptUseSTUN = map ["AttemptUseSTUN"].AsBoolean ();
-                    m_freeSwitchEchoServer = map ["EchoServer"].AsString ();
-                    m_freeSwitchEchoPort = map ["EchoPort"].AsInteger ();
-                    m_freeSwitchDefaultWellKnownIP = map ["DefaultWellKnownIP"].AsString ();
-                    m_freeSwitchDefaultTimeout = map ["DefaultTimeout"].AsInteger ();
+                    m_freeSwitchAPIPrefix = map["APIPrefix"].AsString();
+                    m_freeSwitchRealm = map["Realm"].AsString();
+                    m_freeSwitchSIPProxy = map["SIPProxy"].AsString();
+                    m_freeSwitchAttemptUseSTUN = map["AttemptUseSTUN"].AsBoolean();
+                    m_freeSwitchEchoServer = map["EchoServer"].AsString();
+                    m_freeSwitchEchoPort = map["EchoPort"].AsInteger();
+                    m_freeSwitchDefaultWellKnownIP = map["DefaultWellKnownIP"].AsString();
+                    m_freeSwitchDefaultTimeout = map["DefaultTimeout"].AsInteger();
                     m_freeSwitchUrlResetPassword = string.Empty;
                     //m_freeSwitchContext = map["Context"].AsString ();
 
-                    if (string.IsNullOrEmpty (m_freeSwitchRealm) ||
-                        string.IsNullOrEmpty (m_freeSwitchAPIPrefix)) {
-                        MainConsole.Instance.Error ("[FreeSwitchVoice] plugin mis-configured");
-                        MainConsole.Instance.Info ("[FreeSwitchVoice] plugin disabled: incomplete configuration");
+                    if (string.IsNullOrEmpty(m_freeSwitchRealm) ||
+                        string.IsNullOrEmpty(m_freeSwitchAPIPrefix)) {
+                        MainConsole.Instance.Error("[FreeSwitchVoice] plugin mis-configured");
+                        MainConsole.Instance.Info("[FreeSwitchVoice] plugin disabled: incomplete configuration");
                         return;
                     }
 
@@ -143,12 +143,12 @@ namespace FreeswitchVoice
                     // - buddies: viv_buddy.php
                     // - ???: viv_watcher.php
                     // - signout: viv_signout.php
-                    MainServer.Instance.AddStreamHandler (
-                        new GenericStreamHandler ("GET", string.Format ("{0}/viv_get_prelogin.php", m_freeSwitchAPIPrefix),
+                    MainServer.Instance.AddStreamHandler(
+                        new GenericStreamHandler("GET", string.Format("{0}/viv_get_prelogin.php", m_freeSwitchAPIPrefix),
                                                   FreeSwitchSLVoiceGetPreloginHTTPHandler));
 
-                    MainServer.Instance.AddStreamHandler (
-                        new GenericStreamHandler ("GET", string.Format ("{0}/freeswitch-config", m_freeSwitchAPIPrefix),
+                    MainServer.Instance.AddStreamHandler(
+                        new GenericStreamHandler("GET", string.Format("{0}/freeswitch-config", m_freeSwitchAPIPrefix),
                                                   FreeSwitchConfigHTTPHandler));
 
                     // RestStreamHandler h = new
@@ -158,24 +158,24 @@ namespace FreeswitchVoice
 
 
 
-                    MainServer.Instance.AddStreamHandler (
-                        new GenericStreamHandler ("GET", string.Format ("{0}/viv_signin.php", m_freeSwitchAPIPrefix),
+                    MainServer.Instance.AddStreamHandler(
+                        new GenericStreamHandler("GET", string.Format("{0}/viv_signin.php", m_freeSwitchAPIPrefix),
                                                   FreeSwitchSLVoiceSigninHTTPHandler));
 
-                    MainServer.Instance.AddStreamHandler (
-                        new GenericStreamHandler ("GET", string.Format ("{0}/viv_buddy.php", m_freeSwitchAPIPrefix),
+                    MainServer.Instance.AddStreamHandler(
+                        new GenericStreamHandler("GET", string.Format("{0}/viv_buddy.php", m_freeSwitchAPIPrefix),
                                                   FreeSwitchSLVoiceBuddyHTTPHandler));
 
-                    MainServer.Instance.AddStreamHandler (
-                        new GenericStreamHandler ("GET", string.Format ("{0}/viv_watcher.php", m_freeSwitchAPIPrefix),
+                    MainServer.Instance.AddStreamHandler(
+                        new GenericStreamHandler("GET", string.Format("{0}/viv_watcher.php", m_freeSwitchAPIPrefix),
                                                   FreeSwitchSLVoiceWatcherHTTPHandler));
 
-                    MainConsole.Instance.InfoFormat ("[FreeSwitchVoice] using FreeSwitch server {0}", m_freeSwitchRealm);
+                    MainConsole.Instance.InfoFormat("[FreeSwitchVoice] using FreeSwitch server {0}", m_freeSwitchRealm);
 
-                    MainConsole.Instance.Info ("[FreeSwitchVoice] plugin enabled");
+                    MainConsole.Instance.Info("[FreeSwitchVoice] plugin enabled");
                 } catch (Exception e) {
-                    MainConsole.Instance.ErrorFormat ("[FreeSwitchVoice] plugin initialization failed: {0}", e.Message);
-                    MainConsole.Instance.DebugFormat ("[FreeSwitchVoice] plugin initialization failed: {0}", e.ToString ());
+                    MainConsole.Instance.ErrorFormat("[FreeSwitchVoice] plugin initialization failed: {0}", e.Message);
+                    MainConsole.Instance.DebugFormat("[FreeSwitchVoice] plugin initialization failed: {0}", e.ToString());
                     return;
                 }
 
@@ -187,7 +187,7 @@ namespace FreeswitchVoice
                     try {
 #pragma warning disable 0612, 0618
                         // Mono does not implement the ServicePointManager.ServerCertificateValidationCallback yet!  Don't remove this!
-                        ServicePointManager.CertificatePolicy = new MonoCert ();
+                        ServicePointManager.CertificatePolicy = new MonoCert();
 #pragma warning restore 0612, 0618
                     } catch (Exception) {
                         // Commented multiline spam log message
@@ -198,30 +198,30 @@ namespace FreeswitchVoice
                 // we need to capture scene in an anonymous method
                 // here as we need it later in the callbacks
                 scene.EventManager.OnRegisterCaps += delegate (UUID agentID, IHttpServer server) {
-                    return OnRegisterCaps (scene, agentID, server);
+                    return OnRegisterCaps(scene, agentID, server);
                 };
                 //Add this to the OpenRegionSettings module so we can inform the client about it
-                IOpenRegionSettingsModule ORSM = scene.RequestModuleInterface<IOpenRegionSettingsModule> ();
+                IOpenRegionSettingsModule ORSM = scene.RequestModuleInterface<IOpenRegionSettingsModule>();
                 if (ORSM != null)
-                    ORSM.RegisterGenericValue ("Voice", "SLVoice");
+                    ORSM.RegisterGenericValue("Voice", "SLVoice");
             }
         }
 
-        public void RemoveRegion (IScene scene)
+        public void RemoveRegion(IScene scene)
         {
         }
 
-        public void RegionLoaded (IScene scene)
+        public void RegionLoaded(IScene scene)
         {
             if (m_Enabled) {
-                MainConsole.Instance.Info ("[FreeSwitchVoice] registering IVoiceModule with the scene");
+                MainConsole.Instance.Info("[FreeSwitchVoice] registering IVoiceModule with the scene");
 
                 // register the voice interface for this module, so the script engine can call us
-                scene.RegisterModuleInterface<IVoiceModule> (this);
+                scene.RegisterModuleInterface<IVoiceModule>(this);
             }
         }
 
-        public void Close ()
+        public void Close()
         {
         }
 
@@ -236,16 +236,16 @@ namespace FreeswitchVoice
         // <summary>
         // implementation of IVoiceModule, called by osSetParcelSIPAddress script function
         // </summary>
-        public void setLandSIPAddress (string SIPAddress, UUID GlobalID)
+        public void setLandSIPAddress(string sIPAddress, UUID globalID)
         {
-            MainConsole.Instance.DebugFormat (
-                "[FreeSwitchVoice]: setLandSIPAddress parcel id {0}: setting sip address {1}", GlobalID, SIPAddress);
+            MainConsole.Instance.DebugFormat(
+                "[FreeSwitchVoice]: setLandSIPAddress parcel id {0}: setting sip address {1}", globalID, sIPAddress);
 
             lock (m_ParcelAddress) {
-                if (m_ParcelAddress.ContainsKey (GlobalID.ToString ())) {
-                    m_ParcelAddress [GlobalID.ToString ()] = SIPAddress;
+                if (m_ParcelAddress.ContainsKey(globalID.ToString())) {
+                    m_ParcelAddress[globalID.ToString()] = sIPAddress;
                 } else {
-                    m_ParcelAddress.Add (GlobalID.ToString (), SIPAddress);
+                    m_ParcelAddress.Add(globalID.ToString(), sIPAddress);
                 }
             }
         }
@@ -268,25 +268,25 @@ namespace FreeswitchVoice
         // delegate containing the scene of the respective region (see
         // Initialise()).
         // </summary>
-        public OSDMap OnRegisterCaps (IScene scene, UUID agentID, IHttpServer server)
+        public OSDMap OnRegisterCaps(IScene scene, UUID agentID, IHttpServer server)
         {
-            MainConsole.Instance.DebugFormat ("[FreeSwitchVoice] OnRegisterCaps: agentID {0}", agentID);
+            MainConsole.Instance.DebugFormat("[FreeSwitchVoice] OnRegisterCaps: agentID {0}", agentID);
 
-            OSDMap retVal = new OSDMap ();
-            retVal ["ProvisionVoiceAccountRequest"] = CapsUtil.CreateCAPS ("ProvisionVoiceAccountRequest", "");
+            OSDMap retVal = new OSDMap();
+            retVal["ProvisionVoiceAccountRequest"] = CapsUtil.CreateCAPS("ProvisionVoiceAccountRequest", "");
 
-            server.AddStreamHandler (
-                new GenericStreamHandler ("POST", retVal ["ProvisionVoiceAccountRequest"],
+            server.AddStreamHandler(
+                new GenericStreamHandler("POST", retVal["ProvisionVoiceAccountRequest"],
                                           delegate (string path, Stream req, OSHttpRequest httpRequest, OSHttpResponse httpResponse) {
-                    return ProvisionVoiceAccountRequest (scene, HttpServerHandlerHelpers.ReadString (req), agentID);
-                }));
-            
-            retVal ["ParcelVoiceInfoRequest"] = CapsUtil.CreateCAPS ("ParcelVoiceInfoRequest", "");
-            server.AddStreamHandler (
-                new GenericStreamHandler ("POST", retVal ["ParcelVoiceInfoRequest"],
+                                              return ProvisionVoiceAccountRequest(scene, HttpServerHandlerHelpers.ReadString(req), agentID);
+                                          }));
+
+            retVal["ParcelVoiceInfoRequest"] = CapsUtil.CreateCAPS("ParcelVoiceInfoRequest", "");
+            server.AddStreamHandler(
+                new GenericStreamHandler("POST", retVal["ParcelVoiceInfoRequest"],
                                           delegate (string path, Stream req, OSHttpRequest httpRequest, OSHttpResponse httpResponse) {
-                    return ParcelVoiceInfoRequest (scene, HttpServerHandlerHelpers.ReadString (req), agentID);
-                }));
+                                              return ParcelVoiceInfoRequest(scene, HttpServerHandlerHelpers.ReadString(req), agentID);
+                                          }));
             return retVal;
         }
 
@@ -297,12 +297,12 @@ namespace FreeswitchVoice
         /// <param name="request"></param>
         /// <param name="agentID"></param>
         /// <returns></returns>
-        public byte [] ProvisionVoiceAccountRequest (IScene scene, string request, UUID agentID)
+        public byte[] ProvisionVoiceAccountRequest(IScene scene, string request, UUID agentID)
         {
-            IScenePresence avatar = scene.GetScenePresence (agentID);
+            IScenePresence avatar = scene.GetScenePresence(agentID);
             if (avatar == null) {
-                System.Threading.Thread.Sleep (2000);
-                avatar = scene.GetScenePresence (agentID);
+                System.Threading.Thread.Sleep(2000);
+                avatar = scene.GetScenePresence(agentID);
 
                 if (avatar == null)
                     return MainServer.BadRequest;
@@ -311,35 +311,35 @@ namespace FreeswitchVoice
 
             try {
                 //XmlElement    resp;
-                string agentname = "x" + Convert.ToBase64String (agentID.GetBytes ());
+                string agentname = "x" + Convert.ToBase64String(agentID.GetBytes());
                 string password = "1234";//temp hack//new UUID(Guid.NewGuid()).ToString().Replace('-','Z').Substring(0,16);
 
                 // XXX: we need to cache the voice credentials, as
                 // FreeSwitch is later going to come and ask us for
                 // those
-                agentname = agentname.Replace ('+', '-').Replace ('/', '_');
+                agentname = agentname.Replace('+', '-').Replace('/', '_');
 
                 lock (m_UUIDName) {
-                    if (m_UUIDName.ContainsKey (agentname)) {
-                        m_UUIDName [agentname] = avatarName;
+                    if (m_UUIDName.ContainsKey(agentname)) {
+                        m_UUIDName[agentname] = avatarName;
                     } else {
-                        m_UUIDName.Add (agentname, avatarName);
+                        m_UUIDName.Add(agentname, avatarName);
                     }
                 }
 
-                OSDMap map = new OSDMap ();
-                map ["username"] = agentname;
-                map ["password"] = password;
-                map ["voice_sip_uri_hostname"] = m_freeSwitchRealm;
-                map ["voice_account_server_name"] = string.Format ("http://{0}:{1}{2}/",
+                OSDMap map = new OSDMap();
+                map["username"] = agentname;
+                map["password"] = password;
+                map["voice_sip_uri_hostname"] = m_freeSwitchRealm;
+                map["voice_account_server_name"] = string.Format("http://{0}:{1}{2}/",
                                                                    m_openSimWellKnownHTTPAddress,
                                                                    m_freeSwitchServicePort,
                                                                    m_freeSwitchAPIPrefix);
 
-                return OSDParser.SerializeLLSDXmlBytes (map);
+                return OSDParser.SerializeLLSDXmlBytes(map);
             } catch (Exception e) {
-                MainConsole.Instance.ErrorFormat ("[FreeSwitchVoice][PROVISIONVOICE]: avatar \"{0}\": {1}, retry later", avatarName, e.Message);
-                MainConsole.Instance.DebugFormat ("[FreeSwitchVoice][PROVISIONVOICE]: avatar \"{0}\": {1} failed", avatarName, e.ToString ());
+                MainConsole.Instance.ErrorFormat("[FreeSwitchVoice][PROVISIONVOICE]: avatar \"{0}\": {1}, retry later", avatarName, e.Message);
+                MainConsole.Instance.DebugFormat("[FreeSwitchVoice][PROVISIONVOICE]: avatar \"{0}\": {1} failed", avatarName, e.ToString());
 
                 return MainServer.BadRequest;
             }
@@ -352,9 +352,9 @@ namespace FreeswitchVoice
         /// <param name="request"></param>
         /// <param name="agentID"></param>
         /// <returns></returns>
-        public byte [] ParcelVoiceInfoRequest (IScene scene, string request, UUID agentID)
+        public byte[] ParcelVoiceInfoRequest(IScene scene, string request, UUID agentID)
         {
-            IScenePresence avatar = scene.GetScenePresence (agentID);
+            IScenePresence avatar = scene.GetScenePresence(agentID);
             string avatarName = avatar.Name;
 
             // - check whether we have a region channel in our cache
@@ -365,22 +365,22 @@ namespace FreeswitchVoice
             try {
                 string channelUri;
 
-                IParcelManagementModule parcelManagement = scene.RequestModuleInterface<IParcelManagementModule> ();
+                IParcelManagementModule parcelManagement = scene.RequestModuleInterface<IParcelManagementModule>();
                 if (parcelManagement == null)
-                    throw new Exception (string.Format ("region \"{0}\": avatar \"{1}\": land data not yet available",
+                    throw new Exception(string.Format("region \"{0}\": avatar \"{1}\": land data not yet available",
                                                         scene.RegionInfo.RegionName, avatarName));
 
                 // get channel_uri: check first whether estate
                 // settings allow voice, then whether parcel allows
                 // voice, if all do retrieve or obtain the parcel
                 // voice channel
-                LandData land = parcelManagement.GetLandObject (avatar.AbsolutePosition.X, avatar.AbsolutePosition.Y).LandData;
+                LandData land = parcelManagement.GetLandObject(avatar.AbsolutePosition.X, avatar.AbsolutePosition.Y).LandData;
 
-                MainConsole.Instance.DebugFormat ("[FreeSwitchVoice][PARCELVOICE]: region \"{0}\": Parcel \"{1}\" ({2}): avatar \"{3}\": request: {4}",
+                MainConsole.Instance.DebugFormat("[FreeSwitchVoice][PARCELVOICE]: region \"{0}\": Parcel \"{1}\" ({2}): avatar \"{3}\": request: {4}",
                                                    scene.RegionInfo.RegionName, land.Name, land.LocalID, avatarName, request);
 
                 if (!scene.RegionInfo.EstateSettings.AllowVoice) {
-                    MainConsole.Instance.DebugFormat ("[FreeSwitchVoice][PARCELVOICE]: region \"{0}\": voice not enabled in estate settings",
+                    MainConsole.Instance.DebugFormat("[FreeSwitchVoice][PARCELVOICE]: region \"{0}\": voice not enabled in estate settings",
                                                        scene.RegionInfo.RegionName);
                     channelUri = string.Empty;
                 }
@@ -394,43 +394,43 @@ namespace FreeswitchVoice
                 }
                 else
                 {*/
-                channelUri = ChannelUri (scene, land);
+                channelUri = ChannelUri(scene, land);
                 //}
 
                 // fill in our response to the client
-                OSDMap map = new OSDMap ();
-                map ["region_name"] = scene.RegionInfo.RegionName;
-                map ["parcel_local_id"] = land.LocalID;
-                map ["voice_credentials"] = new OSDMap ();
-                ((OSDMap)map ["voice_credentials"]) ["channel_uri"] = channelUri;
-                return OSDParser.SerializeLLSDXmlBytes (map);
+                OSDMap map = new OSDMap();
+                map["region_name"] = scene.RegionInfo.RegionName;
+                map["parcel_local_id"] = land.LocalID;
+                map["voice_credentials"] = new OSDMap();
+                ((OSDMap)map["voice_credentials"])["channel_uri"] = channelUri;
+                return OSDParser.SerializeLLSDXmlBytes(map);
 
             } catch (Exception e) {
-                MainConsole.Instance.ErrorFormat (
+                MainConsole.Instance.ErrorFormat(
                     "[FreeSwitchVoice][PARCELVOICE]: region \"{0}\": avatar \"{1}\": {2}, retry later",
                     scene.RegionInfo.RegionName, avatarName, e.Message);
-                MainConsole.Instance.DebugFormat (
+                MainConsole.Instance.DebugFormat(
                     "[FreeSwitchVoice][PARCELVOICE]: region \"{0}\": avatar \"{1}\": {2} failed",
-                    scene.RegionInfo.RegionName, avatarName, e.ToString ());
+                    scene.RegionInfo.RegionName, avatarName, e.ToString());
 
                 return MainServer.BadRequest;
             }
         }
 
-        public Hashtable ForwardProxyRequest (Hashtable request)
+        public Hashtable ForwardProxyRequest(Hashtable request)
         {
-            MainConsole.Instance.Debug ("[PROXYING]: -------------------------------proxying request");
-            Hashtable response = new Hashtable ();
-            response ["content_type"] = "text/xml";
-            response ["str_response_string"] = "";
-            response ["int_response_code"] = 200;
+            MainConsole.Instance.Debug("[PROXYING]: -------------------------------proxying request");
+            Hashtable response = new Hashtable();
+            response["content_type"] = "text/xml";
+            response["str_response_string"] = "";
+            response["int_response_code"] = 200;
 
             string forwardaddress = "https://www.bhr.vivox.com/api2/";
-            string body = (string)request ["body"];
-            string method = (string)request ["http-method"];
-            string contenttype = (string)request ["content-type"];
-            string uri = (string)request ["uri"];
-            uri = uri.Replace ("/api/", "");
+            string body = (string)request["body"];
+            string method = (string)request["http-method"];
+            string contenttype = (string)request["content-type"];
+            string uri = (string)request["uri"];
+            uri = uri.Replace("/api/", "");
             forwardaddress += uri;
 
 
@@ -438,44 +438,44 @@ namespace FreeswitchVoice
             int fwdresponsecode = 200;
             string fwdresponsecontenttype = "text/xml";
 
-            HttpWebRequest forwardreq = (HttpWebRequest)WebRequest.Create (forwardaddress);
+            HttpWebRequest forwardreq = (HttpWebRequest)WebRequest.Create(forwardaddress);
             forwardreq.Method = method;
             forwardreq.ContentType = contenttype;
             forwardreq.KeepAlive = false;
 
             if (method == "POST") {
-                byte [] contentreq = Util.UTF8.GetBytes (body);
+                byte[] contentreq = Util.UTF8.GetBytes(body);
                 forwardreq.ContentLength = contentreq.Length;
-                Stream reqStream = forwardreq.GetRequestStream ();
-                reqStream.Write (contentreq, 0, contentreq.Length);
-                reqStream.Close ();
+                Stream reqStream = forwardreq.GetRequestStream();
+                reqStream.Write(contentreq, 0, contentreq.Length);
+                reqStream.Close();
             }
 
-            HttpWebResponse fwdrsp = (HttpWebResponse)forwardreq.GetResponse ();
+            HttpWebResponse fwdrsp = (HttpWebResponse)forwardreq.GetResponse();
             Encoding encoding = Util.UTF8;
-            StreamReader fwdresponsestream = new StreamReader (fwdrsp.GetResponseStream (), encoding);
-            fwdresponsestr = fwdresponsestream.ReadToEnd ();
+            StreamReader fwdresponsestream = new StreamReader(fwdrsp.GetResponseStream(), encoding);
+            fwdresponsestr = fwdresponsestream.ReadToEnd();
             fwdresponsecontenttype = fwdrsp.ContentType;
             fwdresponsecode = (int)fwdrsp.StatusCode;
-            fwdresponsestream.Close ();
+            fwdresponsestream.Close();
 
-            response ["content_type"] = fwdresponsecontenttype;
-            response ["str_response_string"] = fwdresponsestr;
-            response ["int_response_code"] = fwdresponsecode;
+            response["content_type"] = fwdresponsecontenttype;
+            response["str_response_string"] = fwdresponsestr;
+            response["int_response_code"] = fwdresponsecode;
 
             return response;
         }
 
 
-        public byte [] FreeSwitchSLVoiceGetPreloginHTTPHandler (string path, Stream request, OSHttpRequest httpRequest,
-                                      OSHttpResponse httpResponse)
+        public byte[] FreeSwitchSLVoiceGetPreloginHTTPHandler(string path, Stream request, OSHttpRequest httpRequest,
+                                                                OSHttpResponse httpResponse)
         {
-            MainConsole.Instance.Debug ("[FreeSwitchVoice] FreeSwitchSLVoiceGetPreloginHTTPHandler called");
+            MainConsole.Instance.Debug("[FreeSwitchVoice] FreeSwitchSLVoiceGetPreloginHTTPHandler called");
 
             httpResponse.ContentType = "text/xml";
             httpResponse.StatusCode = 200;
 
-            return Encoding.UTF8.GetBytes (string.Format (
+            return Encoding.UTF8.GetBytes(string.Format(
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
                 "<VCConfiguration>\r\n" +
                     "<DefaultRealm>{0}</DefaultRealm>\r\n" +
@@ -501,38 +501,38 @@ namespace FreeswitchVoice
                 ""));
         }
 
-        public byte [] FreeSwitchSLVoiceBuddyHTTPHandler (string path, Stream request, 
+        public byte[] FreeSwitchSLVoiceBuddyHTTPHandler(string path, Stream request,
                                                           OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
             httpResponse.ContentType = "text/xml";
             httpResponse.StatusCode = 200;
 
-            Hashtable requestBody = ParseRequestBody (HttpServerHandlerHelpers.ReadString (request));
+            Hashtable requestBody = ParseRequestBody(HttpServerHandlerHelpers.ReadString(request));
 
-            if (!requestBody.ContainsKey ("auth_token"))
+            if (!requestBody.ContainsKey("auth_token"))
                 return MainServer.BadRequest;
 
-            string auth_token = (string)requestBody ["auth_token"];
+            string auth_token = (string)requestBody["auth_token"];
             //string[] auth_tokenvals = auth_token.Split(':');
             //string username = auth_tokenvals[0];
             int strcount = 0;
 
-            string [] ids = new string [strcount];
+            string[] ids = new string[strcount];
 
             int iter = -1;
             lock (m_UUIDName) {
                 strcount = m_UUIDName.Count;
-                ids = new string [strcount];
+                ids = new string[strcount];
                 foreach (string s in m_UUIDName.Keys) {
                     iter++;
-                    ids [iter] = s;
+                    ids[iter] = s;
                 }
             }
-            StringBuilder resp = new StringBuilder ();
-            resp.Append ("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?><response xmlns=\"http://www.vivox.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation= \"/xsd/buddy_list.xsd\">");
+            StringBuilder resp = new StringBuilder();
+            resp.Append("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?><response xmlns=\"http://www.vivox.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation= \"/xsd/buddy_list.xsd\">");
 
-            resp.Append (
-                string.Format (@"<level0>
+            resp.Append(
+                string.Format(@"<level0>
                                <status>OK</status>
                                <cookie_name>lib_session</cookie_name>
                                <cookie>{0}</cookie>
@@ -547,9 +547,9 @@ namespace FreeswitchVoice
             */
             for (int i = 0; i < ids.Length; i++) {
                 DateTime currenttime = DateTime.Now;
-                string dt = currenttime.ToString ("yyyy-MM-dd HH:mm:ss.0zz");
-                resp.Append (
-                    string.Format (@"<level3>
+                string dt = currenttime.ToString("yyyy-MM-dd HH:mm:ss.0zz");
+                resp.Append(
+                    string.Format(@"<level3>
                                     <bdy_id>{1}</bdy_id>
                                     <bdy_data></bdy_data>
                                     <bdy_uri>sip:{0}@{2}</bdy_uri>
@@ -560,38 +560,38 @@ namespace FreeswitchVoice
                                     <modified_ts>{3}</modified_ts>
                                     <b2g_group_id></b2g_group_id>
                                    </level3>",
-                                   ids [i],
+                                   ids[i],
                                    i,
                                    m_freeSwitchRealm,
                                    dt));
             }
 
-            resp.Append ("</buddies><groups></groups></body></level0></response>");
+            resp.Append("</buddies><groups></groups></body></level0></response>");
 
-            Regex normalizeEndLines = new Regex (@"\r\n", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.Multiline);
+            Regex normalizeEndLines = new Regex(@"\r\n", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.Multiline);
 
-            string retVal = resp.ToString ();
-            MainConsole.Instance.DebugFormat ("[FREESWITCH]: {0}", normalizeEndLines.Replace (retVal, ""));
+            string retVal = resp.ToString();
+            MainConsole.Instance.DebugFormat("[FREESWITCH]: {0}", normalizeEndLines.Replace(retVal, ""));
 
-            return Encoding.UTF8.GetBytes (retVal);
+            return Encoding.UTF8.GetBytes(retVal);
         }
 
-        public byte [] FreeSwitchSLVoiceWatcherHTTPHandler (string path, Stream request,
+        public byte[] FreeSwitchSLVoiceWatcherHTTPHandler(string path, Stream request,
                                                             OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
-            MainConsole.Instance.Debug ("[FreeSwitchVoice]: FreeSwitchSLVoiceWatcherHTTPHandler called");
+            MainConsole.Instance.Debug("[FreeSwitchVoice]: FreeSwitchSLVoiceWatcherHTTPHandler called");
 
             httpResponse.ContentType = "text/xml";
             httpResponse.StatusCode = 200;
 
-            Hashtable requestBody = ParseRequestBody (HttpServerHandlerHelpers.ReadString (request));
+            Hashtable requestBody = ParseRequestBody(HttpServerHandlerHelpers.ReadString(request));
 
-            string auth_token = (string)requestBody ["auth_token"];
+            string auth_token = (string)requestBody["auth_token"];
             //string[] auth_tokenvals = auth_token.Split(':');
             //string username = auth_tokenvals[0];
 
-            StringBuilder resp = new StringBuilder ();
-            resp.Append (
+            StringBuilder resp = new StringBuilder();
+            resp.Append(
                 "<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>" +
                 "<response xmlns=\"http://www.vivox.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation= \"/xsd/buddy_list.xsd\">");
 
@@ -600,7 +600,7 @@ namespace FreeswitchVoice
             // Viewer 1 appeared happy to ignore the lack of reply and still works with this reply.
             //
             // However, really we need to fill in whatever watcher data should be here (whatever that is).
-            resp.Append (string.Format (
+            resp.Append(string.Format(
                 @"<level0>
                     <status>OK</status>
                     <cookie_name>lib_session</cookie_name>
@@ -611,27 +611,27 @@ namespace FreeswitchVoice
                 </response>",
                 auth_token));
 
-            return Encoding.UTF8.GetBytes (resp.ToString ());
+            return Encoding.UTF8.GetBytes(resp.ToString());
         }
 
-        public byte [] FreeSwitchSLVoiceSigninHTTPHandler (string path, Stream request,
+        public byte[] FreeSwitchSLVoiceSigninHTTPHandler(string path, Stream request,
                                                            OSHttpRequest httpRequest, OSHttpResponse httpResponse)
         {
-            MainConsole.Instance.Debug ("[FreeSwitchVoice] FreeSwitchSLVoiceSigninHTTPHandler called");
-            string requestbody = HttpServerHandlerHelpers.ReadString (request);
+            MainConsole.Instance.Debug("[FreeSwitchVoice] FreeSwitchSLVoiceSigninHTTPHandler called");
+            string requestbody = HttpServerHandlerHelpers.ReadString(request);
             string uri = httpRequest.RawUrl;
             string contenttype = httpRequest.ContentType;
 
-            Hashtable requestBody = ParseRequestBody (requestbody);
+            Hashtable requestBody = ParseRequestBody(requestbody);
 
             //string pwd = (string) requestBody["pwd"];
-            string userid = (string)requestBody ["userid"];
+            string userid = (string)requestBody["userid"];
 
             string avatarName = string.Empty;
             int pos = -1;
             lock (m_UUIDName) {
-                if (m_UUIDName.ContainsKey (userid)) {
-                    avatarName = m_UUIDName [userid];
+                if (m_UUIDName.ContainsKey(userid)) {
+                    avatarName = m_UUIDName[userid];
                     foreach (string s in m_UUIDName.Keys) {
                         pos++;
                         if (s == userid)
@@ -640,12 +640,12 @@ namespace FreeswitchVoice
                 }
             }
 
-            MainConsole.Instance.DebugFormat (
+            MainConsole.Instance.DebugFormat(
                 "[FreeSwitchVoice]: AUTH, URI: {0}, Content-Type:{1}, Body{2}", uri, contenttype, requestbody);
 
             httpResponse.ContentType = "text/xml";
             httpResponse.StatusCode = 200;
-            return Encoding.UTF8.GetBytes (string.Format (@"<response xsi:schemaLocation=""/xsd/signin.xsd"">
+            return Encoding.UTF8.GetBytes(string.Format(@"<response xsi:schemaLocation=""/xsd/signin.xsd"">
                     <level0>
                         <status>OK</status>
                         <body>
@@ -662,23 +662,23 @@ namespace FreeswitchVoice
                 </response>", userid, pos, avatarName));
         }
 
-        public Hashtable ParseRequestBody (string body)
+        public Hashtable ParseRequestBody(string body)
         {
-            Hashtable bodyParams = new Hashtable ();
+            Hashtable bodyParams = new Hashtable();
             // split string
-            string [] nvps = body.Split (new char [] { '&' });
+            string[] nvps = body.Split(new char[] { '&' });
 
             foreach (string s in nvps) {
-                if (s.Trim () != "") {
-                    string [] nvp = s.Split (new char [] { '=' });
-                    bodyParams.Add (HttpUtility.UrlDecode (nvp [0]), HttpUtility.UrlDecode (nvp [1]));
+                if (s.Trim() != "") {
+                    string[] nvp = s.Split(new char[] { '=' });
+                    bodyParams.Add(HttpUtility.UrlDecode(nvp[0]), HttpUtility.UrlDecode(nvp[1]));
                 }
             }
 
             return bodyParams;
         }
 
-        string ChannelUri (IScene scene, LandData land)
+        string ChannelUri(IScene scene, LandData land)
         {
             string channelUri = null;
 
@@ -689,58 +689,58 @@ namespace FreeswitchVoice
             // as the directory ID. Otherwise, it reflects the parcel's ID.
 
             lock (m_ParcelAddress) {
-                if (m_ParcelAddress.ContainsKey (land.GlobalID.ToString ())) {
-                    MainConsole.Instance.DebugFormat (
-                        "[FreeSwitchVoice]: parcel id {0}: using sip address {1}", land.GlobalID, m_ParcelAddress [land.GlobalID.ToString ()]);
-                    return m_ParcelAddress [land.GlobalID.ToString ()];
+                if (m_ParcelAddress.ContainsKey(land.GlobalID.ToString())) {
+                    MainConsole.Instance.DebugFormat(
+                        "[FreeSwitchVoice]: parcel id {0}: using sip address {1}", land.GlobalID, m_ParcelAddress[land.GlobalID.ToString()]);
+                    return m_ParcelAddress[land.GlobalID.ToString()];
                 }
             }
 
             if (land.LocalID != 1 && (land.Flags & (uint)ParcelFlags.UseEstateVoiceChan) == 0) {
-                landName = string.Format ("{0}:{1}", scene.RegionInfo.RegionName, land.Name);
-                landUUID = land.GlobalID.ToString ();
-                MainConsole.Instance.DebugFormat (
+                landName = string.Format("{0}:{1}", scene.RegionInfo.RegionName, land.Name);
+                landUUID = land.GlobalID.ToString();
+                MainConsole.Instance.DebugFormat(
                     "[FreeSwitchVoice]: Region:Parcel \"{0}\": parcel id {1}: using channel name {2}", landName, land.LocalID, landUUID);
             } else {
-                landName = string.Format ("{0}:{1}", scene.RegionInfo.RegionName, scene.RegionInfo.RegionName);
-                landUUID = scene.RegionInfo.RegionID.ToString ();
-                MainConsole.Instance.DebugFormat (
+                landName = string.Format("{0}:{1}", scene.RegionInfo.RegionName, scene.RegionInfo.RegionName);
+                landUUID = scene.RegionInfo.RegionID.ToString();
+                MainConsole.Instance.DebugFormat(
                     "[FreeSwitchVoice]: Region:Parcel \"{0}\": parcel id {1}: using channel name {2}", landName, land.LocalID, landUUID);
             }
-            ASCIIEncoding encoding = new ASCIIEncoding ();
+            ASCIIEncoding encoding = new ASCIIEncoding();
 
             // slvoice handles the sip address differently if it begins with confctl, hiding it from the user in the friends list. however it also disables
             // the personal speech indicators as well unless some siren14-3d codec magic happens. we dont have siren143d so we'll settle for the personal speech indicator.
-            channelUri = string.Format ("sip:conf-{0}@{1}", "x" + Convert.ToBase64String (encoding.GetBytes (landUUID)), m_freeSwitchRealm);
+            channelUri = string.Format("sip:conf-{0}@{1}", "x" + Convert.ToBase64String(encoding.GetBytes(landUUID)), m_freeSwitchRealm);
 
             lock (m_ParcelAddress) {
-                if (!m_ParcelAddress.ContainsKey (land.GlobalID.ToString ())) {
-                    m_ParcelAddress.Add (land.GlobalID.ToString (), channelUri);
+                if (!m_ParcelAddress.ContainsKey(land.GlobalID.ToString())) {
+                    m_ParcelAddress.Add(land.GlobalID.ToString(), channelUri);
                 }
             }
 
             return channelUri;
         }
 
-        static bool CustomCertificateValidation (object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
+        static bool CustomCertificateValidation(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
         {
             return true;
         }
 
-        public byte [] FreeSwitchConfigHTTPHandler (string path, Stream request, OSHttpRequest httpRequest,
-                                      OSHttpResponse httpResponse)
+        public byte[] FreeSwitchConfigHTTPHandler(string path, Stream request, OSHttpRequest httpRequest,
+                                                    OSHttpResponse httpResponse)
         {
-            Hashtable requestBody = ParseRequestBody (HttpServerHandlerHelpers.ReadString (request));
+            Hashtable requestBody = ParseRequestBody(HttpServerHandlerHelpers.ReadString(request));
 
-            string section = httpRequest.QueryString ["section"];
+            string section = httpRequest.QueryString["section"];
 
             if (section == "directory")
-                return m_FreeswitchService.HandleDirectoryRequest (requestBody, httpRequest, httpResponse);
+                return m_FreeswitchService.HandleDirectoryRequest(requestBody, httpRequest, httpResponse);
 
             if (section == "dialplan")
-                return m_FreeswitchService.HandleDialplanRequest (requestBody, httpRequest, httpResponse);
+                return m_FreeswitchService.HandleDialplanRequest(requestBody, httpRequest, httpResponse);
 
-            MainConsole.Instance.WarnFormat ("[FreeSwitchVoice]: section was {0}", section);
+            MainConsole.Instance.WarnFormat("[FreeSwitchVoice]: section was {0}", section);
             return MainServer.BadRequest;
         }
     }
@@ -749,7 +749,7 @@ namespace FreeswitchVoice
     {
         #region ICertificatePolicy Members
 
-        public bool CheckValidationResult (ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem)
+        public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem)
         {
             return true;
         }

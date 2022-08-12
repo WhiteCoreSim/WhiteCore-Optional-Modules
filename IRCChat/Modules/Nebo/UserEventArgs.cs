@@ -4,7 +4,7 @@ namespace MetaBuilders.Irc
 {
     public class UserEventArgs : EventArgs
     {
-        public UserEventArgs (User u)
+        public UserEventArgs(User u)
         {
             _user = u;
         }

@@ -53,33 +53,33 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (TransportCommand);
-            writer.AddParameter (Target);
-            string extendedData = CtcpUtil.Escape (ExtendedData);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(TransportCommand);
+            writer.AddParameter(Target);
+            string extendedData = CtcpUtil.Escape(ExtendedData);
             if (extendedData.Length > 0) {
                 extendedData = " " + extendedData;
             }
             string payLoad = CtcpUtil.ExtendedDataMarker + InternalCommand + extendedData + CtcpUtil.ExtendedDataMarker;
-            writer.AddParameter (payLoad);
+            writer.AddParameter(payLoad);
         }
 
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!CtcpUtil.IsCtcpMessage (unparsedMessage)) {
+            if (!CtcpUtil.IsCtcpMessage(unparsedMessage)) {
                 return false;
             }
 
-            if (TransportCommand != CtcpUtil.GetTransportCommand (unparsedMessage)) {
+            if (TransportCommand != CtcpUtil.GetTransportCommand(unparsedMessage)) {
                 return false;
             }
 
-            if (InternalCommand.Length != 0 && InternalCommand != CtcpUtil.GetInternalCommand (unparsedMessage)) {
+            if (InternalCommand.Length != 0 && InternalCommand != CtcpUtil.GetInternalCommand(unparsedMessage)) {
                 return false;
             }
 
@@ -89,11 +89,11 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count > 0) {
-                Target = parameters [0];
+                Target = parameters[0];
             } else {
                 Target = "";
             }
@@ -102,34 +102,34 @@ namespace MetaBuilders.Irc.Messages
 
         #region IChannelTargetedMessage Members
 
-        bool IChannelTargetedMessage.IsTargetedAtChannel (string channelName)
+        bool IChannelTargetedMessage.IsTargetedAtChannel(string channelName)
         {
-            return IsTargetedAtChannel (channelName);
+            return IsTargetedAtChannel(channelName);
         }
 
         /// <summary>
         /// Determines if the the current message is targeted at the given channel.
         /// </summary>
-        protected virtual bool IsTargetedAtChannel (string channelName)
+        protected virtual bool IsTargetedAtChannel(string channelName)
         {
-            return MessageUtil.IsIgnoreCaseMatch (Target, channelName);
+            return MessageUtil.IsIgnoreCaseMatch(Target, channelName);
         }
 
         #endregion
 
         #region IQueryTargetedMessage Members
 
-        bool IQueryTargetedMessage.IsQueryToUser (User user)
+        bool IQueryTargetedMessage.IsQueryToUser(User user)
         {
-            return IsQueryToUser (user);
+            return IsQueryToUser(user);
         }
 
         /// <summary>
         /// Determines if the current message is targeted at a query to the given user.
         /// </summary>
-        protected virtual bool IsQueryToUser (User user)
+        protected virtual bool IsQueryToUser(User user)
         {
-            return (MessageUtil.IsIgnoreCaseMatch (user.Nick, target));
+            return (MessageUtil.IsIgnoreCaseMatch(user.Nick, target));
         }
 
         #endregion

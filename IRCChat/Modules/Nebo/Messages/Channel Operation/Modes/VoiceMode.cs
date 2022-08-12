@@ -12,14 +12,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="VoiceMode"/> class.
         /// </summary>
-        public VoiceMode ()
+        public VoiceMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="VoiceMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public VoiceMode (ModeAction action)
+        public VoiceMode(ModeAction action)
         {
             Action = action;
         }
@@ -28,7 +28,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Creates a new instance of the <see cref="VoiceMode"/> class 
         /// with the given <see cref="ModeAction"/> and member's nick.
         /// </summary>
-        public VoiceMode (ModeAction action, string nick)
+        public VoiceMode(ModeAction action, string nick)
         {
             Action = action;
             Nick = nick;

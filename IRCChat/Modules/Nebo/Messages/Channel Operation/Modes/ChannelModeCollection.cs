@@ -10,7 +10,7 @@ namespace MetaBuilders.Irc.Messages.Modes
     ///    </para>
     /// </summary>
     /// <seealso cref='ChannelModeCollection'/>
-    [Serializable ()]
+    [Serializable()]
     public class ChannelModeCollection : ObservableCollection<ChannelMode>
     {
 
@@ -18,11 +18,11 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Clears the current collection and adds the given modes
         /// </summary>
         /// <param name="newModes"></param>
-        public void ResetWith (ChannelModeCollection newModes)
+        public void ResetWith(ChannelModeCollection newModes)
         {
-            Clear ();
+            Clear();
             foreach (ChannelMode mode in newModes) {
-                Add (mode);
+                Add(mode);
             }
         }
 

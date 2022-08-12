@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("WhiteCore-Sim.org")]
 [assembly: AssemblyProduct("OAR Version Backup Module")]
-[assembly: AssemblyCopyright("Copyright © WhiteCore 2015-2018")]
+[assembly: AssemblyCopyright("Copyright © WhiteCore 2015-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2018.12.27")]
-[assembly: AssemblyFileVersion("2018.12.27")]
+[assembly: AssemblyVersion("2022.08.01")]
+[assembly: AssemblyFileVersion("2022.08.01")]

@@ -14,7 +14,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="SoundRequestMessage"/> class.
         /// </summary>
-        public SoundRequestMessage ()
+        public SoundRequestMessage()
         {
             InternalCommand = "SOUND";
         }
@@ -48,9 +48,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnSoundRequest (new IrcMessageEventArgs<SoundRequestMessage> (this));
+            conduit.OnSoundRequest(new IrcMessageEventArgs<SoundRequestMessage>(this));
         }
 
         /// <summary>
@@ -65,15 +65,15 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            string eData = CtcpUtil.GetExtendedData (unparsedMessage);
+            base.Parse(unparsedMessage);
+            string eData = CtcpUtil.GetExtendedData(unparsedMessage);
             if (eData.Length > 0) {
-                StringCollection p = MessageUtil.GetParameters (eData);
-                SoundFile = p [0];
+                StringCollection p = MessageUtil.GetParameters(eData);
+                SoundFile = p[0];
                 if (p.Count > 1) {
-                    Text = p [1];
+                    Text = p[1];
                 }
             }
         }

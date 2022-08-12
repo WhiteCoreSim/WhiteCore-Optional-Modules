@@ -19,7 +19,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="ListMessage"/> class.
         /// </summary>
-        public ListMessage ()
+        public ListMessage()
         {
         }
 
@@ -27,9 +27,9 @@ namespace MetaBuilders.Irc.Messages
         /// Creates a new instance of the <see cref="ListMessage"/> class with the given channel.
         /// </summary>
         /// <param name="channel"></param>
-        public ListMessage (string channel)
+        public ListMessage(string channel)
         {
-            channels.Add (channel);
+            channels.Add(channel);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace MetaBuilders.Irc.Messages
                 return channels;
             }
         }
-        StringCollection channels = new StringCollection ();
+        StringCollection channels = new StringCollection();
 
         /// <summary>
         /// Gets or sets the server that should return the info.
@@ -184,75 +184,75 @@ namespace MetaBuilders.Irc.Messages
         }
 
         /// <exclude />
-        public override void Validate (ServerSupport serverSupport)
+        public override void Validate(ServerSupport serverSupport)
         {
-            base.Validate (serverSupport);
+            base.Validate(serverSupport);
             if (serverSupport != null) {
                 if (MaxUsers >= 0 || MinUsers >= 0) {
-                    VerifySupport (serverSupport, ServerSupport.ExtendedListParameters.UserCount);
+                    VerifySupport(serverSupport, ServerSupport.ExtendedListParameters.UserCount);
                 }
                 if (YoungerThan >= 0 || OlderThan >= 0) {
-                    VerifySupport (serverSupport, ServerSupport.ExtendedListParameters.CreationTime);
+                    VerifySupport(serverSupport, ServerSupport.ExtendedListParameters.CreationTime);
                 }
-                if (!string.IsNullOrEmpty (MatchMask)) {
-                    VerifySupport (serverSupport, ServerSupport.ExtendedListParameters.Mask);
+                if (!string.IsNullOrEmpty(MatchMask)) {
+                    VerifySupport(serverSupport, ServerSupport.ExtendedListParameters.Mask);
                 }
-                if (!string.IsNullOrEmpty (NotMatchMask)) {
-                    VerifySupport (serverSupport, ServerSupport.ExtendedListParameters.NotMask);
+                if (!string.IsNullOrEmpty(NotMatchMask)) {
+                    VerifySupport(serverSupport, ServerSupport.ExtendedListParameters.NotMask);
                 }
                 if (TopicOlderThan >= 0 || TopicYoungerThan >= 0) {
-                    VerifySupport (serverSupport, ServerSupport.ExtendedListParameters.Topic);
+                    VerifySupport(serverSupport, ServerSupport.ExtendedListParameters.Topic);
                 }
             }
         }
 
-        static void VerifySupport (ServerSupport serverSupport, ServerSupport.ExtendedListParameters parameter)
+        static void VerifySupport(ServerSupport serverSupport, ServerSupport.ExtendedListParameters parameter)
         {
             if ((serverSupport.ExtendedList & parameter) != parameter) {
-                throw new InvalidMessageException (string.Format (CultureInfo.InvariantCulture, NeboResources.ServerDoesNotSupportExtendedListParameter, parameter.ToString ()));
+                throw new InvalidMessageException(string.Format(CultureInfo.InvariantCulture, NeboResources.ServerDoesNotSupportExtendedListParameter, parameter.ToString()));
             }
         }
 
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
+            base.AddParametersToFormat(writer);
 
-            StringCollection options = new StringCollection ();
+            StringCollection options = new StringCollection();
             if (MaxUsers >= 0) {
-                options.Add ("<" + MaxUsers.ToString (CultureInfo.InvariantCulture));
+                options.Add("<" + MaxUsers.ToString(CultureInfo.InvariantCulture));
             }
             if (MinUsers >= 0) {
-                options.Add (">" + MinUsers.ToString (CultureInfo.InvariantCulture));
+                options.Add(">" + MinUsers.ToString(CultureInfo.InvariantCulture));
             }
             if (YoungerThan >= 0) {
-                options.Add ("C<" + YoungerThan.ToString (CultureInfo.InvariantCulture));
+                options.Add("C<" + YoungerThan.ToString(CultureInfo.InvariantCulture));
             }
             if (OlderThan >= 0) {
-                options.Add ("C>" + OlderThan.ToString (CultureInfo.InvariantCulture));
+                options.Add("C>" + OlderThan.ToString(CultureInfo.InvariantCulture));
             }
-            if (!string.IsNullOrEmpty (MatchMask)) {
-                options.Add ("*" + MatchMask + "*");
+            if (!string.IsNullOrEmpty(MatchMask)) {
+                options.Add("*" + MatchMask + "*");
             }
-            if (!string.IsNullOrEmpty (NotMatchMask)) {
-                options.Add ("!*" + NotMatchMask + "*");
+            if (!string.IsNullOrEmpty(NotMatchMask)) {
+                options.Add("!*" + NotMatchMask + "*");
             }
             if (TopicOlderThan >= 0) {
-                options.Add ("T>" + TopicOlderThan.ToString (CultureInfo.InvariantCulture));
+                options.Add("T>" + TopicOlderThan.ToString(CultureInfo.InvariantCulture));
             }
             if (TopicYoungerThan >= 0) {
-                options.Add ("T<" + TopicYoungerThan.ToString (CultureInfo.InvariantCulture));
+                options.Add("T<" + TopicYoungerThan.ToString(CultureInfo.InvariantCulture));
             }
 
 
             if (options.Count > 0) {
-                writer.AddList (options, ",", false);
+                writer.AddList(options, ",", false);
             } else if (Channels.Count != 0) {
-                writer.AddList (Channels, ",", false);
+                writer.AddList(Channels, ",", false);
                 if (Server.Length != 0) {
-                    writer.AddParameter (Server);
+                    writer.AddParameter(Server);
                 }
             }
         }
@@ -260,11 +260,11 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
 
-            Channels.Clear ();
+            Channels.Clear();
             Server = "";
             MatchMask = "";
             NotMatchMask = "";
@@ -277,44 +277,44 @@ namespace MetaBuilders.Irc.Messages
 
             if (parameters.Count >= 1) {
 
-                if (IsExtendedParameter (parameters [0])) {
-                    foreach (string extOption in parameters [0].Split (',')) {
-                        if (extOption.StartsWith ("!*", StringComparison.Ordinal)) {
-                            NotMatchMask = MessageUtil.StringBetweenStrings (extOption, "!*", "*");
-                        } else if (extOption.StartsWith ("*", StringComparison.Ordinal)) {
-                            MatchMask = MessageUtil.StringBetweenStrings (extOption, "*", "*");
-                        } else if (extOption.StartsWith ("C>", StringComparison.Ordinal)) {
-                            OlderThan = Convert.ToInt32 (extOption.Substring (2), CultureInfo.InvariantCulture);
-                        } else if (extOption.StartsWith ("C<", StringComparison.Ordinal)) {
-                            YoungerThan = Convert.ToInt32 (extOption.Substring (2), CultureInfo.InvariantCulture);
-                        } else if (extOption.StartsWith ("T>", StringComparison.Ordinal)) {
-                            TopicOlderThan = Convert.ToInt32 (extOption.Substring (2), CultureInfo.InvariantCulture);
-                        } else if (extOption.StartsWith ("T<", StringComparison.Ordinal)) {
-                            TopicYoungerThan = Convert.ToInt32 (extOption.Substring (2), CultureInfo.InvariantCulture);
-                        } else if (extOption.StartsWith (">", StringComparison.Ordinal)) {
-                            MinUsers = Convert.ToInt32 (extOption.Substring (1), CultureInfo.InvariantCulture);
-                        } else if (extOption.StartsWith ("<", StringComparison.Ordinal)) {
-                            MaxUsers = Convert.ToInt32 (extOption.Substring (1), CultureInfo.InvariantCulture);
+                if (IsExtendedParameter(parameters[0])) {
+                    foreach (string extOption in parameters[0].Split(',')) {
+                        if (extOption.StartsWith("!*", StringComparison.Ordinal)) {
+                            NotMatchMask = MessageUtil.StringBetweenStrings(extOption, "!*", "*");
+                        } else if (extOption.StartsWith("*", StringComparison.Ordinal)) {
+                            MatchMask = MessageUtil.StringBetweenStrings(extOption, "*", "*");
+                        } else if (extOption.StartsWith("C>", StringComparison.Ordinal)) {
+                            OlderThan = Convert.ToInt32(extOption.Substring(2), CultureInfo.InvariantCulture);
+                        } else if (extOption.StartsWith("C<", StringComparison.Ordinal)) {
+                            YoungerThan = Convert.ToInt32(extOption.Substring(2), CultureInfo.InvariantCulture);
+                        } else if (extOption.StartsWith("T>", StringComparison.Ordinal)) {
+                            TopicOlderThan = Convert.ToInt32(extOption.Substring(2), CultureInfo.InvariantCulture);
+                        } else if (extOption.StartsWith("T<", StringComparison.Ordinal)) {
+                            TopicYoungerThan = Convert.ToInt32(extOption.Substring(2), CultureInfo.InvariantCulture);
+                        } else if (extOption.StartsWith(">", StringComparison.Ordinal)) {
+                            MinUsers = Convert.ToInt32(extOption.Substring(1), CultureInfo.InvariantCulture);
+                        } else if (extOption.StartsWith("<", StringComparison.Ordinal)) {
+                            MaxUsers = Convert.ToInt32(extOption.Substring(1), CultureInfo.InvariantCulture);
                         }
                     }
-                } else if (MessageUtil.HasValidChannelPrefix (parameters [0])) {
-                    Channels.AddRange (parameters [0].Split (','));
+                } else if (MessageUtil.HasValidChannelPrefix(parameters[0])) {
+                    Channels.AddRange(parameters[0].Split(','));
                     if (parameters.Count >= 2) {
-                        Server = parameters [1];
+                        Server = parameters[1];
                     }
                 }
 
             }
         }
 
-        static bool IsExtendedParameter (string p)
+        static bool IsExtendedParameter(string p)
         {
-            if (string.IsNullOrEmpty (p)) {
+            if (string.IsNullOrEmpty(p)) {
                 return false;
             }
-            string [] exList = { "!*", "*", "<", ">", "T", "C" };
+            string[] exList = { "!*", "*", "<", ">", "T", "C" };
             foreach (string extStart in exList) {
-                if (p.StartsWith (extStart, StringComparison.Ordinal)) {
+                if (p.StartsWith(extStart, StringComparison.Ordinal)) {
                     return true;
                 }
             }
@@ -324,9 +324,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnList (new IrcMessageEventArgs<ListMessage> (this));
+            conduit.OnList(new IrcMessageEventArgs<ListMessage>(this));
         }
 
     }

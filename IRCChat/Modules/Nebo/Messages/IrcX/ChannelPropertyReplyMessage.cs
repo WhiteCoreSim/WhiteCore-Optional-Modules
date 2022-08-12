@@ -15,7 +15,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="ChannelPropertyReplyMessage"/>.
         /// </summary>
-        public ChannelPropertyReplyMessage ()
+        public ChannelPropertyReplyMessage()
         {
             InternalNumeric = 818;
         }
@@ -62,31 +62,31 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (Channel);
-            writer.AddParameter (Prop);
-            writer.AddParameter (Value);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(Channel);
+            writer.AddParameter(Prop);
+            writer.AddParameter(Value);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
 
             Channel = "";
             Prop = "";
             Value = "";
 
             if (parameters.Count > 1) {
-                Channel = parameters [1];
+                Channel = parameters[1];
                 if (parameters.Count > 2) {
-                    Prop = parameters [2];
+                    Prop = parameters[2];
                     if (parameters.Count > 3) {
-                        Value = parameters [3];
+                        Value = parameters[3];
                     }
                 }
             }
@@ -95,25 +95,25 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnChannelPropertyReply (new IrcMessageEventArgs<ChannelPropertyReplyMessage> (this));
+            conduit.OnChannelPropertyReply(new IrcMessageEventArgs<ChannelPropertyReplyMessage>(this));
         }
 
 
         #region IChannelTargetedMessage Members
 
-        bool IChannelTargetedMessage.IsTargetedAtChannel (string channelName)
+        bool IChannelTargetedMessage.IsTargetedAtChannel(string channelName)
         {
-            return IsTargetedAtChannel (channelName);
+            return IsTargetedAtChannel(channelName);
         }
 
         /// <summary>
         /// Determines if the the current message is targeted at the given channel.
         /// </summary>
-        protected virtual bool IsTargetedAtChannel (string channelName)
+        protected virtual bool IsTargetedAtChannel(string channelName)
         {
-            return MessageUtil.IsIgnoreCaseMatch (Channel, channelName);
+            return MessageUtil.IsIgnoreCaseMatch(Channel, channelName);
             ;
         }
 

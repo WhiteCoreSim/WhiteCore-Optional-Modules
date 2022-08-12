@@ -11,14 +11,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="PrivateMode"/> class.
         /// </summary>
-        public PrivateMode ()
+        public PrivateMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="PrivateMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public PrivateMode (ModeAction action)
+        public PrivateMode(ModeAction action)
         {
             Action = action;
         }

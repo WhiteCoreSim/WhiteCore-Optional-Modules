@@ -18,14 +18,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="AnonymousMode"/> class.
         /// </summary>
-        public AnonymousMode ()
+        public AnonymousMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="AnonymousMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public AnonymousMode (ModeAction action)
+        public AnonymousMode(ModeAction action)
         {
             this.Action = action;
         }

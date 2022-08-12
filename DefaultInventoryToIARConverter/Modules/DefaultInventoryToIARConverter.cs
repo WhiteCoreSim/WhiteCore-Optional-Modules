@@ -69,35 +69,35 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
         /// </summary>
         /// <param name="config">Config file</param>
         /// <param name="registry">Place to register the modules into</param>
-        public void Initialize (IConfigSource config, IRegistryCore registry)
+        public void Initialize(IConfigSource config, IRegistryCore registry)
         {
             m_registry = registry;
-            libConfig = config.Configs ["DefaultAssetsIARCreator"];
+            libConfig = config.Configs["DefaultAssetsIARCreator"];
 
             if (libConfig == null) {
-                var iniSource = new IniConfigSource ("DefaultInventory/Inventory.ini", Nini.Ini.IniFileType.AuroraStyle);
-                libConfig = iniSource.Configs ["DefaultAssetsIARCreator"];
+                var iniSource = new IniConfigSource("DefaultInventory/Inventory.ini", Nini.Ini.IniFileType.AuroraStyle);
+                libConfig = iniSource.Configs["DefaultAssetsIARCreator"];
             }
 
             if (libConfig != null) {
-                m_enabled = libConfig.GetBoolean ("Enabled", false);
-                IARName = libConfig.GetString ("NameOfIAR", IARName);
+                m_enabled = libConfig.GetBoolean("Enabled", false);
+                IARName = libConfig.GetString("NameOfIAR", IARName);
             }
 
             if (m_enabled) {
-                AddConsoleCommands ();
+                AddConsoleCommands();
             }
         }
 
-        public void PostInitialize (IConfigSource config, IRegistryCore registry)
+        public void PostInitialize(IConfigSource config, IRegistryCore registry)
         {
         }
 
-        public void Start (IConfigSource config, IRegistryCore registry)
+        public void Start(IConfigSource config, IRegistryCore registry)
         {
         }
 
-        public void FinishedStartup ()
+        public void FinishedStartup()
         {
         }
 
@@ -106,10 +106,10 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
         /// </summary>
         /// <param name="scene">Not used</param>
         /// <param name="cmd">Not used</param>
-        static void HandleDefInvHelp (IScene scene, string [] cmd)
+        static void HandleDefInvHelp(IScene scene, string[] cmd)
         {
 
-            MainConsole.Instance.Info (
+            MainConsole.Instance.Info(
                 "save default inventory [IAR Filename]\n" +
                 "Save the current default inventory to an IAR file for later\n" +
                 "[IAR Filename] : Optional, defaults to 'DefaultInventory.iar'");
@@ -118,16 +118,16 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
         /// <summary>
         /// Adds the console commands.
         /// </summary>
-        void AddConsoleCommands ()
+        void AddConsoleCommands()
         {
             if (MainConsole.Instance != null) {
-                MainConsole.Instance.Commands.AddCommand (
+                MainConsole.Instance.Commands.AddCommand(
                     "save default inventory",
                     "save default inventory [IAR Filename]",
                     "Save the current default inventory to an IAR file for later reloadingte>: The required activity state",
                     HandleDefInvSave, false, true);
 
-                MainConsole.Instance.Commands.AddCommand (
+                MainConsole.Instance.Commands.AddCommand(
                     "save default inventory help",
                     "save default inventory help",
                     "Help about the save default inventory command.",
@@ -140,7 +140,7 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
         /// </summary>
         /// <param name="scene">Scene.</param>
         /// <param name="cmd">Cmd.</param>
-        void HandleDefInvSave (IScene scene, string [] cmd)
+        void HandleDefInvSave(IScene scene, string[] cmd)
         {
             if (!m_enabled)
                 return;
@@ -153,10 +153,10 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
             // optional filename
             int el = cmd.Length;
             if (el >= 4) {
-                fileName = cmd [3];
+                fileName = cmd[3];
 
                 // some file sanity checks
-                string extension = Path.GetExtension (fileName);
+                string extension = Path.GetExtension(fileName);
 
                 if (extension == string.Empty) {
                     fileName = fileName + ".iar";
@@ -164,62 +164,62 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
 
             }
 
-            string fileDir = Path.GetDirectoryName (fileName);
+            string fileDir = Path.GetDirectoryName(fileName);
             if (fileDir == "") {
                 fileDir = "./DefaultInventory";
                 fileName = fileDir + '/' + fileName;
             }
-            if (!Directory.Exists (fileDir)) {
-                MainConsole.Instance.Info ("[Libdef]: The folder specified, '" + fileDir + "' does not exist!");
+            if (!Directory.Exists(fileDir)) {
+                MainConsole.Instance.Info("[Libdef]: The folder specified, '" + fileDir + "' does not exist!");
                 return;
             }
 
             // don't try and write to an existing file
-            if (File.Exists (fileName)) {
-                if (MainConsole.Instance.Prompt ("[Libdef]: The inventory file '" + fileName + "' exists. Overwrite?", "yes") != "yes")
+            if (File.Exists(fileName)) {
+                if (MainConsole.Instance.Prompt("[Libdef]: The inventory file '" + fileName + "' exists. Overwrite?", "yes") != "yes")
                     return;
 
-                File.Delete (fileName);
+                File.Delete(fileName);
             }
 
             // good to go... do it...
             m_busy = true;
-            m_libService = m_registry.RequestModuleInterface<ILibraryService> ();
+            m_libService = m_registry.RequestModuleInterface<ILibraryService>();
 
-            var regInfo = new RegionInfo ();
+            var regInfo = new RegionInfo();
             IScene m_MockScene;
 
             //Make the scene for the IAR loader
             if (m_registry is IScene)
                 m_MockScene = (IScene)m_registry;
             else {
-                m_MockScene = new Scene ();
-                m_MockScene.Initialize (regInfo);
-                m_MockScene.AddModuleInterfaces (m_registry.GetInterfaces ());
+                m_MockScene = new Scene();
+                m_MockScene.Initialize(regInfo);
+                m_MockScene.AddModuleInterfaces(m_registry.GetInterfaces());
             }
 
-            UserAccount uinfo = m_MockScene.UserAccountService.GetUserAccount (null, m_libService.LibraryOwnerUUID);
+            UserAccount uinfo = m_MockScene.UserAccountService.GetUserAccount(null, m_libService.LibraryOwnerUUID);
             //Make the user account for the default IAR
             if (uinfo == null) {
-                uinfo = new UserAccount (m_libService.LibraryOwnerUUID);
+                uinfo = new UserAccount(m_libService.LibraryOwnerUUID);
                 uinfo.Name = m_libService.LibraryOwnerName;
-                m_MockScene.InventoryService.CreateUserInventory (m_libService.LibraryOwnerUUID, false);
+                m_MockScene.InventoryService.CreateUserInventory(m_libService.LibraryOwnerUUID, false);
             }
 
-            var assets = new List<AssetBase> ();
+            var assets = new List<AssetBase>();
             if (m_MockScene.InventoryService != null) {
                 //Add the folders to the user's inventory
-                InventoryCollection i = m_MockScene.InventoryService.GetFolderContent (m_libService.LibraryOwnerUUID, UUID.Zero);
+                InventoryCollection i = m_MockScene.InventoryService.GetFolderContent(m_libService.LibraryOwnerUUID, UUID.Zero);
                 if (i != null) {
                     foreach (InventoryItemBase item in i.Items) {
-                        AssetBase asset = m_MockScene.RequestModuleInterface<IAssetService> ().Get (item.AssetID.ToString ());
+                        AssetBase asset = m_MockScene.RequestModuleInterface<IAssetService>().Get(item.AssetID.ToString());
                         if (asset != null)
-                            assets.Add (asset);
+                            assets.Add(asset);
                     }
                 }
             }
             InventoryFolderBase rootFolder = null;
-            List<InventoryFolderBase> rootFolders = m_MockScene.InventoryService.GetRootFolders (m_libService.LibraryOwnerUUID);
+            List<InventoryFolderBase> rootFolders = m_MockScene.InventoryService.GetRootFolders(m_libService.LibraryOwnerUUID);
             foreach (InventoryFolderBase folder in rootFolders) {
                 if (folder.Name == "My Inventory")
                     continue;
@@ -229,20 +229,20 @@ namespace WhiteCore.Addon.DefaultInventoryToIARConverter
             }
             if (rootFolder != null) {
                 //Save the IAR of the default assets
-                MainConsole.Instance.Info ("[Libdef]: Saving default inventory to " + fileName);
-                var write = new InventoryArchiveWriteRequest (
-                    Guid.NewGuid (),
+                MainConsole.Instance.Info("[Libdef]: Saving default inventory to " + fileName);
+                var write = new InventoryArchiveWriteRequest(
+                    Guid.NewGuid(),
                     null,
                     m_MockScene,
                     uinfo,
                     "/",
-                    new GZipStream (new FileStream (fileName, FileMode.Create), CompressionMode.Compress),
+                    new GZipStream(new FileStream(fileName, FileMode.Create), CompressionMode.Compress),
                     true,
                     rootFolder,
                     assets,
                     null
                 );
-                write.Execute ();
+                write.Execute();
             }
 
             m_busy = false;

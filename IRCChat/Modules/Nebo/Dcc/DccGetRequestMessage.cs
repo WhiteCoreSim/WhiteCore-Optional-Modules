@@ -18,7 +18,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
 		/// Creates a new instance of the <see cref="DccGetRequestMessage"/> class.
 		/// </summary>
-		public DccGetRequestMessage ()
+		public DccGetRequestMessage()
         {
             InternalCommand = "DCC";
         }
@@ -29,7 +29,7 @@ namespace MetaBuilders.Irc.Messages
         /// </summary>
         protected override string ExtendedData {
             get {
-                return MessageUtil.ParametersToString (false, DccCommand, FileName);
+                return MessageUtil.ParametersToString(false, DccCommand, FileName);
             }
         }
 
@@ -89,46 +89,46 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!base.CanParse (unparsedMessage)) {
+            if (!base.CanParse(unparsedMessage)) {
                 return false;
             }
 
-            return CanParseDccCommand (DccUtil.GetCommand (unparsedMessage));
+            return CanParseDccCommand(DccUtil.GetCommand(unparsedMessage));
         }
 
         /// <summary>
         /// Determines if the message's DCC command is compatible with this message.
         /// </summary>
 
-        public virtual bool CanParseDccCommand (string command)
+        public virtual bool CanParseDccCommand(string command)
         {
-            if (string.IsNullOrEmpty (command)) {
+            if (string.IsNullOrEmpty(command)) {
                 return false;
             }
-            return (DccCommand.ToUpperInvariant ().EndsWith (command.ToUpperInvariant (), StringComparison.Ordinal));
+            return (DccCommand.ToUpperInvariant().EndsWith(command.ToUpperInvariant(), StringComparison.Ordinal));
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            FileName = DccUtil.GetArgument (unparsedMessage);
-            string unparsedCommand = DccUtil.GetCommand (unparsedMessage).ToUpperInvariant ();
-            string commandExtenstion = unparsedCommand.Substring (0, unparsedCommand.Length - 3);
-            TurboMode = commandExtenstion.IndexOf ("T", StringComparison.Ordinal) >= 0;
-            Secure = commandExtenstion.IndexOf ("S", StringComparison.Ordinal) >= 0;
+            base.Parse(unparsedMessage);
+            FileName = DccUtil.GetArgument(unparsedMessage);
+            string unparsedCommand = DccUtil.GetCommand(unparsedMessage).ToUpperInvariant();
+            string commandExtenstion = unparsedCommand.Substring(0, unparsedCommand.Length - 3);
+            TurboMode = commandExtenstion.IndexOf("T", StringComparison.Ordinal) >= 0;
+            Secure = commandExtenstion.IndexOf("S", StringComparison.Ordinal) >= 0;
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnDccGetRequest (new IrcMessageEventArgs<DccGetRequestMessage> (this));
+            conduit.OnDccGetRequest(new IrcMessageEventArgs<DccGetRequestMessage>(this));
         }
 
     }

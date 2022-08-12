@@ -13,14 +13,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="InviteOnlyMode"/> class.
         /// </summary>
-        public InviteOnlyMode ()
+        public InviteOnlyMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="InviteOnlyMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public InviteOnlyMode (ModeAction action)
+        public InviteOnlyMode(ModeAction action)
         {
             Action = action;
         }

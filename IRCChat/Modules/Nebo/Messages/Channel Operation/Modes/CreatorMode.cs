@@ -11,14 +11,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="CreatorMode"/> class.
         /// </summary>
-        public CreatorMode ()
+        public CreatorMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="CreatorMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public CreatorMode (ModeAction action)
+        public CreatorMode(ModeAction action)
         {
             Action = action;
         }
@@ -27,7 +27,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Creates a new instance of the <see cref="CreatorMode"/> class 
         /// with the given <see cref="ModeAction"/> and member's nick.
         /// </summary>
-        public CreatorMode (ModeAction action, string nick)
+        public CreatorMode(ModeAction action, string nick)
         {
             Action = action;
             Nick = nick;

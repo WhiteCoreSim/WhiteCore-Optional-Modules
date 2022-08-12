@@ -41,28 +41,28 @@ namespace WhiteCore.Addon.DefaultAssetXMLLoader
         protected ILibraryService m_service;
         protected IInventoryService m_inventoryService;
 
-        public void LoadLibrary (ILibraryService service, IConfigSource source, IRegistryCore registry)
+        public void LoadLibrary(ILibraryService service, IConfigSource source, IRegistryCore registry)
         {
             m_service = service;
-            m_inventoryService = registry.RequestModuleInterface<IInventoryService> ();
+            m_inventoryService = registry.RequestModuleInterface<IInventoryService>();
 
-            IConfig libConfig = source.Configs ["InventoryXMLLoader"];
-            string pLibrariesLocation = Path.Combine ("inventory", "Libraries.xml");
+            IConfig libConfig = source.Configs["InventoryXMLLoader"];
+            string pLibrariesLocation = Path.Combine("inventory", "Libraries.xml");
             if (libConfig != null) {
-                if (libConfig.GetBoolean ("PreviouslyLoaded", false))      // If it is loaded, don't reload
-                    return; 
-                pLibrariesLocation = libConfig.GetString ("DefaultLibrary", pLibrariesLocation);
-                LoadLibraries (pLibrariesLocation);
+                if (libConfig.GetBoolean("PreviouslyLoaded", false))      // If it is loaded, don't reload
+                    return;
+                pLibrariesLocation = libConfig.GetString("DefaultLibrary", pLibrariesLocation);
+                LoadLibraries(pLibrariesLocation);
             }
         }
 
-        InventoryItemBase CreateItem (UUID inventoryID, UUID assetID, string name, string description,
+        InventoryItemBase CreateItem(UUID inventoryID, UUID assetID, string name, string description,
                                      int assetType, int invType, UUID parentFolderID)
         {
-            var item = new InventoryItemBase ();
+            var item = new InventoryItemBase();
 
             item.Owner = m_service.LibraryOwnerUUID;
-            item.CreatorId = m_service.LibraryOwnerUUID.ToString ();
+            item.CreatorId = m_service.LibraryOwnerUUID.ToString();
             item.ID = inventoryID;
             item.AssetID = assetID;
             item.Description = description;
@@ -81,10 +81,10 @@ namespace WhiteCore.Addon.DefaultAssetXMLLoader
         /// Use the asset set information at path to load assets
         /// </summary>
         /// <param name="librariesControlPath"></param>
-        protected void LoadLibraries (string librariesControlPath)
+        protected void LoadLibraries(string librariesControlPath)
         {
-            MainConsole.Instance.InfoFormat ("[InventoryXMLLoader]: Loading library control file {0}", librariesControlPath);
-            LoadFromFile (librariesControlPath, "Libraries control", ReadLibraryFromConfig);
+            MainConsole.Instance.InfoFormat("[InventoryXMLLoader]: Loading library control file {0}", librariesControlPath);
+            LoadFromFile(librariesControlPath, "Libraries control", ReadLibraryFromConfig);
         }
 
         /// <summary>
@@ -92,16 +92,16 @@ namespace WhiteCore.Addon.DefaultAssetXMLLoader
         /// </summary>
         /// <param name="config">Config.</param>
         /// <param name="path">Path.</param>
-        protected void ReadLibraryFromConfig (IConfig config, string path)
+        protected void ReadLibraryFromConfig(IConfig config, string path)
         {
-            string basePath = Path.GetDirectoryName (path);
-            string foldersPath = Path.Combine (basePath, config.GetString ("foldersFile", string.Empty));
+            string basePath = Path.GetDirectoryName(path);
+            string foldersPath = Path.Combine(basePath, config.GetString("foldersFile", string.Empty));
 
-            LoadFromFile (foldersPath, "Library folders", ReadFolderFromConfig);
+            LoadFromFile(foldersPath, "Library folders", ReadFolderFromConfig);
 
-            string itemsPath = Path.Combine (basePath, config.GetString ("itemsFile", string.Empty));
+            string itemsPath = Path.Combine(basePath, config.GetString("itemsFile", string.Empty));
 
-            LoadFromFile (itemsPath, "Library items", ReadItemFromConfig);
+            LoadFromFile(itemsPath, "Library items", ReadItemFromConfig);
         }
 
         /// <summary>
@@ -109,19 +109,19 @@ namespace WhiteCore.Addon.DefaultAssetXMLLoader
         /// </summary>
         /// <param name="config">Config.</param>
         /// <param name="path">Path.</param>
-        void ReadFolderFromConfig (IConfig config, string path)
+        void ReadFolderFromConfig(IConfig config, string path)
         {
-            var folderInfo = new InventoryFolderImpl ();
+            var folderInfo = new InventoryFolderImpl();
 
-            folderInfo.ID = new UUID (config.GetString ("folderID", UUID.Random ().ToString ()));
-            folderInfo.Name = config.GetString ("name", "unknown");
-            folderInfo.ParentID = new UUID (config.GetString ("parentFolderID", UUID.Zero.ToString ()));
-            folderInfo.Type = (short)config.GetInt ("type", 8);
+            folderInfo.ID = new UUID(config.GetString("folderID", UUID.Random().ToString()));
+            folderInfo.Name = config.GetString("name", "unknown");
+            folderInfo.ParentID = new UUID(config.GetString("parentFolderID", UUID.Zero.ToString()));
+            folderInfo.Type = (short)config.GetInt("type", 8);
 
             folderInfo.Owner = m_service.LibraryOwnerUUID;
             folderInfo.Version = 1;
 
-            m_inventoryService.AddFolder (folderInfo);
+            m_inventoryService.AddFolder(folderInfo);
         }
 
         /// <summary>
@@ -129,29 +129,29 @@ namespace WhiteCore.Addon.DefaultAssetXMLLoader
         /// </summary>
         /// <param name="config">Config.</param>
         /// <param name="path">Path.</param>
-        void ReadItemFromConfig (IConfig config, string path)
+        void ReadItemFromConfig(IConfig config, string path)
         {
-            var item = new InventoryItemBase ();
+            var item = new InventoryItemBase();
 
             item.Owner = m_service.LibraryOwnerUUID;
-            item.CreatorId = m_service.LibraryOwnerUUID.ToString ();
-            item.ID = new UUID (config.GetString ("inventoryID", UUID.Random ().ToString ()));
-            item.AssetID = new UUID (config.GetString ("assetID", item.ID.ToString ()));
-            item.Folder = new UUID (config.GetString ("folderID", UUID.Zero.ToString ()));
-            item.Name = config.GetString ("name", string.Empty);
-            item.Description = config.GetString ("description", item.Name);
-            item.InvType = config.GetInt ("inventoryType", 0);
-            item.AssetType = config.GetInt ("assetType", item.InvType);
-            item.CurrentPermissions = (uint)config.GetLong ("currentPermissions", 0x7FFFFFFF);
-            item.NextPermissions = (uint)config.GetLong ("nextPermissions", 0x7FFFFFFF);
-            item.EveryOnePermissions = (uint)config.GetLong ("everyonePermissions", 0x7FFFFFFF);
-            item.BasePermissions = (uint)config.GetLong ("basePermissions", 0x7FFFFFFF);
-            item.Flags = (uint)config.GetInt ("flags", 0);
+            item.CreatorId = m_service.LibraryOwnerUUID.ToString();
+            item.ID = new UUID(config.GetString("inventoryID", UUID.Random().ToString()));
+            item.AssetID = new UUID(config.GetString("assetID", item.ID.ToString()));
+            item.Folder = new UUID(config.GetString("folderID", UUID.Zero.ToString()));
+            item.Name = config.GetString("name", string.Empty);
+            item.Description = config.GetString("description", item.Name);
+            item.InvType = config.GetInt("inventoryType", 0);
+            item.AssetType = config.GetInt("assetType", item.InvType);
+            item.CurrentPermissions = (uint)config.GetLong("currentPermissions", 0x7FFFFFFF);
+            item.NextPermissions = (uint)config.GetLong("nextPermissions", 0x7FFFFFFF);
+            item.EveryOnePermissions = (uint)config.GetLong("everyonePermissions", 0x7FFFFFFF);
+            item.BasePermissions = (uint)config.GetLong("basePermissions", 0x7FFFFFFF);
+            item.Flags = (uint)config.GetInt("flags", 0);
 
-            m_inventoryService.AddItem (item);
+            m_inventoryService.AddItem(item);
         }
 
-        private delegate void ConfigAction (IConfig config, string path);
+        private delegate void ConfigAction(IConfig config, string path);
 
         /// <summary>
         /// Load the given configuration at a path and perform an action on each Config contained within it
@@ -159,19 +159,19 @@ namespace WhiteCore.Addon.DefaultAssetXMLLoader
         /// <param name="path"></param>
         /// <param name="fileDescription"></param>
         /// <param name="action"></param>
-        static void LoadFromFile (string path, string fileDescription, ConfigAction action)
+        static void LoadFromFile(string path, string fileDescription, ConfigAction action)
         {
-            if (File.Exists (path)) {
+            if (File.Exists(path)) {
                 try {
-                    var source = new XmlConfigSource (path);
+                    var source = new XmlConfigSource(path);
 
                     for (int i = 0; i < source.Configs.Count; i++)
-                        action (source.Configs [i], path);
+                        action(source.Configs[i], path);
                 } catch (XmlException e) {
-                    MainConsole.Instance.ErrorFormat ("[InventoryXMLLoader]: Error loading {0} : {1}", path, e);
+                    MainConsole.Instance.ErrorFormat("[InventoryXMLLoader]: Error loading {0} : {1}", path, e);
                 }
             } else
-                MainConsole.Instance.ErrorFormat ("[InventoryXMLLoader]: {0} file {1} does not exist!", fileDescription, path);
+                MainConsole.Instance.ErrorFormat("[InventoryXMLLoader]: {0} file {1} does not exist!", fileDescription, path);
         }
     }
 }

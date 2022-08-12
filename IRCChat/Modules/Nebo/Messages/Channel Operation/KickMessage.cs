@@ -19,7 +19,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="KickMessage"/> class.
         /// </summary>
-        public KickMessage ()
+        public KickMessage()
         {
         }
 
@@ -28,14 +28,14 @@ namespace MetaBuilders.Irc.Messages
         /// </summary>
         /// <param name="channel">The name of the channel affected.</param>
         /// <param name="nick">The nick of the user being kicked out.</param>
-        public KickMessage (string channel, string nick)
+        public KickMessage(string channel, string nick)
         {
-            channels.Add (channel);
-            nicks.Add (nick);
+            channels.Add(channel);
+            nicks.Add(nick);
         }
 
-        StringCollection channels = new StringCollection ();
-        StringCollection nicks = new StringCollection ();
+        StringCollection channels = new StringCollection();
+        StringCollection nicks = new StringCollection();
         string reason = "";
 
         /// <summary>
@@ -80,17 +80,17 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Validates this message against the given server support
         /// </summary>
-        public override void Validate (ServerSupport serverSupport)
+        public override void Validate(ServerSupport serverSupport)
         {
-            base.Validate (serverSupport);
+            base.Validate(serverSupport);
             if (serverSupport == null) {
                 return;
             }
             if (Reason.Length > serverSupport.MaxKickCommentLength) {
-                Reason = Reason.Substring (0, serverSupport.MaxKickCommentLength);
+                Reason = Reason.Substring(0, serverSupport.MaxKickCommentLength);
             }
             for (int i = 0; i < Channels.Count; i++) {
-                Channels [i] = MessageUtil.EnsureValidChannelName (Channels [i], serverSupport);
+                Channels[i] = MessageUtil.EnsureValidChannelName(Channels[i], serverSupport);
             }
         }
 
@@ -98,14 +98,14 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddList (Channels, ",", false);
-            writer.AddList (Nicks, ",", false);
+            base.AddParametersToFormat(writer);
+            writer.AddList(Channels, ",", false);
+            writer.AddList(Nicks, ",", false);
 
             if (Reason.Length != 0) {
-                writer.AddParameter (Reason);
+                writer.AddParameter(Reason);
             }
         }
 
@@ -113,17 +113,17 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the parameters portion of the message
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
-            Channels.Clear ();
-            Nicks.Clear ();
+            base.ParseParameters(parameters);
+            Channels.Clear();
+            Nicks.Clear();
             Reason = "";
             if (parameters.Count >= 2) {
-                Channels.AddRange (parameters [0].Split (','));
-                Nicks.AddRange (parameters [1].Split (','));
+                Channels.AddRange(parameters[0].Split(','));
+                Nicks.AddRange(parameters[1].Split(','));
                 if (parameters.Count >= 3) {
-                    Reason = parameters [2];
+                    Reason = parameters[2];
                 }
             }
         }
@@ -132,25 +132,25 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnKick (new IrcMessageEventArgs<KickMessage> (this));
+            conduit.OnKick(new IrcMessageEventArgs<KickMessage>(this));
         }
 
 
         #region IChannelTargetedMessage Members
 
-        bool IChannelTargetedMessage.IsTargetedAtChannel (string channelName)
+        bool IChannelTargetedMessage.IsTargetedAtChannel(string channelName)
         {
-            return IsTargetedAtChannel (channelName);
+            return IsTargetedAtChannel(channelName);
         }
 
         /// <summary>
         /// Determines if the the current message is targeted at the given channel.
         /// </summary>
-        protected virtual bool IsTargetedAtChannel (string channelName)
+        protected virtual bool IsTargetedAtChannel(string channelName)
         {
-            return MessageUtil.ContainsIgnoreCaseMatch (Channels, channelName);
+            return MessageUtil.ContainsIgnoreCaseMatch(Channels, channelName);
         }
 
         #endregion

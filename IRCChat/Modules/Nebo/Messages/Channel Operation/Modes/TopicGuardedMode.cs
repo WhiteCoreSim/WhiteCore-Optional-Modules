@@ -11,14 +11,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="TopicGuardedMode"/> class.
         /// </summary>
-        public TopicGuardedMode ()
+        public TopicGuardedMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="TopicGuardedMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public TopicGuardedMode (ModeAction action)
+        public TopicGuardedMode(ModeAction action)
         {
             Action = action;
         }

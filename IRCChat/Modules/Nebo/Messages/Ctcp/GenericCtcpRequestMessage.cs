@@ -36,9 +36,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnGenericCtcpRequest (new IrcMessageEventArgs<GenericCtcpRequestMessage> (this));
+            conduit.OnGenericCtcpRequest(new IrcMessageEventArgs<GenericCtcpRequestMessage>(this));
         }
 
         /// <summary>
@@ -56,11 +56,11 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            Command = CtcpUtil.GetInternalCommand (unparsedMessage);
-            DataPackage = CtcpUtil.GetExtendedData (unparsedMessage);
+            base.Parse(unparsedMessage);
+            Command = CtcpUtil.GetInternalCommand(unparsedMessage);
+            DataPackage = CtcpUtil.GetExtendedData(unparsedMessage);
         }
 
     }

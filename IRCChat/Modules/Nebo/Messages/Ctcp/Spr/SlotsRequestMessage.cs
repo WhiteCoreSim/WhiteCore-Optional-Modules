@@ -14,7 +14,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="SlotsRequestMessage"/> class.
         /// </summary>
-        public SlotsRequestMessage ()
+        public SlotsRequestMessage()
         {
             InternalCommand = "SLOTS";
         }
@@ -23,8 +23,8 @@ namespace MetaBuilders.Irc.Messages
         /// Creates a new instance of the <see cref="ActionRequestMessage"/> class with the given text and target.
         /// </summary>
         /// <param name="target">The target of the action.</param>
-        public SlotsRequestMessage (string target)
-            : this ()
+        public SlotsRequestMessage(string target)
+            : this()
         {
             Target = target;
         }
@@ -124,9 +124,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnSlotsRequest (new IrcMessageEventArgs<SlotsRequestMessage> (this));
+            conduit.OnSlotsRequest(new IrcMessageEventArgs<SlotsRequestMessage>(this));
         }
 
         /// <summary>
@@ -134,27 +134,27 @@ namespace MetaBuilders.Irc.Messages
         /// </summary>
         protected override string ExtendedData {
             get {
-                return string.Format (CultureInfo.InvariantCulture, "{0} {1} {2} {3} {4} {5} {6}", TotalSendSlots, AvailableSendSlots, NextSend, TakenQueueSlots, TotalQueueSlots, CpsRecord, TotalFiles);
+                return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3} {4} {5} {6}", TotalSendSlots, AvailableSendSlots, NextSend, TakenQueueSlots, TotalQueueSlots, CpsRecord, TotalFiles);
             }
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Int32.TryParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Int32@)")]
-        public override void Parse (string unparsedMessage)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Int32.TryParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Int32@)")]
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            string slotInfo = CtcpUtil.GetExtendedData (unparsedMessage);
-            string [] slotInfoItems = slotInfo.Split (' ');
+            base.Parse(unparsedMessage);
+            string slotInfo = CtcpUtil.GetExtendedData(unparsedMessage);
+            string[] slotInfoItems = slotInfo.Split(' ');
             if (slotInfoItems.Length >= 7) {
-                int.TryParse (slotInfoItems [0], NumberStyles.Integer, CultureInfo.InvariantCulture, out totalSendSlots);
-                int.TryParse (slotInfoItems [1], NumberStyles.Integer, CultureInfo.InvariantCulture, out availableSendSlots);
-                nextSend = slotInfoItems [2];
-                int.TryParse (slotInfoItems [3], NumberStyles.Integer, CultureInfo.InvariantCulture, out takenQueueSlots);
-                int.TryParse (slotInfoItems [4], NumberStyles.Integer, CultureInfo.InvariantCulture, out totalQueueSlots);
-                int.TryParse (slotInfoItems [5], NumberStyles.Integer, CultureInfo.InvariantCulture, out cpsRecord);
-                int.TryParse (slotInfoItems [6], NumberStyles.Integer, CultureInfo.InvariantCulture, out totalFiles);
+                int.TryParse(slotInfoItems[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out totalSendSlots);
+                int.TryParse(slotInfoItems[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out availableSendSlots);
+                nextSend = slotInfoItems[2];
+                int.TryParse(slotInfoItems[3], NumberStyles.Integer, CultureInfo.InvariantCulture, out takenQueueSlots);
+                int.TryParse(slotInfoItems[4], NumberStyles.Integer, CultureInfo.InvariantCulture, out totalQueueSlots);
+                int.TryParse(slotInfoItems[5], NumberStyles.Integer, CultureInfo.InvariantCulture, out cpsRecord);
+                int.TryParse(slotInfoItems[6], NumberStyles.Integer, CultureInfo.InvariantCulture, out totalFiles);
             }
         }
 

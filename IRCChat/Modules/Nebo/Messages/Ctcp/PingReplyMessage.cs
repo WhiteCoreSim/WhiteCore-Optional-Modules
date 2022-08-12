@@ -13,7 +13,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="PingReplyMessage"/> class.
         /// </summary>
-        public PingReplyMessage ()
+        public PingReplyMessage()
         {
             InternalCommand = "PING";
         }
@@ -26,7 +26,7 @@ namespace MetaBuilders.Irc.Messages
         /// This allows the requestor to substract the two to calculate the timespan to whatever degree
         /// of exactness that they want.
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "TimeStamp")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "TimeStamp")]
         public virtual string TimeStamp {
             get {
                 return timeStamp;
@@ -49,18 +49,18 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnPingReply (new IrcMessageEventArgs<PingReplyMessage> (this));
+            conduit.OnPingReply(new IrcMessageEventArgs<PingReplyMessage>(this));
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            TimeStamp = CtcpUtil.GetExtendedData (unparsedMessage);
+            base.Parse(unparsedMessage);
+            TimeStamp = CtcpUtil.GetExtendedData(unparsedMessage);
         }
 
     }

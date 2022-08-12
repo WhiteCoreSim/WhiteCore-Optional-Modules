@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file's license:
  * 
  *  Copyright 2011 Matthew Beardmore
@@ -56,32 +56,32 @@ namespace WhiteCore.Addon.IRCChat
 {
     public class IRCGroupService : INonSharedRegionModule
     {
-        Dictionary<UUID, string> m_network = new Dictionary<UUID, string> ();
-        Dictionary<UUID, string> m_channel = new Dictionary<UUID, string> ();
-        Dictionary<UUID, string> m_gridName = new Dictionary<UUID, string> ();
+        Dictionary<UUID, string> m_network = new Dictionary<UUID, string>();
+        Dictionary<UUID, string> m_channel = new Dictionary<UUID, string>();
+        Dictionary<UUID, string> m_gridName = new Dictionary<UUID, string>();
         IScene m_scene;
         bool m_spamDebug = false;
         bool m_enabled = false;
         // m_GroupUser;
-        Dictionary<UUID, Client> clients = new Dictionary<UUID, Client> ();
+        Dictionary<UUID, Client> clients = new Dictionary<UUID, Client>();
         IConfig m_config;
 
-        public void Initialise (IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
-            IConfig ircConfig = source.Configs ["IRCModule"];
+            IConfig ircConfig = source.Configs["IRCModule"];
             if (ircConfig != null) {
-                m_enabled = ircConfig.GetBoolean ("GroupsModule", m_enabled);
-                m_spamDebug = ircConfig.GetBoolean ("DebugMode", m_spamDebug);
+                m_enabled = ircConfig.GetBoolean("GroupsModule", m_enabled);
+                m_spamDebug = ircConfig.GetBoolean("DebugMode", m_spamDebug);
                 //m_GroupUser = ircConfig.Get("AvatarID","");
                 m_config = ircConfig;
             }
         }
 
-        public void PostInitialise ()
+        public void PostInitialise()
         {
         }
 
-        public void AddRegion (IScene scene)
+        public void AddRegion(IScene scene)
         {
             if (!m_enabled)
                 return;
@@ -91,41 +91,41 @@ namespace WhiteCore.Addon.IRCChat
             scene.EventManager.OnMakeChildAgent += EventManager_OnMakeChildAgent;
             scene.EventManager.OnRemovePresence += EventManager_OnRemovePresence;
             scene.EventManager.OnIncomingInstantMessage += EventManager_OnIncomingInstantMessage;
-            InitClients ();
+            InitClients();
         }
 
-        void InitClients ()
+        void InitClients()
         {
             // use this???     IGroupsServicesConnector conn = m_scene.RequestModuleInterface<IGroupsServicesConnector>();
 
-            IGroupsServiceConnector conn = Framework.Utilities.DataManager.RequestPlugin<IGroupsServiceConnector> ();
+            IGroupsServiceConnector conn = Framework.Utilities.DataManager.RequestPlugin<IGroupsServiceConnector>();
             if (conn != null) {
-                foreach (string s in m_config.GetKeys ()) {
-                    if (s.EndsWith ("_Network", StringComparison.Ordinal)) {
-                        string networkvalue = m_config.GetString (s);
-                        string channelvalue = m_config.GetString (s.Replace ("_Network", "_Channel"));
-                        string nickvalue = m_config.GetString (s.Replace ("_Network", "_Nick"));
-                        string gridName = m_config.GetString (s.Replace ("_Network", "_GridName"), MainServer.Instance.ServerURI.Remove (0, 7));
-                        GroupRecord g = conn.GetGroupRecord (UUID.Zero, UUID.Zero, s.Replace ("_Network", "").Replace ('_', ' '));
-                        if (g != null) {
-                            m_network [g.GroupID] = networkvalue;
-                            m_channel [g.GroupID] = channelvalue;
-                            m_gridName [g.GroupID] = gridName;
-                            CreateIRCConnection (networkvalue, nickvalue, channelvalue, g.GroupID);
+                foreach (string s in m_config.GetKeys()) {
+                    if (s.EndsWith("_Network", StringComparison.Ordinal)) {
+                        string networkvalue = m_config.GetString(s);
+                        string channelvalue = m_config.GetString(s.Replace("_Network", "_Channel"));
+                        string nickvalue = m_config.GetString(s.Replace("_Network", "_Nick"));
+                        string gridName = m_config.GetString(s.Replace("_Network", "_GridName"), MainServer.Instance.ServerURI.Remove(0, 7));
+                        GroupRecord grp = conn.GetGroupRecord(UUID.Zero, UUID.Zero, s.Replace("_Network", "").Replace('_', ' '));
+                        if (grp != null) {
+                            m_network[grp.GroupID] = networkvalue;
+                            m_channel[grp.GroupID] = channelvalue;
+                            m_gridName[grp.GroupID] = gridName;
+                            CreateIRCConnection(networkvalue, nickvalue, channelvalue, grp.GroupID);
                         }
                     }
                 }
             } else {
-                MainConsole.Instance.TraceFormat ("[GroupIRC]: Exception initialising clients - Unable to locate GroupServiceConnector");
+                MainConsole.Instance.TraceFormat("[GroupIRC]: Exception initialising clients - Unable to locate GroupServiceConnector");
                 m_enabled = false;
             }
         }
 
-        public void RegionLoaded (IScene scene)
+        public void RegionLoaded(IScene scene)
         {
         }
 
-        public void RemoveRegion (IScene scene)
+        public void RemoveRegion(IScene scene)
         {
             if (!m_enabled)
                 return;
@@ -136,7 +136,7 @@ namespace WhiteCore.Addon.IRCChat
             scene.EventManager.OnIncomingInstantMessage -= EventManager_OnIncomingInstantMessage;
         }
 
-        public void Close ()
+        public void Close()
         {
         }
 
@@ -148,37 +148,37 @@ namespace WhiteCore.Addon.IRCChat
             get { return null; }
         }
 
-        void EventManager_OnMakeRootAgent (IScenePresence presence)
+        void EventManager_OnMakeRootAgent(IScenePresence presence)
         {
             presence.ControllingClient.OnPreSendInstantMessage += ControllingClient_OnPreSendInstantMessage;
         }
 
-        void EventManager_OnRemovePresence (IScenePresence presence)
+        void EventManager_OnRemovePresence(IScenePresence presence)
         {
             presence.ControllingClient.OnPreSendInstantMessage -= ControllingClient_OnPreSendInstantMessage;
         }
 
-        void EventManager_OnMakeChildAgent (IScenePresence presence, GridRegion destination)
+        void EventManager_OnMakeChildAgent(IScenePresence presence, GridRegion destination)
         {
             presence.ControllingClient.OnPreSendInstantMessage -= ControllingClient_OnPreSendInstantMessage;
         }
 
-        void EventManager_OnIncomingInstantMessage (GridInstantMessage message)
+        void EventManager_OnIncomingInstantMessage(GridInstantMessage message)
         {
-            ControllingClient_OnPreSendInstantMessage (null, message);
+            ControllingClient_OnPreSendInstantMessage(null, message);
         }
 
-        bool ControllingClient_OnPreSendInstantMessage (IClientAPI remoteclient, GridInstantMessage im)
+        bool ControllingClient_OnPreSendInstantMessage(IClientAPI remoteclient, GridInstantMessage im)
         {
             string name = remoteclient == null ? im.FromAgentName : remoteclient.Name;
             if (im.Dialog == (byte)InstantMessageDialog.SessionSend) {
                 Client client;
-                if (clients.TryGetValue (im.SessionID, out client)) {
+                if (clients.TryGetValue(im.SessionID, out client)) {
                     try {
                         if (client.Connection.Status == ConnectionStatus.Connected)
-                            client.SendChat ("(grid:" + m_gridName [im.SessionID] + ") " + name + ": " + im.Message, m_channel [im.SessionID]);
+                            client.SendChat("(grid:" + m_gridName[im.SessionID] + ") " + name + ": " + im.Message, m_channel[im.SessionID]);
                     } catch (Exception ex) {
-                        MainConsole.Instance.TraceFormat ("[GroupIRC]: Exception sending chat message ({0})", ex);
+                        MainConsole.Instance.TraceFormat("[GroupIRC]: Exception sending chat message ({0})", ex);
                     }
                 }
             }
@@ -196,13 +196,13 @@ namespace WhiteCore.Addon.IRCChat
                         UUID.Zero, (byte)InstantMessageDialog.SessionSend, e.Message.Text, false, Vector3.Zero), groupID);
                 }
         */
-        void chatting (object sender, IrcMessageEventArgs<TextMessage> e, UUID groupID)
+        void Chatting(object sender, IrcMessageEventArgs<TextMessage> e, UUID groupID)
         {
-            IInstantMessagingService gMessaging = m_scene.RequestModuleInterface<IInstantMessagingService> ();
+            IInstantMessagingService gMessaging = m_scene.RequestModuleInterface<IInstantMessagingService>();
 
             if (gMessaging != null) {
-                gMessaging.EnsureSessionIsStarted (groupID);
-                gMessaging.SendChatToSession (UUID.Zero, new GridInstantMessage () {
+                gMessaging.EnsureSessionIsStarted(groupID);
+                gMessaging.SendChatToSession(UUID.Zero, new GridInstantMessage() {
                     FromAgentID = (UUID)"4fec5721-6980-40ca-815c-aba0264b175a",
                     //FromAgentID = UUID.Random(),
                     //FromAgentName = "VN_Irc",
@@ -214,98 +214,98 @@ namespace WhiteCore.Addon.IRCChat
                     FromGroup = false,
                     SessionID = UUID.Zero,
                     Offline = 0,
-                    BinaryBucket = new byte [0],
-                    Timestamp = (uint)Util.UnixTimeSinceEpoch ()
+                    BinaryBucket = new byte[0],
+                    Timestamp = (uint)Util.UnixTimeSinceEpoch()
                 });
 
 
-                MainConsole.Instance.InfoFormat ("Sending " + e.Message.Text + " to Group " + groupID + " From " + e.Message.Sender.Nick);
+                MainConsole.Instance.InfoFormat("Sending " + e.Message.Text + " to Group " + groupID + " From " + e.Message.Sender.Nick);
             }
 
         }
 
-        void CreateIRCConnection (string network, string nick, string channel, UUID groupID)
+        void CreateIRCConnection(string network, string nick, string channel, UUID groupID)
         {
             // Create a new client to the given address with the given nick
-            Client client = new Client (network, nick);
+            Client client = new Client(network, nick);
             Ident.Service.User = client.User;
-            HookUpClientEvents (channel, groupID, client);
+            HookUpClientEvents(channel, groupID, client);
             client.EnableAutoIdent = false;
-            client.Connection.Connect ();
-            clients [groupID] = client;
+            client.Connection.Connect();
+            clients[groupID] = client;
         }
 
-        void HookUpClientEvents (string channel, UUID groupID, Client client)
+        void HookUpClientEvents(string channel, UUID groupID, Client client)
         {
             // Once I'm welcomed, I can start joining channels
             client.Messages.Welcome += delegate (object sender, IrcMessageEventArgs<WelcomeMessage> e) {
-                welcomed (sender, e, client, channel);
+                Welcomed(sender, e, client, channel);
             };
 
             // People are chatting, pay attention so I can be a lame echobot :)
             client.Messages.Chat += delegate (object sender, IrcMessageEventArgs<TextMessage> e) {
 
                 UUID mystupiduuid = (UUID)"4fec5721-6980-40ca-815c-aba0264b175a"; // debug only??
-                chatting (mystupiduuid, e, groupID);
-                MainConsole.Instance.InfoFormat ("got " + groupID + " and " + e.Message.Text + " From: " + sender);
+                Chatting(mystupiduuid, e, groupID);
+                MainConsole.Instance.InfoFormat("got " + groupID + " and " + e.Message.Text + " From: " + sender);
             };
 
             client.Messages.TimeRequest += delegate (object sender, IrcMessageEventArgs<TimeRequestMessage> e) {
-                timeRequested (sender, e, client);
+                TimeRequested(sender, e, client);
             };
 
-            client.DataReceived += dataGot;
-            client.DataSent += dataSent;
+            client.DataReceived += DataGot;
+            client.DataSent += DataSent;
 
-            client.Connection.Disconnected += logDisconnected;
+            client.Connection.Disconnected += LogDisconnected;
         }
 
-        void CloseClient (IScenePresence sp)
+        void CloseClient(IScenePresence sp)
         {
-            if (clients.ContainsKey (sp.UUID)) {
-                Client client = clients [sp.UUID];
-                clients.Remove (sp.UUID);
-                Util.FireAndForget (delegate (object o) {
-                    client.SendQuit ("Left the region");
+            if (clients.ContainsKey(sp.UUID)) {
+                Client client = clients[sp.UUID];
+                clients.Remove(sp.UUID);
+                Util.FireAndForget(delegate (object o) {
+                    client.SendQuit("Left the region");
                 });
             }
         }
 
-        void logDisconnected (object sender, ConnectionDataEventArgs e)
+        void LogDisconnected(object sender, ConnectionDataEventArgs e)
         {
             if (m_spamDebug) {
                 string data = "*** Disconnected: " + e.Data;
-                MainConsole.Instance.Warn ("[GroupIRC]: " + data);
+                MainConsole.Instance.Warn("[GroupIRC]: " + data);
             }
         }
 
-        void dataGot (object sender, ConnectionDataEventArgs e)
+        void DataGot(object sender, ConnectionDataEventArgs e)
         {
             if (m_spamDebug) {
                 string data = "*** Got: " + e.Data;
-                MainConsole.Instance.Warn ("[GroupIRC]: " + data);
+                MainConsole.Instance.Warn("[GroupIRC]: " + data);
             }
         }
 
-        void dataSent (object sender, ConnectionDataEventArgs e)
+        void DataSent(object sender, ConnectionDataEventArgs e)
         {
             if (m_spamDebug) {
                 string data = "*** Sent: " + e.Data;
-                MainConsole.Instance.Warn ("[GroupIRC]: " + data);
+                MainConsole.Instance.Warn("[GroupIRC]: " + data);
             }
         }
 
-        void timeRequested (object sender, IrcMessageEventArgs<TimeRequestMessage> e, Client client)
+        void TimeRequested(object sender, IrcMessageEventArgs<TimeRequestMessage> e, Client client)
         {
-            TimeReplyMessage reply = new TimeReplyMessage ();
-            reply.CurrentTime = DateTime.Now.ToLongTimeString ();
+            TimeReplyMessage reply = new TimeReplyMessage();
+            reply.CurrentTime = DateTime.Now.ToLongTimeString();
             reply.Target = e.Message.Sender.Nick;
-            client.Send (reply);
+            client.Send(reply);
         }
 
-        void welcomed (object sender, IrcMessageEventArgs<WelcomeMessage> e, Client client, string channel)
+        void Welcomed(object sender, IrcMessageEventArgs<WelcomeMessage> e, Client client, string channel)
         {
-            client.SendJoin (channel);
+            client.SendJoin(channel);
         }
     }
 }

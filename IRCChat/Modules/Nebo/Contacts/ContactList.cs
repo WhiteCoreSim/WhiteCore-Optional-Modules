@@ -36,24 +36,24 @@ namespace MetaBuilders.Irc.Contacts
         /// This method should not be called until the Client receives the ServerSupport is populated.
         /// An easy way to make sure is to wait until the Ready event of the Client.
         /// </remarks>
-        public void Initialize (Client client)
+        public void Initialize(Client client)
         {
             if (client == null) {
-                throw new ArgumentNullException (nameof (client));
+                throw new ArgumentNullException(nameof(client));
             }
             ServerSupport support = client.ServerSupports;
             Client = client;
-            Users = new UserCollection ();
+            Users = new UserCollection();
 
             if (support.MaxWatches > 0) {
-                tracker = new ContactsWatchTracker (this);
+                tracker = new ContactsWatchTracker(this);
             } else if (support.MaxMonitors > 0) {
-                tracker = new ContactsMonitorTracker (this);
+                tracker = new ContactsMonitorTracker(this);
             } else {
-                tracker = new ContactsIsOnTracker (this);
+                tracker = new ContactsIsOnTracker(this);
             }
 
-            tracker.Initialize ();
+            tracker.Initialize();
         }
 
         ContactsTracker tracker;
@@ -66,22 +66,22 @@ namespace MetaBuilders.Irc.Contacts
         /// <summary>
         /// Implements IDisposable.Dispose
         /// </summary>
-        public void Dispose ()
+        public void Dispose()
         {
-            Dispose (true);
-            GC.SuppressFinalize (this);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
         /// Implements IDisposable.Dispose
         /// </summary>
-        void Dispose (bool disposing)
+        void Dispose(bool disposing)
         {
             if (!disposed) {
                 if (disposing) {
                     IDisposable disposableTracker = tracker as IDisposable;
                     if (disposableTracker != null) {
-                        disposableTracker.Dispose ();
+                        disposableTracker.Dispose();
                     }
 
                 }
@@ -90,9 +90,9 @@ namespace MetaBuilders.Irc.Contacts
         }
 
         /// <exclude />
-        ~ContactList ()
+        ~ContactList()
         {
-            Dispose (false);
+            Dispose(false);
         }
 
         #endregion

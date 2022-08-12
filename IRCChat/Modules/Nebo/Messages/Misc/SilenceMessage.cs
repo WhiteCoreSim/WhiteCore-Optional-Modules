@@ -14,22 +14,22 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the SilenceMessage class.
         /// </summary>
-        public SilenceMessage ()
+        public SilenceMessage()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the SilenceMessage class with the given mask.
         /// </summary>
-        public SilenceMessage (string userMask)
+        public SilenceMessage(string userMask)
         {
-            silencedUser.Parse (userMask);
+            silencedUser.Parse(userMask);
         }
 
         /// <summary>
         /// Creates a new instance of the SilenceMessage class with the <see cref="User"/>.
         /// </summary>
-        public SilenceMessage (User silencedUser)
+        public SilenceMessage(User silencedUser)
         {
             this.silencedUser = silencedUser;
         }
@@ -54,7 +54,7 @@ namespace MetaBuilders.Irc.Messages
                 silencedUser = value;
             }
         }
-        User silencedUser = new User ();
+        User silencedUser = new User();
 
         /// <summary>
         /// Gets or sets the action being applied to the silenced user on the list.
@@ -72,33 +72,33 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
             // SILENCE [{{+|-}<user>@<host>}]
-            base.AddParametersToFormat (writer);
-            if (SilencedUser != null && SilencedUser.ToString ().Length != 0) {
-                writer.AddParameter (Action.ToString () + SilencedUser);
+            base.AddParametersToFormat(writer);
+            if (SilencedUser != null && SilencedUser.ToString().Length != 0) {
+                writer.AddParameter(Action.ToString() + SilencedUser);
             }
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count > 0) {
-                string target = parameters [0];
-                string action = target.Substring (0, 1);
-                if (ModeAction.IsDefined (action)) {
-                    Action = ModeAction.Parse (action);
-                    target = target.Substring (1);
+                string target = parameters[0];
+                string action = target.Substring(0, 1);
+                if (ModeAction.IsDefined(action)) {
+                    Action = ModeAction.Parse(action);
+                    target = target.Substring(1);
                 } else {
                     Action = ModeAction.Add;
                 }
-                SilencedUser = new User (target);
+                SilencedUser = new User(target);
             } else {
-                SilencedUser = new User ();
+                SilencedUser = new User();
                 Action = ModeAction.Add;
             }
         }
@@ -106,9 +106,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnSilence (new IrcMessageEventArgs<SilenceMessage> (this));
+            conduit.OnSilence(new IrcMessageEventArgs<SilenceMessage>(this));
         }
 
     }

@@ -14,7 +14,7 @@ namespace MetaBuilders.Irc.Dcc
     {
         #region Private Members
 
-        byte [] buffer;
+        byte[] buffer;
 
         FileStream file;
         long startPosition;
@@ -74,7 +74,7 @@ namespace MetaBuilders.Irc.Dcc
             }
             set {
                 if (value > 8192) {
-                    throw new ArgumentException (NeboResources.BufferSizeIsLimited, nameof (value));
+                    throw new ArgumentException(NeboResources.BufferSizeIsLimited, nameof(value));
                 }
                 bufferSize = value;
             }
@@ -147,10 +147,10 @@ namespace MetaBuilders.Irc.Dcc
         /// <summary>
         /// Raises the <see cref="TransferInterruption"/> event.
         /// </summary>
-        protected void OnTransferInterruption (EventArgs e)
+        protected void OnTransferInterruption(EventArgs e)
         {
             if (TransferInterruption != null) {
-                TransferInterruption (this, e);
+                TransferInterruption(this, e);
             }
         }
 
@@ -161,10 +161,10 @@ namespace MetaBuilders.Irc.Dcc
         /// <summary>
         /// Raises the <see cref="TransferComplete"/> event.
         /// </summary>
-        protected void OnTransferComplete (EventArgs e)
+        protected void OnTransferComplete(EventArgs e)
         {
             if (TransferComplete != null) {
-                TransferComplete (this, e);
+                TransferComplete(this, e);
             }
         }
         #endregion
@@ -174,89 +174,89 @@ namespace MetaBuilders.Irc.Dcc
         /// <summary>
         /// Sends the file over the current socket.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        internal void Send ()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        internal void Send()
         {
             if (!File.CanRead) {
-                throw new InvalidOperationException (NeboResources.CannotReadFromFile);
+                throw new InvalidOperationException(NeboResources.CannotReadFromFile);
             }
 
             bytesTransferred = 0;
 
-            buffer = new byte [BufferSize];
-            byte [] acknowledgment = new byte [4];
+            buffer = new byte[BufferSize];
+            byte[] acknowledgment = new byte[4];
             int bytesSent;
 
 
-            while ((bytesSent = File.Read (buffer, 0, buffer.Length)) != 0) {
+            while ((bytesSent = File.Read(buffer, 0, buffer.Length)) != 0) {
                 try {
-                    transferSocket.Send (buffer, bytesSent, SocketFlags.None);
+                    transferSocket.Send(buffer, bytesSent, SocketFlags.None);
                     bytesTransferred += bytesSent;
                     if (!TurboMode && !SendAhead) {
-                        transferSocket.Receive (acknowledgment);
+                        transferSocket.Receive(acknowledgment);
                     }
                 } catch {
-                    OnTransferInterruption (EventArgs.Empty);
+                    OnTransferInterruption(EventArgs.Empty);
                 }
             }
 
             if (!TurboMode) {
-                while (!AllAcknowledgmentsReceived (acknowledgment)) {
-                    transferSocket.Receive (acknowledgment);
+                while (!AllAcknowledgmentsReceived(acknowledgment)) {
+                    transferSocket.Receive(acknowledgment);
                 }
             }
-            OnTransferComplete (EventArgs.Empty);
+            OnTransferComplete(EventArgs.Empty);
         }
 
         /// <summary>
         /// Receives the file over the current socket.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal void Receive ()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal void Receive()
         {
             bytesTransferred = 0;
 
-            buffer = new byte [BufferSize];
+            buffer = new byte[BufferSize];
             int bytesReceived;
 
             while (!IsTransferComplete) {
-                bytesReceived = transferSocket.Receive (buffer);
+                bytesReceived = transferSocket.Receive(buffer);
                 if (bytesReceived == 0) {
-                    OnTransferInterruption (EventArgs.Empty);
+                    OnTransferInterruption(EventArgs.Empty);
                     return;
                 }
                 bytesTransferred += bytesReceived;
                 if (File.CanWrite) {
-                    File.Write (buffer, 0, bytesReceived);
+                    File.Write(buffer, 0, bytesReceived);
                 }
-                SendAcknowledgement ();
+                SendAcknowledgement();
             }
-            File.Flush ();
-            OnTransferComplete (EventArgs.Empty);
+            File.Flush();
+            OnTransferComplete(EventArgs.Empty);
         }
 
         #endregion
 
         #region Helpers
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        void SendAcknowledgement ()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        void SendAcknowledgement()
         {
             if (!TurboMode) {
                 //Convert BytesTransfered to a 4 byte array containing the number
-                byte [] bytesAck = DccBytesReceivedFormat ();
+                byte[] bytesAck = DccBytesReceivedFormat();
 
                 // Send it over the socket.
-                transferSocket.Send (bytesAck);
+                transferSocket.Send(bytesAck);
             }
         }
 
-        bool AllAcknowledgmentsReceived (byte [] lastAck)
+        bool AllAcknowledgmentsReceived(byte[] lastAck)
         {
-            long acknowledgedBytes = DccBytesToLong (lastAck);
+            long acknowledgedBytes = DccBytesToLong(lastAck);
             return acknowledgedBytes >= BytesTransferred;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         bool IsTransferComplete {
             get {
                 if (fileSize == -1) {
@@ -266,24 +266,24 @@ namespace MetaBuilders.Irc.Dcc
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        byte [] DccBytesReceivedFormat ()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        byte[] DccBytesReceivedFormat()
         {
-            byte [] size = new byte [4];
-            byte [] longBytes = BitConverter.GetBytes (NetworkUnsignedLong (BytesTransferred));
-            Array.Copy (longBytes, 0, size, 0, 4);
+            byte[] size = new byte[4];
+            byte[] longBytes = BitConverter.GetBytes(NetworkUnsignedLong(BytesTransferred));
+            Array.Copy(longBytes, 0, size, 0, 4);
             return size;
         }
 
-        static long DccBytesToLong (byte [] received)
+        static long DccBytesToLong(byte[] received)
         {
-            return IPAddress.NetworkToHostOrder (BitConverter.ToInt32 (received, 0));
+            return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(received, 0));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        static long NetworkUnsignedLong (long hostOrderLong)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        static long NetworkUnsignedLong(long hostOrderLong)
         {
-            long networkLong = IPAddress.HostToNetworkOrder (hostOrderLong);
+            long networkLong = IPAddress.HostToNetworkOrder(hostOrderLong);
             return (networkLong >> 32) & 0x00000000ffffffff;
         }
 

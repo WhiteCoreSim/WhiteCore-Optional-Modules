@@ -16,14 +16,14 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the OperMessage class.
         /// </summary>
-        public OperMessage ()
+        public OperMessage()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the OperMessage class with the given name and password.
         /// </summary>
-        public OperMessage (string name, string password)
+        public OperMessage(string name, string password)
         {
             op_name = name;
             op_password = password;
@@ -67,22 +67,22 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (Name);
-            writer.AddParameter (Password);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(Name);
+            writer.AddParameter(Password);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count >= 2) {
-                Name = parameters [0];
-                Password = parameters [1];
+                Name = parameters[0];
+                Password = parameters[1];
             } else {
                 Name = "";
                 Password = "";
@@ -92,9 +92,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnOper (new IrcMessageEventArgs<OperMessage> (this));
+            conduit.OnOper(new IrcMessageEventArgs<OperMessage>(this));
         }
 
     }

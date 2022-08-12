@@ -19,7 +19,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="DccSendRequestMessage"/> class.
         /// </summary>
-        public DccSendRequestMessage ()
+        public DccSendRequestMessage()
         {
         }
 
@@ -28,7 +28,7 @@ namespace MetaBuilders.Irc.Messages
         /// </summary>
         protected override string ExtendedData {
             get {
-                return base.ExtendedData + " " + Size.ToString (CultureInfo.InvariantCulture);
+                return base.ExtendedData + " " + Size.ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -108,34 +108,34 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Determines if the message's DCC command is compatible with this message.
         /// </summary>
-        public override bool CanParseDccCommand (string command)
+        public override bool CanParseDccCommand(string command)
         {
             if (command == null) {
                 return false;
             }
-            return command.EndsWith ("SEND", StringComparison.OrdinalIgnoreCase);
+            return command.EndsWith("SEND", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            FileName = DccUtil.GetArgument (unparsedMessage);
-            Size = Convert.ToInt32 (DccUtil.GetParameters (unparsedMessage) [4], CultureInfo.InvariantCulture);
-            string unparsedCommand = DccUtil.GetCommand (unparsedMessage).ToUpperInvariant ();
-            string commandExtenstion = unparsedCommand.Substring (0, unparsedCommand.Length - 4);
-            TurboMode = commandExtenstion.IndexOf ("T", StringComparison.Ordinal) >= 0;
-            Secure = commandExtenstion.IndexOf ("S", StringComparison.Ordinal) >= 0;
+            base.Parse(unparsedMessage);
+            FileName = DccUtil.GetArgument(unparsedMessage);
+            Size = Convert.ToInt32(DccUtil.GetParameters(unparsedMessage)[4], CultureInfo.InvariantCulture);
+            string unparsedCommand = DccUtil.GetCommand(unparsedMessage).ToUpperInvariant();
+            string commandExtenstion = unparsedCommand.Substring(0, unparsedCommand.Length - 4);
+            TurboMode = commandExtenstion.IndexOf("T", StringComparison.Ordinal) >= 0;
+            Secure = commandExtenstion.IndexOf("S", StringComparison.Ordinal) >= 0;
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnDccSendRequest (new IrcMessageEventArgs<DccSendRequestMessage> (this));
+            conduit.OnDccSendRequest(new IrcMessageEventArgs<DccSendRequestMessage>(this));
         }
 
     }

@@ -14,7 +14,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="ActionRequestMessage"/> class.
         /// </summary>
-        public ActionRequestMessage ()
+        public ActionRequestMessage()
         {
             InternalCommand = "ACTION";
         }
@@ -23,8 +23,8 @@ namespace MetaBuilders.Irc.Messages
         /// Creates a new instance of the <see cref="ActionRequestMessage"/> class with the given text.
         /// </summary>
         /// <param name="text">The text of the action.</param>
-        public ActionRequestMessage (string text)
-            : this ()
+        public ActionRequestMessage(string text)
+            : this()
         {
             req_text = text;
         }
@@ -34,8 +34,8 @@ namespace MetaBuilders.Irc.Messages
         /// </summary>
         /// <param name="text">The text of the action.</param>
         /// <param name="target">The target of the action.</param>
-        public ActionRequestMessage (string text, string target)
-            : this (text)
+        public ActionRequestMessage(string text, string target)
+            : this(text)
         {
             Target = target;
         }
@@ -56,9 +56,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnActionRequest (new IrcMessageEventArgs<ActionRequestMessage> (this));
+            conduit.OnActionRequest(new IrcMessageEventArgs<ActionRequestMessage>(this));
         }
 
         /// <summary>
@@ -73,10 +73,10 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            Text = CtcpUtil.GetExtendedData (unparsedMessage);
+            base.Parse(unparsedMessage);
+            Text = CtcpUtil.GetExtendedData(unparsedMessage);
         }
 
     }

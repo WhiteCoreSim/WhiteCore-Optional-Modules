@@ -37,8 +37,8 @@ using WhiteCore.Framework.Modules;
 using WhiteCore.Framework.SceneInfo;
 using WhiteCore.Framework.Services;
 
-[assembly: AssemblyVersion("2015.5.15")]
-[assembly: AssemblyFileVersion("2015.5.15")]
+[assembly: AssemblyVersion("2022.08.01")]
+[assembly: AssemblyFileVersion("2022.08.01")]
 
 namespace WhiteCore.Addon.HelpHTML
 {
@@ -54,40 +54,40 @@ namespace WhiteCore.Addon.HelpHTML
             }
         }
 
-        public void Initialize(IGenericData GenericData, IConfigSource source, IRegistryCore simBase, string DefaultConnectionString)
+        public void Initialize(IGenericData GenericData, IConfigSource source, IRegistryCore simBase, string defaultConnectionString)
         {
             loadDateTime = DateTime.Now;
             MainConsole.Instance.Commands.AddCommand(
                 "helphtml",
                 "helphtml [helpPath]",
                 "output help as html document [to an optional path]",
-                loadHelp, false, true);
+                LoadHelp, false, true);
         }
 
         #endregion
 
         DateTime loadDateTime;
 
-        string cmd2helpFile(string[] cmd)
+        string Cmd2helpFile(string[] cmd)
         {
             string helpFile = "index";
 
             return "help/" + helpFile + ".html";
         }
 
-        string cmd2helpTitle(string[] cmd)
+        string Cmd2helpTitle(string[] cmd)
         {
             return "WhiteCore Help";
         }
 
-        void loadHelp(IScene scene, string[] cmd)
+        void LoadHelp(IScene scene, string[] cmd)
         {
-            string fileName = cmd2helpFile(cmd);
+            string fileName = Cmd2helpFile(cmd);
 
             if (!File.Exists(fileName) || File.GetLastWriteTime(fileName).CompareTo(loadDateTime) < 0)
             {
                 MainConsole.Instance.Info("Help file is probably stale, writing new one.");
-                writeHtmlOutput(cmd);
+                WriteHtmlOutput(cmd);
             }
 
             Process.Start(Path.GetFullPath(fileName));
@@ -112,9 +112,9 @@ namespace WhiteCore.Addon.HelpHTML
             "</html>"
         };
 
-        void writeHtmlOutput(string[] cmd)
+        void WriteHtmlOutput(string[] cmd)
         {
-            string fileName = cmd2helpFile(cmd);
+            string fileName = Cmd2helpFile(cmd);
             
             if (!Directory.Exists("help"))
             {
@@ -126,7 +126,7 @@ namespace WhiteCore.Addon.HelpHTML
             List<string> header = new List<string>();
             header.AddRange(header1);
             header.AddRange(new string[2]{
-                "<title>" + HttpUtility.HtmlEncode(cmd2helpTitle(cmd)) + "</title>",
+                "<title>" + HttpUtility.HtmlEncode(Cmd2helpTitle(cmd)) + "</title>",
                 "<!-- Created: " + DateTime.Now.ToString("U") + " -->"
             });
             header.AddRange(header2);

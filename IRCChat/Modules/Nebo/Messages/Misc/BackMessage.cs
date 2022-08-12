@@ -22,17 +22,17 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            return (base.CanParse (unparsedMessage) && MessageUtil.GetParameters (unparsedMessage).Count == 0);
+            return (base.CanParse(unparsedMessage) && MessageUtil.GetParameters(unparsedMessage).Count == 0);
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnBack (new IrcMessageEventArgs<BackMessage> (this));
+            conduit.OnBack(new IrcMessageEventArgs<BackMessage>(this));
         }
 
     }

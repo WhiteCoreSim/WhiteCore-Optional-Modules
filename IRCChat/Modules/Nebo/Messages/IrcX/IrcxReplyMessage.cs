@@ -15,7 +15,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="IrcxReplyMessage"/>.
         /// </summary>
-        public IrcxReplyMessage ()
+        public IrcxReplyMessage()
         {
             InternalNumeric = 800;
         }
@@ -54,7 +54,7 @@ namespace MetaBuilders.Irc.Messages
                 return authenticationPackages;
             }
         }
-        StringCollection authenticationPackages = new StringCollection ();
+        StringCollection authenticationPackages = new StringCollection();
 
         /// <summary>
         /// Gets or sets the maximum message length, in bytes.
@@ -89,43 +89,43 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
+            base.AddParametersToFormat(writer);
             if (IsIrcxClientMode) {
-                writer.AddParameter ("1");
+                writer.AddParameter("1");
             } else {
-                writer.AddParameter ("0");
+                writer.AddParameter("0");
             }
-            writer.AddParameter (Version);
-            writer.AddList (AuthenticationPackages, ",", false);
-            writer.AddParameter (MaximumMessageLength.ToString (CultureInfo.InvariantCulture));
-            writer.AddParameter (Tokens);
+            writer.AddParameter(Version);
+            writer.AddList(AuthenticationPackages, ",", false);
+            writer.AddParameter(MaximumMessageLength.ToString(CultureInfo.InvariantCulture));
+            writer.AddParameter(Tokens);
         }
 
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
             if (parameters.Count >= 5) {
-                IsIrcxClientMode = (parameters [1] == "1");
-                Version = parameters [2];
-                AuthenticationPackages.Clear ();
-                foreach (string package in parameters [3].Split (',')) {
-                    AuthenticationPackages.Add (package);
+                IsIrcxClientMode = (parameters[1] == "1");
+                Version = parameters[2];
+                AuthenticationPackages.Clear();
+                foreach (string package in parameters[3].Split(',')) {
+                    AuthenticationPackages.Add(package);
                 }
-                MaximumMessageLength = int.Parse (parameters [4], CultureInfo.InvariantCulture);
+                MaximumMessageLength = int.Parse(parameters[4], CultureInfo.InvariantCulture);
                 if (parameters.Count == 6) {
-                    Tokens = parameters [5];
+                    Tokens = parameters[5];
                 } else {
                     Tokens = "";
                 }
             } else {
                 IsIrcxClientMode = false;
                 Version = "";
-                AuthenticationPackages.Clear ();
+                AuthenticationPackages.Clear();
                 MaximumMessageLength = -1;
                 Tokens = "";
             }
@@ -134,9 +134,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnIrcxReply (new IrcMessageEventArgs<IrcxReplyMessage> (this));
+            conduit.OnIrcxReply(new IrcMessageEventArgs<IrcxReplyMessage>(this));
         }
 
     }

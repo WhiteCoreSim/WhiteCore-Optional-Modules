@@ -43,8 +43,8 @@ namespace WhiteCore.Addon.FlexibleWind
     {
         const float EPSILON = 0.0000001f;   // for floating point zero comparisons
         const int m_mesh = 16;
-       
-        int m_wind_direction = 0;           // The desirecd wind direction (external force)
+
+        int m_wind_direction = 0;           // The desired wind direction (external force)
         //  0 : Random Wind (default)
         //  1 : North Wind
         //  2 : East Wind
@@ -83,20 +83,18 @@ namespace WhiteCore.Addon.FlexibleWind
 
         #region IWindModulePlugin Members
 
-        public string Version
-        {
+        public string Version {
             get { return "1.0.1.0"; }
         }
 
-        public string Name
-        {
+        public string Name {
             get { return "FlexibleWind"; }
         }
 
 
-        public void Initialise ()
+        public void Initialise()
         {
-            m_rndnums = new Random (Environment.TickCount);
+            m_rndnums = new Random(Environment.TickCount);
 
             m_windSpeeds_u = new float[m_mesh * m_mesh];
             m_windSpeeds_v = new float[m_mesh * m_mesh];
@@ -113,38 +111,37 @@ namespace WhiteCore.Addon.FlexibleWind
             m_comp_u = new AForge.Math.Complex[m_mesh, m_mesh];
             m_comp_v = new AForge.Math.Complex[m_mesh, m_mesh];
 
-            clearForces ();
-            clearSpeeds ();
-            addForces (m_wind_direction);
+            ClearForces();
+            ClearSpeeds();
+            AddForces(m_wind_direction);
         }
 
-        public void WindConfig (IScene scene, IConfig windConfig)
+        public void WindConfig(IScene scene, IConfig windConfig)
         {
             if (scene == null)
                 return;
 
-            if (windConfig != null)
-            {
-                m_strength = windConfig.GetFloat ("strength", m_strength);
-                m_damping_rate = windConfig.GetFloat ("damping", m_damping_rate);
+            if (windConfig != null) {
+                m_strength = windConfig.GetFloat("strength", m_strength);
+                m_damping_rate = windConfig.GetFloat("damping", m_damping_rate);
                 if (m_damping_rate > 1.0f)
                     m_damping_rate = 1.0f;
-                
-                m_wind_direction = windConfig.GetInt ("direction", m_wind_direction);
+
+                m_wind_direction = windConfig.GetInt("direction", m_wind_direction);
                 if (m_wind_direction < 0)
                     m_wind_direction = 0;
                 if (m_wind_direction > 5)
                     m_wind_direction = 5;
 
-                m_period = windConfig.GetInt ("period", m_period);
+                m_period = windConfig.GetInt("period", m_period);
                 if (m_period < 0)
                     m_period = 0;
 
-                m_energy_variation = windConfig.GetFloat ("variationrate", m_energy_variation);
+                m_energy_variation = windConfig.GetFloat("variationrate", m_energy_variation);
                 if (m_energy_variation <= 0.0f)
                     m_energy_variation = 0.001f;
 
-                m_viscosity = windConfig.GetFloat ("viscosity", m_viscosity);
+                m_viscosity = windConfig.GetFloat("viscosity", m_viscosity);
                 if (m_viscosity < 0.0f)
                     m_viscosity = 0.001f;
 
@@ -155,44 +152,38 @@ namespace WhiteCore.Addon.FlexibleWind
         }
 
 
-        public void WindUpdate (uint frame)
+        public void WindUpdate(uint frame)
         {
-            if (m_windSpeeds != null)
-            {
-                for (int i = 0; i < m_mesh * m_mesh; i++)
-                {
-                    m_windForces_u [i] = m_extrForces_u [i] * m_strength;
-                    m_windForces_v [i] = m_extrForces_v [i] * m_strength;
+            if (m_windSpeeds != null) {
+                for (int i = 0; i < m_mesh * m_mesh; i++) {
+                    m_windForces_u[i] = m_extrForces_u[i] * m_strength;
+                    m_windForces_v[i] = m_extrForces_v[i] * m_strength;
                 }
 
-                SolveSFSW (m_mesh, m_windSpeeds_u, m_windSpeeds_v, m_windForces_u, m_windForces_v, m_region_size, m_viscosity, 1.0f);
+                SolveSFSW(m_mesh, m_windSpeeds_u, m_windSpeeds_v, m_windForces_u, m_windForces_v, m_region_size, m_viscosity, 1.0f);
 
                 float energy = 0.0f;
-                for (int i = 0; i < m_mesh * m_mesh; i++)
-                {
-                    m_windSpeeds [i].X = m_windSpeeds_u [i];
-                    m_windSpeeds [i].Y = m_windSpeeds_v [i];
+                for (int i = 0; i < m_mesh * m_mesh; i++) {
+                    m_windSpeeds[i].X = m_windSpeeds_u[i];
+                    m_windSpeeds[i].Y = m_windSpeeds_v[i];
                     //
-                    m_extrForces_u [i] *= m_damping_rate;
-                    m_extrForces_v [i] *= m_damping_rate;
+                    m_extrForces_u[i] *= m_damping_rate;
+                    m_extrForces_v[i] *= m_damping_rate;
 
-                    energy += m_windSpeeds_u [i] * m_windSpeeds_u [i] + m_windSpeeds_v [i] * m_windSpeeds_v [i];
+                    energy += m_windSpeeds_u[i] * m_windSpeeds_u[i] + m_windSpeeds_v[i] * m_windSpeeds_v[i];
                 }
                 //
-                if (Math.Abs (energy) > EPSILON)
-                {
+                if (Math.Abs(energy) > EPSILON) {
                     float st_rate = (m_energy - energy) / energy;
                     //
-                    if (st_rate >= 0.0f && st_rate <= m_energy_variation)
-                    {
+                    if (st_rate >= 0.0f && st_rate <= m_energy_variation) {
                         m_energy_cnt++;
-                        if (m_energy_cnt > 5)
-                        {
-                            MainConsole.Instance.InfoFormat ("[FlexibleWind]: Restart Wind by Energy Limit.");
+                        if (m_energy_cnt > 5) {
+                            MainConsole.Instance.InfoFormat("[FlexibleWind]: Restart Wind by Energy Limit.");
                             // restart wind
-                            clearForces ();
-                            clearSpeeds ();
-                            addForces (m_wind_direction);
+                            ClearForces();
+                            ClearSpeeds();
+                            AddForces(m_wind_direction);
                             m_period_cnt = 0;
                             m_energy_cnt = 0;
                         }
@@ -203,16 +194,14 @@ namespace WhiteCore.Addon.FlexibleWind
 
                 m_energy = energy;
                 //
-                if (m_period != 0)
-                {
+                if (m_period != 0) {
                     m_period_cnt++;
-                    if (m_period_cnt >= m_period)
-                    {
-                        MainConsole.Instance.InfoFormat ("[FlexibleWind]: Restart Wind by Period.");
+                    if (m_period_cnt >= m_period) {
+                        MainConsole.Instance.InfoFormat("[FlexibleWind]: Restart Wind by Period.");
                         // restart wind
-                        clearForces ();
-                        clearSpeeds ();
-                        addForces (m_wind_direction);
+                        ClearForces();
+                        ClearSpeeds();
+                        AddForces(m_wind_direction);
                         m_period_cnt = 0;
                         m_energy_cnt = 0;
                     }
@@ -221,12 +210,11 @@ namespace WhiteCore.Addon.FlexibleWind
         }
 
 
-        public Vector3 WindSpeed (float fX, float fY, float fZ)
+        public Vector3 WindSpeed(float fX, float fY, float fZ)
         {
-            Vector3 windVector = new Vector3 (0.0f, 0.0f, 0.0f);
+            Vector3 windVector = new Vector3(0.0f, 0.0f, 0.0f);
 
-            if (m_windSpeeds != null)
-            {
+            if (m_windSpeeds != null) {
                 int x = (int)fX / m_mesh;
                 int y = (int)fY / m_mesh;
 
@@ -239,129 +227,127 @@ namespace WhiteCore.Addon.FlexibleWind
                 if (y > m_mesh - 1)
                     y = m_mesh - 1;
 
-                windVector.X = m_windSpeeds [y * m_mesh + x].X;
-                windVector.Y = m_windSpeeds [y * m_mesh + x].Y;
+                windVector.X = m_windSpeeds[y * m_mesh + x].X;
+                windVector.Y = m_windSpeeds[y * m_mesh + x].Y;
             }
 
             return windVector;
         }
 
 
-        public Vector2[] WindLLClientArray ()
+        public Vector2[] WindLLClientArray()
         {
             return m_windSpeeds;
         }
 
 
-        public string Description
-        {
-            get
-            {
-                return "Provides a simple fluid solver wind by Jos Stam."; 
+        public string Description {
+            get {
+                return "Provides a simple fluid solver wind by Jos Stam.";
             }
         }
 
 
-        public Dictionary<string, string> WindParams ()
+        public Dictionary<string, string> WindParams()
         {
-            Dictionary<string, string> Params = new Dictionary<string, string> ();
+            Dictionary<string, string> Params = new Dictionary<string, string>();
 
-            Params.Add ("direction", "Kind of the external force");
-            Params.Add ("period", "Period of the external force");
-            Params.Add ("strength", "Wind strength");
-            Params.Add ("damping", "Damping rate of the external force");
-            Params.Add ("viscosity", "Viscosity coefficient of the wind");
-            Params.Add ("variationrate", "Lower limit of the energy variation rate");
-            Params.Add ("stop", "Stop the wind");
+            Params.Add("direction", "Kind of the external force");
+            Params.Add("period", "Period of the external force");
+            Params.Add("strength", "Wind strength");
+            Params.Add("damping", "Damping rate of the external force");
+            Params.Add("viscosity", "Viscosity coefficient of the wind");
+            Params.Add("variationrate", "Lower limit of the energy variation rate");
+            Params.Add("stop", "Stop the wind");
 
             return Params;
         }
 
 
-        public void WindParamSet (string param, float value)
+        public void WindParamSet(string param, float value)
         {
-            switch (param)
-            {
-            case "direction":
-                m_wind_direction = (int)value;
-                if (m_wind_direction < 0)
-                    m_wind_direction = 0;
-                MainConsole.Instance.InfoFormat ("[FlexibleWind]: Set Param : force = {0}", m_wind_direction);
-                clearForces ();
-                addForces (m_wind_direction);
-                break;
+            switch (param) {
+                case "direction":
+                    m_wind_direction = (int)value;
+                    if (m_wind_direction < 0)
+                        m_wind_direction = 0;
+                    MainConsole.Instance.InfoFormat("[FlexibleWind]: Set Param : force = {0}", m_wind_direction);
+                    ClearForces();
+                    AddForces(m_wind_direction);
+                    break;
 
-            case "strength":
-                m_strength = value;
-                MainConsole.Instance.InfoFormat ("[FlexibleWind]: Set Param : strength = {0}", m_strength);
-                break;
+                case "strength":
+                    m_strength = value;
+                    MainConsole.Instance.InfoFormat("[FlexibleWind]: Set Param : strength = {0}", m_strength);
+                    break;
 
-            case "damping":
-                m_damping_rate = value;
-                if (m_damping_rate > 1.0f)
-                    m_damping_rate = 1.0f;
-                MainConsole.Instance.InfoFormat ("[FlexibleWind]: Set Param : damping = {0}", m_damping_rate);
-                break;
+                case "damping":
+                    m_damping_rate = value;
+                    if (m_damping_rate > 1.0f)
+                        m_damping_rate = 1.0f;
+                    MainConsole.Instance.InfoFormat("[FlexibleWind]: Set Param : damping = {0}", m_damping_rate);
+                    break;
 
-            case "period":
-                m_period = (int)value;
-                if (m_period < 0)
-                    m_period = 0;
-                MainConsole.Instance.InfoFormat ("[FlexibleWind]: Set Param : period = {0}", m_period);
-                m_period_cnt = 0;
-                break;
+                case "period":
+                    m_period = (int)value;
+                    if (m_period < 0)
+                        m_period = 0;
+                    MainConsole.Instance.InfoFormat("[FlexibleWind]: Set Param : period = {0}", m_period);
+                    m_period_cnt = 0;
+                    break;
 
-            case "viscosity":
-                m_viscosity = value;
-                if (m_viscosity < 0.0f)
-                    m_viscosity = 0.001f;
-                MainConsole.Instance.InfoFormat ("[FlexibleWind]: Set Param : wind_visc = {0}", m_viscosity);
-                break;
+                case "viscosity":
+                    m_viscosity = value;
+                    if (m_viscosity < 0.0f)
+                        m_viscosity = 0.001f;
+                    MainConsole.Instance.InfoFormat("[FlexibleWind]: Set Param : wind_visc = {0}", m_viscosity);
+                    break;
 
-            case "variationrate":
-                m_energy_variation = value;
-                if (m_energy_variation <= 0.0f)
-                    m_energy_variation = 0.001f;
-                MainConsole.Instance.InfoFormat ("[FlexibleWind]: Set Param : wind_eps = {0}", m_energy_variation);
-                m_energy_cnt = 0;
-                break;
+                case "variationrate":
+                    m_energy_variation = value;
+                    if (m_energy_variation <= 0.0f)
+                        m_energy_variation = 0.001f;
+                    MainConsole.Instance.InfoFormat("[FlexibleWind]: Set Param : wind_eps = {0}", m_energy_variation);
+                    m_energy_cnt = 0;
+                    break;
 
-            case "stop":
-                MainConsole.Instance.InfoFormat ("[FlexibleWind]: Command : stop");
-                clearForces ();
-                clearSpeeds ();
-                break;
+                case "stop":
+                    MainConsole.Instance.InfoFormat("[FlexibleWind]: Command : stop");
+                    ClearForces();
+                    ClearSpeeds();
+                    break;
+                default:
+                    MainConsole.Instance.WarnFormat("[Flexible Wind]: Unknown command {0}", param);
+                    break;
             }
         }
 
 
-        public float WindParamGet (string param)
+        public float WindParamGet(string param)
         {
-            switch (param)
-            {
-            case "direction":
-                return m_wind_direction;
+            switch (param) {
+                case "direction":
+                    return m_wind_direction;
 
-            case "strength":
-                return m_strength;
+                case "strength":
+                    return m_strength;
 
-            case "damping":
-                return m_damping_rate;
+                case "damping":
+                    return m_damping_rate;
 
-            case "period":
-                return m_period;
+                case "period":
+                    return m_period;
 
-            case "wind_visc":
-                return m_viscosity;
+                case "wind_visc":
+                    return m_viscosity;
 
-            case "wind_eps":
-                return m_energy_variation;
+                case "wind_eps":
+                    return m_energy_variation;
 
-            default:
-                {
-                    MainConsole.Instance.WarnFormat ("[Flexible Wind]: Unknown {0} parameter {1}", Name, param);
-                    return 0;
-                }
+                default: {
+                        MainConsole.Instance.WarnFormat("[Flexible Wind]: Unknown {0} parameter {1}", Name, param);
+                        return 0;
+                    }
             }
         }
 
@@ -370,7 +356,7 @@ namespace WhiteCore.Addon.FlexibleWind
 
         #region IDisposable Members
 
-        public void Dispose ()
+        public void Dispose()
         {
             m_windSpeeds = null;
             //
@@ -391,93 +377,78 @@ namespace WhiteCore.Addon.FlexibleWind
         #endregion
 
 
-        public void clearSpeeds ()
+        public void ClearSpeeds()
         {
-            if (m_windSpeeds != null)
-            {
-                for (int i = 0; i < m_mesh * m_mesh; i++)
-                {
-                    m_windSpeeds [i].X = 0.0f;
-                    m_windSpeeds [i].Y = 0.0f;
+            if (m_windSpeeds != null) {
+                for (int i = 0; i < m_mesh * m_mesh; i++) {
+                    m_windSpeeds[i].X = 0.0f;
+                    m_windSpeeds[i].Y = 0.0f;
                 }
             }
 
-            if (m_windSpeeds_u != null && m_windSpeeds_v != null)
-            {
-                for (int i = 0; i < m_mesh * m_mesh; i++)
-                {
-                    m_windSpeeds_u [i] = 0.0f;
-                    m_windSpeeds_v [i] = 0.0f;
+            if (m_windSpeeds_u != null && m_windSpeeds_v != null) {
+                for (int i = 0; i < m_mesh * m_mesh; i++) {
+                    m_windSpeeds_u[i] = 0.0f;
+                    m_windSpeeds_v[i] = 0.0f;
                 }
             }
         }
 
 
-        public void clearForces ()
+        public void ClearForces()
         {
-            if (m_extrForces_u != null && m_extrForces_v != null)
-            {
-                for (int i = 0; i < m_mesh * m_mesh; i++)
-                {
-                    m_extrForces_u [i] = 0.0f; 
-                    m_extrForces_v [i] = 0.0f; 
+            if (m_extrForces_u != null && m_extrForces_v != null) {
+                for (int i = 0; i < m_mesh * m_mesh; i++) {
+                    m_extrForces_u[i] = 0.0f;
+                    m_extrForces_v[i] = 0.0f;
                 }
             }
         }
 
 
-        void addForces (int wind_direction)
+        void AddForces(int wind_direction)
         {
-            if (m_extrForces_u != null && m_extrForces_v != null)
-            {
+            if (m_extrForces_u != null && m_extrForces_v != null) {
                 int i, j;
 
-
-                switch (wind_direction)
-                {
-                case 0:     // random
-                    for (i = 0; i < m_mesh * m_mesh; i++)
-                    {
-                        m_extrForces_u [i] = (float)(m_rndnums.NextDouble () * 2d - 1d);    // -1 to 1 
-                        m_extrForces_v [i] = (float)(m_rndnums.NextDouble () * 2d - 1d);    // -1 to 1 
-                    }
-                    break;
-                case 1:     // North
-                    for (i = m_mesh / 3; i < m_mesh - m_mesh / 3; i++)
-                    {
-                        m_extrForces_v [i + (m_mesh - 2) * m_mesh] -= 2.0f;
-                    }
-                    break;
-                case 2:     //East
-                    for (j = m_mesh / 3; j < m_mesh - m_mesh / 3; j++)
-                    {
-                        m_extrForces_u [m_mesh - 2 + j * m_mesh] -= 2.0f;
-                    }
-                    break;
-                case 3:     // South
-                    for (i = m_mesh / 3; i < m_mesh - m_mesh / 3; i++)
-                    {
-                        m_extrForces_v [i + m_mesh] += 2.0f;
-                    }
-                    break;
-                case 4:     // West
-                    for (j = m_mesh / 3; j < m_mesh - m_mesh / 3; j++)
-                    {
-                        m_extrForces_u [1 + j * m_mesh] += 2.0f;
-                    }
-                    break;
-                case 5:     // Rotational
-                    float radius = (m_mesh) / 6.0f;
-                    for (float f = 0.0f; f < (float)Math.PI; f += 0.01f)
-                    {
-                        float angle = 2.0f * f;
-                        float x = (float)Math.Cos (angle) * radius;
-                        float y = (float)Math.Sin (angle) * radius;
-                        //
-                        m_extrForces_u [(int)(m_mesh / 2 + x) + (int)(m_mesh / 2 + y) * m_mesh] -= (float)Math.Sin (angle) * 0.2f;
-                        m_extrForces_v [(int)(m_mesh / 2 + x) + (int)(m_mesh / 2 + y) * m_mesh] += (float)Math.Cos (angle) * 0.2f;
-                    }
-                    break;
+                switch (wind_direction) {
+                    case 1:     // North
+                        for (i = m_mesh / 3; i < m_mesh - m_mesh / 3; i++) {
+                            m_extrForces_v[i + (m_mesh - 2) * m_mesh] -= 2.0f;
+                        }
+                        break;
+                    case 2:     //East
+                        for (j = m_mesh / 3; j < m_mesh - m_mesh / 3; j++) {
+                            m_extrForces_u[m_mesh - 2 + j * m_mesh] -= 2.0f;
+                        }
+                        break;
+                    case 3:     // South
+                        for (i = m_mesh / 3; i < m_mesh - m_mesh / 3; i++) {
+                            m_extrForces_v[i + m_mesh] += 2.0f;
+                        }
+                        break;
+                    case 4:     // West
+                        for (j = m_mesh / 3; j < m_mesh - m_mesh / 3; j++) {
+                            m_extrForces_u[1 + j * m_mesh] += 2.0f;
+                        }
+                        break;
+                    case 5:     // Rotational
+                        float radius = (m_mesh) / 6.0f;
+                        for (float f = 0.0f; f < (float)Math.PI; f += 0.01f) {
+                            float angle = 2.0f * f;
+                            float x = (float)Math.Cos(angle) * radius;
+                            float y = (float)Math.Sin(angle) * radius;
+                            //
+                            m_extrForces_u[(int)(m_mesh / 2 + x) + (int)(m_mesh / 2 + y) * m_mesh] -= (float)Math.Sin(angle) * 0.2f;
+                            m_extrForces_v[(int)(m_mesh / 2 + x) + (int)(m_mesh / 2 + y) * m_mesh] += (float)Math.Cos(angle) * 0.2f;
+                        }
+                        break;
+                    default:    // random - 0 or somehow not set
+                        for (i = 0; i < m_mesh * m_mesh; i++) {
+                            m_extrForces_u[i] = (float)(m_rndnums.NextDouble() * 2d - 1d);    // -1 to 1 
+                            m_extrForces_v[i] = (float)(m_rndnums.NextDouble() * 2d - 1d);    // -1 to 1 
+                        }
+                        break;
                 }
             }
 
@@ -493,26 +464,23 @@ namespace WhiteCore.Addon.FlexibleWind
         //    Using AForge.Math.FourierTransform for FFT
         //
 
-        void SolveSFSW (int n, float[] wu, float[] wv, float[] fu, float[] fv, int rsize, float visc, float dt)
+        void SolveSFSW(int n, float[] wu, float[] wv, float[] fu, float[] fv, int rsize, float visc, float dt)
         {
-            for (int i = 0; i < n * n; i++)
-            {
-                wu [i] += dt * fu [i];
-                wv [i] += dt * fv [i];
-                m_work_u [i] = wu [i] / rsize;
-                m_work_v [i] = wv [i] / rsize;
+            for (int i = 0; i < n * n; i++) {
+                wu[i] += dt * fu[i];
+                wv[i] += dt * fv[i];
+                m_work_u[i] = wu[i] / rsize;
+                m_work_v[i] = wv[i] / rsize;
             }
 
-            for (int j = 0; j < n; j++)
-            {
+            for (int j = 0; j < n; j++) {
                 int jj = j * n;
-                for (int i = 0; i < n; i++)
-                {
-                    float x = i - dt * m_work_u [i + jj] * n;
-                    float y = j - dt * m_work_v [i + jj] * n;
+                for (int i = 0; i < n; i++) {
+                    float x = i - dt * m_work_u[i + jj] * n;
+                    float y = j - dt * m_work_v[i + jj] * n;
                     //
-                    int xi = (int)Math.Floor (x);
-                    int yi = (int)Math.Floor (y);
+                    int xi = (int)Math.Floor(x);
+                    int yi = (int)Math.Floor(y);
                     float s = (x - xi);
                     float t = (y - yi);
 
@@ -521,60 +489,53 @@ namespace WhiteCore.Addon.FlexibleWind
                     int j0 = (n + (yi % n)) % n;
                     int j1 = (j0 + 1) % n;
 
-                    wu [i + jj] = (1.0f - s) * ((1.0f - t) * m_work_u [i0 + n * j0] + t * m_work_u [i0 + n * j1])
-                                    + s * ((1.0f - t) * m_work_u [i1 + n * j0] + t * m_work_u [i1 + n * j1]);
-                    wv [i + jj] = (1.0f - s) * ((1.0f - t) * m_work_v [i0 + n * j0] + t * m_work_v [i0 + n * j1])
-                                    + s * ((1.0f - t) * m_work_v [i1 + n * j0] + t * m_work_v [i1 + n * j1]);
+                    wu[i + jj] = (1.0f - s) * ((1.0f - t) * m_work_u[i0 + n * j0] + t * m_work_u[i0 + n * j1])
+                                    + s * ((1.0f - t) * m_work_u[i1 + n * j0] + t * m_work_u[i1 + n * j1]);
+                    wv[i + jj] = (1.0f - s) * ((1.0f - t) * m_work_v[i0 + n * j0] + t * m_work_v[i0 + n * j1])
+                                    + s * ((1.0f - t) * m_work_v[i1 + n * j0] + t * m_work_v[i1 + n * j1]);
                 }
             }
 
-            for (int j = 0; j < n; j++)
-            {
+            for (int j = 0; j < n; j++) {
                 int jj = j * n;
-                for (int i = 0; i < n; i++)
-                {
-                    m_comp_u [i, j] = new AForge.Math.Complex (wu [i + jj], 0.0);
-                    m_comp_v [i, j] = new AForge.Math.Complex (wv [i + jj], 0.0);
+                for (int i = 0; i < n; i++) {
+                    m_comp_u[i, j] = new AForge.Math.Complex(wu[i + jj], 0.0);
+                    m_comp_v[i, j] = new AForge.Math.Complex(wv[i + jj], 0.0);
                 }
             }
 
-            AForge.Math.FourierTransform.FFT2 (m_comp_u, AForge.Math.FourierTransform.Direction.Forward);
-            AForge.Math.FourierTransform.FFT2 (m_comp_v, AForge.Math.FourierTransform.Direction.Forward);
+            AForge.Math.FourierTransform.FFT2(m_comp_u, AForge.Math.FourierTransform.Direction.Forward);
+            AForge.Math.FourierTransform.FFT2(m_comp_v, AForge.Math.FourierTransform.Direction.Forward);
 
             visc *= dt;
-            for (int j = 0; j < n; j++)
-            {
+            for (int j = 0; j < n; j++) {
                 float y = (j <= n / 2 ? j : j - n);
                 float yy = y * y;
                 //
-                for (int i = 0; i < n / 2 + 1; i++)
-                {
+                for (int i = 0; i < n / 2 + 1; i++) {
                     float xx = i * i;
                     float r_sq = xx + yy;
-                    if (Math.Abs (r_sq) > EPSILON)
-                    {
-                        float fac = (float)Math.Exp (-r_sq * visc);
+                    if (Math.Abs(r_sq) > EPSILON) {
+                        float fac = (float)Math.Exp(-r_sq * visc);
                         float xy = i * y;
 
-                        AForge.Math.Complex ux = m_comp_u [i, j];
-                        AForge.Math.Complex vx = m_comp_v [i, j];
-                        m_comp_u [i, j] = fac * ((1.0f - xx / r_sq) * ux - xy / r_sq * vx);
-                        m_comp_v [i, j] = fac * (-xy / r_sq * ux + (1.0f - yy / r_sq) * vx);
+                        AForge.Math.Complex ux = m_comp_u[i, j];
+                        AForge.Math.Complex vx = m_comp_v[i, j];
+                        m_comp_u[i, j] = fac * ((1.0f - xx / r_sq) * ux - xy / r_sq * vx);
+                        m_comp_v[i, j] = fac * (-xy / r_sq * ux + (1.0f - yy / r_sq) * vx);
                     }
                 }
             }
 
-            AForge.Math.FourierTransform.FFT2 (m_comp_u, AForge.Math.FourierTransform.Direction.Backward);
-            AForge.Math.FourierTransform.FFT2 (m_comp_v, AForge.Math.FourierTransform.Direction.Backward);
+            AForge.Math.FourierTransform.FFT2(m_comp_u, AForge.Math.FourierTransform.Direction.Backward);
+            AForge.Math.FourierTransform.FFT2(m_comp_v, AForge.Math.FourierTransform.Direction.Backward);
 
             float nrml = 1.0f;//(n*n);
-            for (int j = 0; j < n; j++)
-            {
+            for (int j = 0; j < n; j++) {
                 int jj = j * n;
-                for (int i = 0; i < n; i++)
-                {
-                    wu [i + jj] = (float)(nrml * m_comp_u [i, j].Re) * rsize;
-                    wv [i + jj] = (float)(nrml * m_comp_v [i, j].Re) * rsize;
+                for (int i = 0; i < n; i++) {
+                    wu[i + jj] = (float)(nrml * m_comp_u[i, j].Re) * rsize;
+                    wv[i + jj] = (float)(nrml * m_comp_v[i, j].Re) * rsize;
                 }
             }
 

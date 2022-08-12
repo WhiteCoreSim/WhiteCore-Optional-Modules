@@ -14,14 +14,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="ModeratedMode"/> class.
         /// </summary>
-        public ModeratedMode ()
+        public ModeratedMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="ModeratedMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public ModeratedMode (ModeAction action)
+        public ModeratedMode(ModeAction action)
         {
             Action = action;
         }

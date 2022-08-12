@@ -1,9 +1,9 @@
 using System;
-using System.ComponentModel;
-using MetaBuilders.Irc.Network;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Globalization;
+using MetaBuilders.Irc.Network;
 
 namespace MetaBuilders.Irc
 {
@@ -19,19 +19,19 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Creates a new instance of the <see cref="Channel"/> class on the given client.
         /// </summary>
-        public Channel (Client client)
+        public Channel(Client client)
         {
             _client = client;
-            users.CollectionChanged += new NotifyCollectionChangedEventHandler (users_CollectionChanged);
-            Modes.CollectionChanged += new NotifyCollectionChangedEventHandler (Modes_CollectionChanged);
-            journal.CollectionChanged += new NotifyCollectionChangedEventHandler (journal_CollectionChanged);
+            users.CollectionChanged += new NotifyCollectionChangedEventHandler(Users_CollectionChanged);
+            Modes.CollectionChanged += new NotifyCollectionChangedEventHandler(Modes_CollectionChanged);
+            journal.CollectionChanged += new NotifyCollectionChangedEventHandler(Journal_CollectionChanged);
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="Channel"/> class on the given client with the given name.
         /// </summary>
-        public Channel (Client client, string name)
-            : this (client)
+        public Channel(Client client, string name)
+            : this(client)
         {
             Name = name;
         }
@@ -68,7 +68,7 @@ namespace MetaBuilders.Irc
             }
             internal set {
                 _open = value;
-                OnPropertyChanged (new PropertyChangedEventArgs ("Open"));
+                OnPropertyChanged(new PropertyChangedEventArgs("Open"));
             }
         }
         bool _open = false;
@@ -78,13 +78,13 @@ namespace MetaBuilders.Irc
         /// </summary>
         public virtual string Name {
             get {
-                return Properties ["NAME"] ?? "";
+                return Properties["NAME"] ?? "";
             }
             set {
                 string currentValue = Name;
                 if (currentValue != value) {
-                    Properties ["NAME"] = value;
-                    OnPropertyChanged (new PropertyChangedEventArgs ("Name"));
+                    Properties["NAME"] = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("Name"));
                 }
             }
         }
@@ -94,13 +94,13 @@ namespace MetaBuilders.Irc
         /// </summary>
         public virtual string Topic {
             get {
-                return Properties ["TOPIC"] ?? "";
+                return Properties["TOPIC"] ?? "";
             }
             set {
                 string originalValue = Topic;
                 if (originalValue != value) {
-                    Properties ["TOPIC"] = value;
-                    OnPropertyChanged (new PropertyChangedEventArgs ("Topic"));
+                    Properties["TOPIC"] = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("Topic"));
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace MetaBuilders.Irc
             set {
                 if (topicSetter != value) {
                     topicSetter = value;
-                    OnPropertyChanged (new PropertyChangedEventArgs ("TopicSetter"));
+                    OnPropertyChanged(new PropertyChangedEventArgs("TopicSetter"));
                 }
             }
         }
@@ -130,7 +130,7 @@ namespace MetaBuilders.Irc
             set {
                 if (topicSetTime != value) {
                     topicSetTime = value;
-                    OnPropertyChanged (new PropertyChangedEventArgs ("TopicSetTime"));
+                    OnPropertyChanged(new PropertyChangedEventArgs("TopicSetTime"));
                 }
             }
         }
@@ -169,11 +169,11 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Gets the status for the given <see cref="T:User"/> in the channel.
         /// </summary>
-        public virtual ChannelStatus GetStatusForUser (User channelUser)
+        public virtual ChannelStatus GetStatusForUser(User channelUser)
         {
-            VerifyUserInChannel (channelUser);
-            if (userModes.ContainsKey (channelUser)) {
-                return userModes [channelUser];
+            VerifyUserInChannel(channelUser);
+            if (userModes.ContainsKey(channelUser)) {
+                return userModes[channelUser];
             }
             return ChannelStatus.None;
         }
@@ -181,23 +181,23 @@ namespace MetaBuilders.Irc
         /// <summary>
         /// Applies the given <see cref="T:ChannelStatus"/> to the given <see cref="T:User"/> in the channel.
         /// </summary>
-        public virtual void SetStatusForUser (User channelUser, ChannelStatus status)
+        public virtual void SetStatusForUser(User channelUser, ChannelStatus status)
         {
-            if (status == ChannelStatus.None && userModes.ContainsKey (channelUser)) {
-                userModes.Remove (channelUser);
+            if (status == ChannelStatus.None && userModes.ContainsKey(channelUser)) {
+                userModes.Remove(channelUser);
             } else {
-                VerifyUserInChannel (channelUser);
-                userModes [channelUser] = status;
+                VerifyUserInChannel(channelUser);
+                userModes[channelUser] = status;
             }
         }
 
-        void VerifyUserInChannel (User channelUser)
+        void VerifyUserInChannel(User channelUser)
         {
             if (channelUser == null) {
-                throw new ArgumentNullException ("channelUser");
+                throw new ArgumentNullException("channelUser");
             }
-            if (!Users.Contains (channelUser)) {
-                throw new ArgumentException (String.Format (CultureInfo.InvariantCulture, NeboResources.UserIsNotInChannel, channelUser.Nick, this.Name), "channelUser");
+            if (!Users.Contains(channelUser)) {
+                throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, NeboResources.UserIsNotInChannel, channelUser.Nick, this.Name), "channelUser");
             }
         }
 
@@ -205,38 +205,38 @@ namespace MetaBuilders.Irc
 
         #region Private
 
-        void users_CollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+        void Users_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             UserCollection __users = Users;
 
             if (e.Action == NotifyCollectionChangedAction.Remove) {
-                userModes.RemoveAll (delegate (KeyValuePair<User, ChannelStatus> keyValue) {
-                    return !__users.Contains (keyValue.Key);
+                userModes.RemoveAll(delegate (KeyValuePair<User, ChannelStatus> keyValue) {
+                    return !__users.Contains(keyValue.Key);
                 }
                 );
             }
-            OnPropertyChanged (new PropertyChangedEventArgs ("Users"));
+            OnPropertyChanged(new PropertyChangedEventArgs("Users"));
         }
 
-        void Modes_CollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+        void Modes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            OnPropertyChanged (new PropertyChangedEventArgs ("Modes"));
+            OnPropertyChanged(new PropertyChangedEventArgs("Modes"));
         }
 
-        void journal_CollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+        void Journal_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            OnPropertyChanged (new PropertyChangedEventArgs ("Journal"));
+            OnPropertyChanged(new PropertyChangedEventArgs("Journal"));
         }
 
 
         Client _client;
         User topicSetter;
         DateTime topicSetTime;
-        UserCollection users = new UserCollection ();
-        Messages.Modes.ChannelModeCollection modes = new Messages.Modes.ChannelModeCollection ();
-        Journal journal = new Journal ();
-        UserStatusMap userModes = new UserStatusMap ();
-        NameValueCollection properties = new NameValueCollection ();
+        UserCollection users = new UserCollection();
+        Messages.Modes.ChannelModeCollection modes = new Messages.Modes.ChannelModeCollection();
+        Journal journal = new Journal();
+        UserStatusMap userModes = new UserStatusMap();
+        NameValueCollection properties = new NameValueCollection();
 
         #endregion
 
@@ -251,10 +251,10 @@ namespace MetaBuilders.Irc
         /// Raises the PropertyChanged event.
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnPropertyChanged (PropertyChangedEventArgs e)
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             if (PropertyChanged != null) {
-                PropertyChanged (this, e);
+                PropertyChanged(this, e);
             }
         }
 
@@ -269,18 +269,18 @@ namespace MetaBuilders.Irc
             /// Removes all of the items from the dictionary which the given predictate matches.
             /// </summary>
             /// <returns>The number of items removed from the dictionary.</returns>
-            public int RemoveAll (Predicate<System.Collections.Generic.KeyValuePair<User, ChannelStatus>> match)
+            public int RemoveAll(Predicate<System.Collections.Generic.KeyValuePair<User, ChannelStatus>> match)
             {
                 if (match == null) {
-                    throw new ArgumentNullException ("match");
+                    throw new ArgumentNullException("match");
                 }
                 int countOfItemsRemoved = 0;
 
-                User [] __users = new User [Keys.Count];
-                Keys.CopyTo (__users, 0);
+                User[] __users = new User[Keys.Count];
+                Keys.CopyTo(__users, 0);
                 foreach (User u in __users) {
-                    if (ContainsKey (u) && match (new KeyValuePair<User, ChannelStatus> (u, this [u]))) {
-                        Remove (u);
+                    if (ContainsKey(u) && match(new KeyValuePair<User, ChannelStatus>(u, this[u]))) {
+                        Remove(u);
                         countOfItemsRemoved++;
                     }
                 }

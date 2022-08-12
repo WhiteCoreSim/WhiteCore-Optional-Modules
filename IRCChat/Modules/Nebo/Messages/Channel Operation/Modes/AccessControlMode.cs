@@ -19,23 +19,23 @@ namespace MetaBuilders.Irc.Messages.Modes
                 mask = value;
             }
         }
-        User mask = new User ();
+        User mask = new User();
 
         /// <summary>
         /// Applies this mode to the ModeArguments property of the given <see cref="ChannelModeMessage" />.
         /// </summary>
         /// <param name="msg">The message which will be modified to include this mode.</param>
-        protected override void AddParameter (ChannelModeMessage msg)
+        protected override void AddParameter(ChannelModeMessage msg)
         {
-            msg.ModeArguments.Add (Mask.ToString ());
+            msg.ModeArguments.Add(Mask.ToString());
         }
 
         /// <summary>
         /// A string representation of the mode.
         /// </summary>
-        public override string ToString ()
+        public override string ToString()
         {
-            return base.ToString () + " " + Mask.ToString ();
+            return base.ToString() + " " + Mask.ToString();
         }
     }
 }

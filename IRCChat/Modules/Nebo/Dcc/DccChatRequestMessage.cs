@@ -16,7 +16,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="DccChatRequestMessage"/> class.
         /// </summary>
-        public DccChatRequestMessage () : base ()
+        public DccChatRequestMessage() : base()
         {
         }
 
@@ -56,30 +56,30 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Determines if the message's DCC command is compatible with this message.
         /// </summary>
-        public override bool CanParseDccCommand (string command)
+        public override bool CanParseDccCommand(string command)
         {
-            if (string.IsNullOrEmpty (command)) {
+            if (string.IsNullOrEmpty(command)) {
                 return false;
             }
-            return command.ToUpperInvariant ().EndsWith ("CHAT", StringComparison.Ordinal);
+            return command.ToUpperInvariant().EndsWith("CHAT", StringComparison.Ordinal);
         }
 
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
+            base.Parse(unparsedMessage);
 
-            Secure = DccUtil.GetCommand (unparsedMessage).ToUpperInvariant ().StartsWith ("S", StringComparison.Ordinal);
+            Secure = DccUtil.GetCommand(unparsedMessage).ToUpperInvariant().StartsWith("S", StringComparison.Ordinal);
         }
 
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnDccChatRequest (new IrcMessageEventArgs<DccChatRequestMessage> (this));
+            conduit.OnDccChatRequest(new IrcMessageEventArgs<DccChatRequestMessage>(this));
         }
 
 

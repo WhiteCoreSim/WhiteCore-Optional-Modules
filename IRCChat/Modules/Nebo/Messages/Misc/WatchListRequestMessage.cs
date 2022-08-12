@@ -33,22 +33,22 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Determines if the message can be parsed by this type.
         /// </summary>
-        public override bool CanParse (string unparsedMessage)
+        public override bool CanParse(string unparsedMessage)
         {
-            if (!base.CanParse (unparsedMessage)) {
+            if (!base.CanParse(unparsedMessage)) {
                 return false;
             }
-            StringCollection param = MessageUtil.GetParameters (unparsedMessage);
-            return (param.Count == 0 || (param.Count == 1 && MessageUtil.IsIgnoreCaseMatch (param [0], "L")));
+            StringCollection param = MessageUtil.GetParameters(unparsedMessage);
+            return (param.Count == 0 || (param.Count == 1 && MessageUtil.IsIgnoreCaseMatch(param[0], "L")));
         }
 
         /// <summary>
         /// Overrides <see href="IrcMessage.ParseParameters" />
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
-            OnlineOnly = parameters.Count == 0 || parameters [0] == "l";
+            base.ParseParameters(parameters);
+            OnlineOnly = parameters.Count == 0 || parameters[0] == "l";
         }
 
 
@@ -59,13 +59,13 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
+            base.AddParametersToFormat(writer);
             if (onlineOnly) {
-                writer.AddParameter ("l");
+                writer.AddParameter("l");
             } else {
-                writer.AddParameter ("L");
+                writer.AddParameter("L");
             }
         }
 
@@ -76,9 +76,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnWatchListRequest (new IrcMessageEventArgs<WatchListRequestMessage> (this));
+            conduit.OnWatchListRequest(new IrcMessageEventArgs<WatchListRequestMessage>(this));
         }
 
         #endregion

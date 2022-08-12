@@ -79,25 +79,25 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Validates this message against the given server support
         /// </summary>
-        public override void Validate (ServerSupport serverSupport)
+        public override void Validate(ServerSupport serverSupport)
         {
-            base.Validate (serverSupport);
-            Channel = MessageUtil.EnsureValidChannelName (Channel, serverSupport);
+            base.Validate(serverSupport);
+            Channel = MessageUtil.EnsureValidChannelName(Channel, serverSupport);
         }
 
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddParameter (this.Channel);
+            base.AddParametersToFormat(writer);
+            writer.AddParameter(this.Channel);
             if (Prop.Length == 0) {
-                writer.AddParameter ("*");
+                writer.AddParameter("*");
             } else {
-                writer.AddParameter (Prop);
+                writer.AddParameter(Prop);
                 if (NewValue.Length != 0) {
-                    writer.AddParameter (NewValue);
+                    writer.AddParameter(NewValue);
                 }
             }
         }
@@ -105,23 +105,23 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the parameters portion of the message.
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
+            base.ParseParameters(parameters);
 
             Channel = "";
             Prop = "";
             NewValue = "";
 
             if (parameters.Count > 0) {
-                Channel = parameters [0];
+                Channel = parameters[0];
                 if (parameters.Count > 1) {
-                    Prop = parameters [1];
+                    Prop = parameters[1];
                     if (Prop == "*") {
                         Prop = "";
                     }
                     if (parameters.Count > 2) {
-                        NewValue = parameters [2];
+                        NewValue = parameters[2];
                     }
                 }
             }
@@ -130,9 +130,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnChannelProperty (new IrcMessageEventArgs<ChannelPropertyMessage> (this));
+            conduit.OnChannelProperty(new IrcMessageEventArgs<ChannelPropertyMessage>(this));
         }
 
     }

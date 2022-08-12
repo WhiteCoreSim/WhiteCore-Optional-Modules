@@ -12,14 +12,14 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// <summary>
         /// Creates a new instance of the <see cref="LimitMode"/> class.
         /// </summary>
-        public LimitMode ()
+        public LimitMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="LimitMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public LimitMode (ModeAction action)
+        public LimitMode(ModeAction action)
         {
             Action = action;
         }
@@ -28,7 +28,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Creates a new instance of the <see cref="LimitMode"/> class 
         /// with the given <see cref="ModeAction"/> and user limit.
         /// </summary>
-        public LimitMode (ModeAction action, int userLimit)
+        public LimitMode(ModeAction action, int userLimit)
         {
             Action = action;
             user_Limit = userLimit;
@@ -38,7 +38,7 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Creates a new instance of the <see cref="LimitMode"/> class 
         /// with the given user limit.
         /// </summary>
-        public LimitMode (int userLimit)
+        public LimitMode(int userLimit)
         {
             user_Limit = userLimit;
         }
@@ -70,10 +70,10 @@ namespace MetaBuilders.Irc.Messages.Modes
         /// Applies this mode to the ModeArguments property of the given <see cref="ChannelModeMessage" />.
         /// </summary>
         /// <param name="msg">The message which will be modified to include this mode.</param>
-        protected override void AddParameter (ChannelModeMessage msg)
+        protected override void AddParameter(ChannelModeMessage msg)
         {
             if (UserLimit != -1) {
-                msg.ModeArguments.Add (user_Limit.ToString (CultureInfo.InvariantCulture));
+                msg.ModeArguments.Add(user_Limit.ToString(CultureInfo.InvariantCulture));
             }
         }
     }

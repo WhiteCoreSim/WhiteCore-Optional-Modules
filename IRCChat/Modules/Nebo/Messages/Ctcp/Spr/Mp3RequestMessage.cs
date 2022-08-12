@@ -6,14 +6,14 @@ namespace MetaBuilders.Irc.Messages
     /// <summary>
     /// An SPR Jukebox message that notifies the recipient of the senders available mp3 file.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Mp"), Serializable]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Mp"), Serializable]
     public class Mp3RequestMessage : CtcpRequestMessage
     {
 
         /// <summary>
         /// Creates a new instance of the <see cref="Mp3RequestMessage"/> class.
         /// </summary>
-        public Mp3RequestMessage ()
+        public Mp3RequestMessage()
         {
             InternalCommand = "MP3";
         }
@@ -22,8 +22,8 @@ namespace MetaBuilders.Irc.Messages
         /// Creates a new instance of the <see cref="ActionRequestMessage"/> class with the given text and target.
         /// </summary>
         /// <param name="target">The target of the action.</param>
-        public Mp3RequestMessage (string target)
-            : this ()
+        public Mp3RequestMessage(string target)
+            : this()
         {
             Target = target;
         }
@@ -44,9 +44,9 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnMp3Request (new IrcMessageEventArgs<Mp3RequestMessage> (this));
+            conduit.OnMp3Request(new IrcMessageEventArgs<Mp3RequestMessage>(this));
         }
 
         /// <summary>
@@ -61,10 +61,10 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the given string to populate this <see cref="IrcMessage"/>.
         /// </summary>
-        public override void Parse (string unparsedMessage)
+        public override void Parse(string unparsedMessage)
         {
-            base.Parse (unparsedMessage);
-            FileName = CtcpUtil.GetExtendedData (unparsedMessage);
+            base.Parse(unparsedMessage);
+            FileName = CtcpUtil.GetExtendedData(unparsedMessage);
         }
 
     }

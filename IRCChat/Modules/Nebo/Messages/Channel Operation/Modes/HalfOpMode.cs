@@ -5,33 +5,33 @@ namespace MetaBuilders.Irc.Messages.Modes
     /// <summary>
     /// This mode is used to toggle the half-operator status of a channel member.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Op")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Op")]
     public class HalfOpMode : MemberStatusMode
     {
 
         /// <summary>
         /// Creates a new instance of the <see cref="HalfOpMode"/> class.
         /// </summary>
-        public HalfOpMode ()
+        public HalfOpMode()
         {
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="HalfOpMode"/> class with the given <see cref="ModeAction"/>.
         /// </summary>
-        public HalfOpMode (ModeAction action)
+        public HalfOpMode(ModeAction action)
         {
-            this.Action = action;
+            Action = action;
         }
 
         /// <summary>
         /// Creates a new instance of the <see cref="HalfOpMode"/> class 
         /// with the given <see cref="ModeAction"/> and member's nick.
         /// </summary>
-        public HalfOpMode (ModeAction action, string nick)
+        public HalfOpMode(ModeAction action, string nick)
         {
-            this.Action = action;
-            this.Nick = nick;
+            Action = action;
+            Nick = nick;
         }
 
         /// <summary>

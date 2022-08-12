@@ -22,11 +22,11 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Validates this message against the given server support
         /// </summary>
-        public override void Validate (ServerSupport serverSupport)
+        public override void Validate(ServerSupport serverSupport)
         {
-            base.Validate (serverSupport);
+            base.Validate(serverSupport);
             if (serverSupport != null && serverSupport.MaxWatches <= 0) {
-                throw new InvalidMessageException (NeboResources.ServerDoesNotSupportWatch);
+                throw new InvalidMessageException(NeboResources.ServerDoesNotSupportWatch);
             }
 
         }

@@ -19,7 +19,7 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Creates a new instance of the <see cref="JoinMessage"/> class.
         /// </summary>
-        public JoinMessage () : base ()
+        public JoinMessage() : base()
         {
         }
 
@@ -27,9 +27,9 @@ namespace MetaBuilders.Irc.Messages
         /// Creates a new instance of the <see cref="JoinMessage"/> class with the given channel.
         /// </summary>
         /// <param name="channel">The name of the channel to join.</param>
-        public JoinMessage (string channel)
+        public JoinMessage(string channel)
         {
-            channels.Add (channel);
+            channels.Add(channel);
         }
 
         /// <summary>
@@ -60,17 +60,17 @@ namespace MetaBuilders.Irc.Messages
             }
         }
 
-        StringCollection channels = new StringCollection ();
-        StringCollection keys = new StringCollection ();
+        StringCollection channels = new StringCollection();
+        StringCollection keys = new StringCollection();
 
         /// <summary>
         /// Validates this message against the given server support
         /// </summary>
-        public override void Validate (ServerSupport serverSupport)
+        public override void Validate(ServerSupport serverSupport)
         {
-            base.Validate (serverSupport);
+            base.Validate(serverSupport);
             for (int i = 0; i < Channels.Count; i++) {
-                Channels [i] = MessageUtil.EnsureValidChannelName (Channels [i], serverSupport);
+                Channels[i] = MessageUtil.EnsureValidChannelName(Channels[i], serverSupport);
             }
         }
 
@@ -78,12 +78,12 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Overrides <see cref="IrcMessage.AddParametersToFormat"/>.
         /// </summary>
-        protected override void AddParametersToFormat (IrcMessageWriter writer)
+        protected override void AddParametersToFormat(IrcMessageWriter writer)
         {
-            base.AddParametersToFormat (writer);
-            writer.AddList (Channels, ",", true);
+            base.AddParametersToFormat(writer);
+            writer.AddList(Channels, ",", true);
             if (Keys.Count != 0) {
-                writer.AddList (Keys, ",", true);
+                writer.AddList(Keys, ",", true);
             }
         }
 
@@ -91,15 +91,15 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Parses the parameters portion of the message
         /// </summary>
-        protected override void ParseParameters (StringCollection parameters)
+        protected override void ParseParameters(StringCollection parameters)
         {
-            base.ParseParameters (parameters);
-            Channels.Clear ();
-            Keys.Clear ();
+            base.ParseParameters(parameters);
+            Channels.Clear();
+            Keys.Clear();
             if (parameters.Count > 0) {
-                Channels.AddRange (parameters [0].Split (','));
+                Channels.AddRange(parameters[0].Split(','));
                 if (parameters.Count > 1) {
-                    Keys.AddRange (parameters [1].Split (','));
+                    Keys.AddRange(parameters[1].Split(','));
                 }
             }
         }
@@ -108,25 +108,25 @@ namespace MetaBuilders.Irc.Messages
         /// <summary>
         /// Notifies the given <see cref="MessageConduit"/> by raising the appropriate event for the current <see cref="IrcMessage"/> subclass.
         /// </summary>
-        public override void Notify (MessageConduit conduit)
+        public override void Notify(MessageConduit conduit)
         {
-            conduit.OnJoin (new IrcMessageEventArgs<JoinMessage> (this));
+            conduit.OnJoin(new IrcMessageEventArgs<JoinMessage>(this));
         }
 
 
         #region IChannelTargetedMessage Members
 
-        bool IChannelTargetedMessage.IsTargetedAtChannel (string channelName)
+        bool IChannelTargetedMessage.IsTargetedAtChannel(string channelName)
         {
-            return IsTargetedAtChannel (channelName);
+            return IsTargetedAtChannel(channelName);
         }
 
         /// <summary>
         /// Determines if the the current message is targeted at the given channel.
         /// </summary>
-        protected virtual bool IsTargetedAtChannel (string channelName)
+        protected virtual bool IsTargetedAtChannel(string channelName)
         {
-            return MessageUtil.ContainsIgnoreCaseMatch (Channels, channelName);
+            return MessageUtil.ContainsIgnoreCaseMatch(Channels, channelName);
         }
 
         #endregion

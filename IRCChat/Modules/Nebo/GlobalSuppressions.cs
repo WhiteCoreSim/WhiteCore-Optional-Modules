@@ -8,7 +8,7 @@
 // Suppression File". You do not need to add suppressions to this
 // file manually.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "MetaBuilders.Irc.Contacts" )]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "MetaBuilders.Irc.Dcc" )]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "MetaBuilders.Irc.Contacts")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "MetaBuilders.Irc.Dcc")]
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "numerics", Scope = "resource", Target = "MetaBuilders.Irc.NeboResources.resources" )]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "numerics", Scope = "resource", Target = "MetaBuilders.Irc.NeboResources.resources")]
